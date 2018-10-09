@@ -1,0 +1,29 @@
+stages:
+  - test
+  - upload-pypi
+
+test:
+  stage: test
+  image: python:3.5-slim
+  script:
+  - python setup.py install
+  - python setup.py test
+
+upload-python-egg:
+  stage: upload-pypi
+  image: python:3.5-slim
+  script:
+  - |
+    echo -e "[distutils]
+    index-servers = wiremind
+    [wiremind]
+    repository:https://upload.pypi.wiremind.fr
+    username:upload
+    password:${PYPIPASSWORD}" > ~/.pypirc
+  - export VERSION=$(cat VERSION)
+  # Only upload if it is not already on our pypi
+  - pip download --index-url https://upload:${PYPIPASSWORD}@pypi.wiremind.fr chartreuse==$VERSION && ALREADY_THERE=true || ALREADY_THERE=false
+  - if "$ALREADY_THERE"; then echo "Egg already on index; not uploading."; else
+    python setup.py sdist upload -r wiremind;
+    fi
+
