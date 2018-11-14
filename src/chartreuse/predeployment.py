@@ -4,10 +4,11 @@ from future.standard_library import install_aliases
 install_aliases()
 
 import os
-import sys
 import time
 
-from .utils import KubernetesHelper, AlembicMigrationHelper
+from wiremind_kubernetes import KubernetesHelper
+
+from .utils import AlembicMigrationHelper
 
 ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
     os.environ.get("ALLOW_MIGRATION_FOR_EMPTY_DATABASE", "")
@@ -45,7 +46,8 @@ def celery_workers_stop():
 
 
 def main():
-    alembic_migration_helper = AlembicMigrationHelper(DATABASE_URL, ALLOW_MIGRATION_FOR_EMPTY_DATABASE)
+    AlembicMigrationHelper(DATABASE_URL, ALLOW_MIGRATION_FOR_EMPTY_DATABASE)
+    # AlembicMigrationHelper exits 0 if no migration is needed
     celery_workers_stop()
 
 

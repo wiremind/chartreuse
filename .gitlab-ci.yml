@@ -22,7 +22,7 @@ upload-python-egg:
     password:${PYPIPASSWORD}" > ~/.pypirc
   - export VERSION=$(cat VERSION)
   # Only upload if it is not already on our pypi
-  - pip download --index-url https://upload:${PYPIPASSWORD}@pypi.wiremind.fr chartreuse==$VERSION && ALREADY_THERE=true || ALREADY_THERE=false
+  - pip download --extra-index-url https://upload:${PYPIPASSWORD}@pypi.wiremind.fr chartreuse==$VERSION && ALREADY_THERE=true || ALREADY_THERE=false
   - if "$ALREADY_THERE"; then echo "Egg already on index; not uploading."; else
     python setup.py sdist upload -r wiremind;
     fi

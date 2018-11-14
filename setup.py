@@ -36,7 +36,7 @@ setup(
     zip_safe=True,
     tests_require=["nose>=1.0", "mock"],
     cmdclass={"test": NoseTestCommand},
-    install_requires=["kubernetes", "alembic", "requests", "future"],
+    install_requires=["wiremind-kubernetes>=0.0.3", "alembic", "requests", "future", "psycopg2"],
     entry_points={
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",
