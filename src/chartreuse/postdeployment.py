@@ -32,6 +32,8 @@ def celery_workers_start():
 
 def main():
     alembic_migration_helper = AlembicMigrationHelper(DATABASE_URL, ALLOW_MIGRATION_FOR_EMPTY_DATABASE)
+    # Even if we stop before deployment, deployment definition can have changed so much that it has been restarted.
+    celery_workers_stop()
     alembic_migration_helper.migrate_db()
     celery_workers_start()
 

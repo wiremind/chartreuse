@@ -6,7 +6,7 @@ test:
   stage: test
   image: python:3.5-slim
   before_script:
-    - pip install --extra-index-url https://upload:laegoos9Sha1ohg@pypi.wiremind.fr -r requirements.txt
+    - pip install --extra-index-url https://upload:${PYPIPASSWORD}@pypi.wiremind.fr -r requirements.txt
   script:
   - python setup.py install
   - python setup.py test
