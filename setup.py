@@ -9,6 +9,7 @@ from setuptools.command.test import test as TestCommand
 with open('VERSION') as version_file:
     version = version_file.read().strip()
 
+
 class NoseTestCommand(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
@@ -34,9 +35,15 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=True,
-    tests_require=["nose>=1.0", "mock"],
     cmdclass={"test": NoseTestCommand},
     install_requires=["wiremind-kubernetes>=0.0.3", "alembic", "requests", "future", "psycopg2"],
+    extras_require={
+        'dev': [
+            'nose>=1.0',
+            'mock',
+            'coverage',
+        ]
+    },
     entry_points={
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",
