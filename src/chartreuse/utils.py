@@ -6,7 +6,6 @@ install_aliases()
 import os
 import re
 import socket
-import sys
 import urllib.parse
 import time
 
@@ -56,7 +55,6 @@ class AlembicMigrationHelper(object):
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
 
         self._configure()
-        self._check_migration_possible()
 
     def _configure(self):
         os.chdir("/app/alembic")
@@ -66,19 +64,20 @@ class AlembicMigrationHelper(object):
             % (cleaned_url, "alembic.ini")
         )
 
-    def _check_migration_possible(self):
+    def check_migration_possible(self):
         if not self.is_postgres_domain_name_resolvable():
             print("Postgres server does not exist yet, not upgrading database.")
-            sys.exit(0)
+            return False
         if not self.is_postgres_reachable():
             print("Postgres server does not answer, not upgrading database.")
-            sys.exit(0)
+            return False
         if (not self.allow_migration_for_empty_database and self.is_postgres_empty()):
             print("Database is not populated yet, not upgrading it.")
-            sys.exit(0)
+            return False
         if not self.is_migration_needed():
             print("Database does not need migration, exiting.")
-            sys.exit(0)
+            return False
+        return True
 
     def is_postgres_domain_name_resolvable(self):
         os.chdir("/app/alembic")

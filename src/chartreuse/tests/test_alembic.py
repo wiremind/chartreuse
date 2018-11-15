@@ -9,14 +9,14 @@ import chartreuse.utils
 class AlembicTestCase(unittest.TestCase):
     def setUp(self):
         self.original_configure = chartreuse.utils.AlembicMigrationHelper._configure
-        self.original_check_migration_possible = chartreuse.utils.AlembicMigrationHelper._check_migration_possible
+        self.original_check_migration_possible = chartreuse.utils.AlembicMigrationHelper.check_migration_possible
         chartreuse.utils.AlembicMigrationHelper._configure = lambda x: None
-        chartreuse.utils.AlembicMigrationHelper._check_migration_possible = lambda x: None
+        chartreuse.utils.AlembicMigrationHelper.check_migration_possible = lambda x: None
         self.alembicMigrationHelper = chartreuse.utils.AlembicMigrationHelper('foo')
 
     def tearDown(self):
         chartreuse.utils.AlembicMigrationHelper._configure = self.original_configure
-        chartreuse.utils.AlembicMigrationHelper._check_migration_possible = self.original_check_migration_possible
+        chartreuse.utils.AlembicMigrationHelper.check_migration_possible = self.original_check_migration_possible
 
     def test_respect_empty_database(self):
         """
