@@ -36,9 +36,9 @@ class EslembicMigrationHelper(object):
         if not self._is_elasticsearch_reachable():
             print("Elasticsearch service does not answer, not upgrading Elasticsearch.")
             return False
-        #if (not self.allow_migration_for_empty_database and self.is_postgres_empty()):
-        #    print("Elasticsearch is not populated yet, not upgrading it.")
-        #    return False
+        # if (not self.allow_migration_for_empty_database and self.is_postgres_empty()):
+        #     print("Elasticsearch is not populated yet, not upgrading it.")
+        #     return False
         if not self.is_migration_needed():
             print("Database does not need migration, exiting.")
             return False

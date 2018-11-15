@@ -30,7 +30,7 @@ class Chartreuse(object):
 
     def start_pods(self):
         """
-        Start all Celery
+        Start all Pods that should be started
         """
         kubernetes_helper = wiremind_kubernetes.KubernetesHelper()
         expected_deployment_scale_dict = kubernetes_helper.get_expected_deployment_scale_dict()
@@ -38,34 +38,34 @@ class Chartreuse(object):
         if not expected_deployment_scale_dict:
             return
 
-        print("Starting up celery workers")
+        print("Scaling up pods")
         for (name, amount) in expected_deployment_scale_dict.items():
             kubernetes_helper.scale_up_deployment(name, amount)
 
     def stop_pods(self):
         """
-        SQL migration implies that every worker should be restarted.
-        We stop every worker before applying migration
+        SQL migration implies that every backend pod should be restarted.
+        We stop them before applying migration
         """
         kubernetes_helper = wiremind_kubernetes.KubernetesHelper()
-        celery_deployment_list = kubernetes_helper.get_deployment_name_to_be_stopped_list()
+        deployment_list = kubernetes_helper.get_deployment_name_to_be_stopped_list()
 
-        if not celery_deployment_list:
+        if not deployment_list:
             return
 
-        print("Shutting down celery workers")
-        for celery_deployment_name in celery_deployment_list:
-            kubernetes_helper.scale_down_deployment(celery_deployment_name)
+        print("Shutting down pods")
+        for deployment_name in deployment_list:
+            kubernetes_helper.scale_down_deployment(deployment_name)
 
         # Make sure to wait for actual stop (can be looong)
         for _ in range(360):  # 1 hour
             time.sleep(10)
             stopped = 0
-            for celery_deployment_name in celery_deployment_list:
-                if kubernetes_helper.is_deployment_stopped(celery_deployment_name):
+            for deployment_name in deployment_list:
+                if kubernetes_helper.is_deployment_stopped(deployment_name):
                     stopped += 1
-            if stopped == len(celery_deployment_list):
+            if stopped == len(deployment_list):
                 break
             else:
-                print("Celery workers not stopped yet. Waiting...")
-        print("Celery workers have been stopped.")
+                print("All pods not stopped yet. Waiting...")
+        print("All pods have been stopped.")
