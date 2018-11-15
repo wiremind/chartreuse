@@ -1,0 +1,23 @@
+# Allows to define "expected deployment scale" so that one can reset the
+# number of Pods for a deployment to the expected amount if it has manually been changed
+
+# Expected data:
+# - "deploymentName"
+# - "expectedScale"
+
+# XXX Automate it.
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: expecteddeploymentscales.wiremind.fr
+spec:
+  group: wiremind.fr
+  version: v1
+  scope: Namespaced
+  names:
+    plural: expecteddeploymentscales
+    singular: expecteddeploymentscale
+    kind: ExpectedDeploymentScale
+    shortNames:
+      - eds
