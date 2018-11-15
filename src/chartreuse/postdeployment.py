@@ -7,7 +7,7 @@ import os
 
 from wiremind_kubernetes import KubernetesHelper
 
-from .utils import AlembicMigrationHelper, celery_workers_stop
+from .utils import AlembicMigrationHelper, stop_pods
 
 ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
     os.environ.get("ALLOW_MIGRATION_FOR_EMPTY_DATABASE", "")
@@ -33,7 +33,7 @@ def celery_workers_start():
 def main():
     alembic_migration_helper = AlembicMigrationHelper(DATABASE_URL, ALLOW_MIGRATION_FOR_EMPTY_DATABASE)
     # Even if we stop before deployment, deployment definition can have changed so much that it has been restarted.
-    celery_workers_stop()
+    stop_pods()
     alembic_migration_helper.migrate_db()
     celery_workers_start()
 

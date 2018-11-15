@@ -15,7 +15,7 @@ import sqlalchemy
 from wiremind_kubernetes import KubernetesHelper, _run_command
 
 
-def celery_workers_stop():
+def stop_pods():
     """
     SQL migration implies that every worker should be restarted.
     We stop every worker before applying migration
@@ -31,7 +31,7 @@ def celery_workers_stop():
         kubernetes_helper.scale_down_deployment(celery_deployment_name)
 
     # Make sure to wait for actual stop (can be looong)
-    for retry in range(360):  # 1 hour
+    for _ in range(360):  # 1 hour
         time.sleep(10)
         stopped = 0
         for celery_deployment_name in celery_deployment_list:
@@ -55,13 +55,16 @@ class AlembicMigrationHelper(object):
         self.database_url = database_url
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
 
-        os.chdir("/app/alembic")
-        cleaned_url = database_url.replace("/", r"\/")
-        _run_command(
-            "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
-            % (cleaned_url, "alembic.ini")
-        )
+        self._configure()
         self._check_migration_possible()
+
+        def _configure(self):
+            os.chdir("/app/alembic")
+            cleaned_url = database_url.replace("/", r"\/")
+            _run_command(
+                "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
+                % (cleaned_url, "alembic.ini")
+            )
 
     def _check_migration_possible(self):
         if not self.is_postgres_domain_name_resolvable():
@@ -104,6 +107,12 @@ class AlembicMigrationHelper(object):
     def is_postgres_empty(self):
         os.chdir("/app/alembic")
         table_list = sqlalchemy.create_engine(self.database_url).table_names()
+        self._is_postgres_empty(table_list)
+
+    def _is_postgres_empty(self, table_list):
+        """
+        Internal method called by is_postgres_empty to ease testing.
+        """
         print("Tables in database: %s" % table_list)
         # Don't count "alembic" table
         table_name = "alembic_version"

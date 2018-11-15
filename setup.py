@@ -36,7 +36,13 @@ setup(
     include_package_data=True,
     zip_safe=True,
     cmdclass={"test": NoseTestCommand},
-    install_requires=["wiremind-kubernetes>=0.0.3", "alembic", "requests", "future", "psycopg2"],
+    install_requires=[
+        "alembic",
+        "eslembic",
+        "future",
+        "psycopg2",
+        "wiremind-kubernetes>=0.0.3",
+    ],
     extras_require={
         'dev': [
             'nose>=1.0',
