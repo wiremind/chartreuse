@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-chartreuse-pre-deployment
+  labels:
+    app: {{ template "chartreuse.name" . }}
+    chart: {{ template "chartreuse.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: "pre-deployment"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: {{ template "chartreuse.name" . }}
+        chart: {{ template "chartreuse.chart" . }}
+        release: {{ .Release.Name }}
+        component: "pre-deployment"
+        logFormat: json
+    spec:
+      restartPolicy: "Never"
+      imagePullSecrets:
+        - name: gitlab-docker-registry
+      containers:
+        - name: chartreuse
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "export COMMAND='chartreuse-pre-deployment'; if command -v $COMMAND; then $COMMAND; else echo \"File $COMMAND not found, not migrating.\"; fi"
+          envFrom:
+          - secretRef:
+              name: {{ template "chartreuse.fullname" . }}
+          - configMapRef:
+              name: {{ template "chartreuse.fullname" . }}
+          env:
+      serviceAccountName: {{ template "chartreuse.serviceAccountName" . }}

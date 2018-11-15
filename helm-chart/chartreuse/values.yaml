@@ -1,0 +1,36 @@
+# Default values for chartreuse.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: overrideme
+  tag: latest # Change me to a real image from a tag
+  pullPolicy: IfNotPresent
+
+# Enable if you want to provide your own Secret, otherwise will be created by Helm
+# XXX implement creation of secret
+customSecret: true
+
+allowMigrationFromEmptyDatabase: false
+
+serviceAccount:
+  create: true
+  name:
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
