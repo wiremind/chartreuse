@@ -1,4 +1,8 @@
-# Alembic migration within kubernetes
+# Chartreuse: Alembic migration within kubernetes
+
+Chartreuse is a wrapper around Alembic to ease, detect and automate alembic migrations on deployed applications.
+
+Chartreuse is made to work as Helm hooks. You need to use Chartreuse a a sub-chart of your project.
 
 # Install
 
@@ -6,12 +10,19 @@ This Python package requires a `Custom Resource Definition`:
 
     $ kubectl apply -f customResourceDescription-expecteddeploymentscales.yaml
 
-## Steps
+# Configuration
 
- - Pre-deployment job: Stop all celeries
- - Run normal deployment
+TBD
+
+## How it works
+
+The steps are:
+
+ - Pre-deployment job (i.e a script that is run n kubernetes BEFORE deploying the new version of your app in kubernetes):
+    - Detect if an alembic migration is required, if not, exit
+    - Stop all celeries, nginx-uwsgi, cron
+ - Run normal kubernetes deployment
  - Post-deployment job:
-    - Migrate
-    - Restart all celeries
-
-It has been decided to keep the nginx/uwsgi alive (unless manual intervention of planned downtime for long migrations).
+    - Detect if an alembic migration is required, if not, exit
+    - Do alembic migration
+    - Restart all pods that have been stopped before
