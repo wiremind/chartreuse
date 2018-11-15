@@ -5,7 +5,9 @@ install_aliases()
 
 import os
 
-from .utils import KubernetesHelper, AlembicMigrationHelper
+from wiremind_kubernetes import KubernetesHelper
+
+from .utils import AlembicMigrationHelper
 
 ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
     os.environ.get("ALLOW_MIGRATION_FOR_EMPTY_DATABASE", "")
