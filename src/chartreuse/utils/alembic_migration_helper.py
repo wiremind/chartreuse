@@ -7,40 +7,10 @@ import os
 import re
 import socket
 import urllib.parse
-import time
 
 import sqlalchemy
 
-from wiremind_kubernetes import KubernetesHelper, _run_command
-
-
-def stop_pods():
-    """
-    SQL migration implies that every worker should be restarted.
-    We stop every worker before applying migration
-    """
-    kubernetes_helper = KubernetesHelper()
-    celery_deployment_list = kubernetes_helper.get_deployment_name_to_be_stopped_list()
-
-    if not celery_deployment_list:
-        return
-
-    print("Shutting down celery workers")
-    for celery_deployment_name in celery_deployment_list:
-        kubernetes_helper.scale_down_deployment(celery_deployment_name)
-
-    # Make sure to wait for actual stop (can be looong)
-    for _ in range(360):  # 1 hour
-        time.sleep(10)
-        stopped = 0
-        for celery_deployment_name in celery_deployment_list:
-            if kubernetes_helper.is_deployment_stopped(celery_deployment_name):
-                stopped += 1
-        if stopped == len(celery_deployment_list):
-            break
-        else:
-            print("Celery workers not stopped yet. Waiting...")
-    print("Celery workers have been stopped.")
+from wiremind_kubernetes import _run_command
 
 
 class AlembicMigrationHelper(object):
