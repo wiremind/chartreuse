@@ -58,13 +58,13 @@ class AlembicMigrationHelper(object):
         self._configure()
         self._check_migration_possible()
 
-        def _configure(self):
-            os.chdir("/app/alembic")
-            cleaned_url = database_url.replace("/", r"\/")
-            _run_command(
-                "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
-                % (cleaned_url, "alembic.ini")
-            )
+    def _configure(self):
+        os.chdir("/app/alembic")
+        cleaned_url = self.database_url.replace("/", r"\/")
+        _run_command(
+            "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
+            % (cleaned_url, "alembic.ini")
+        )
 
     def _check_migration_possible(self):
         if not self.is_postgres_domain_name_resolvable():
