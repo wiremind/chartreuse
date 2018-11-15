@@ -7,7 +7,7 @@ import os
 
 from wiremind_kubernetes import KubernetesHelper
 
-from .utils import AlembicMigrationHelper
+from .utils import AlembicMigrationHelper, celery_workers_stop
 
 ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
     os.environ.get("ALLOW_MIGRATION_FOR_EMPTY_DATABASE", "")

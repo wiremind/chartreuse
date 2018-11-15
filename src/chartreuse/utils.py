@@ -8,10 +8,11 @@ import re
 import socket
 import sys
 import urllib.parse
+import time
 
 import sqlalchemy
 
-from wiremind_kubernetes import _run_command
+from wiremind_kubernetes import KubernetesHelper, _run_command
 
 
 def celery_workers_stop():
@@ -30,7 +31,7 @@ def celery_workers_stop():
         kubernetes_helper.scale_down_deployment(celery_deployment_name)
 
     # Make sure to wait for actual stop (can be looong)
-    for retry in range(360): # 1 hour
+    for retry in range(360):  # 1 hour
         time.sleep(10)
         stopped = 0
         for celery_deployment_name in celery_deployment_list:
@@ -69,10 +70,7 @@ class AlembicMigrationHelper(object):
         if not self.is_postgres_reachable():
             print("Postgres server does not answer, not upgrading database.")
             sys.exit(0)
-        if (
-            not self.allow_migration_for_empty_database
-            and self.is_postgres_empty()
-        ):
+        if (not self.allow_migration_for_empty_database and self.is_postgres_empty()):
             print("Database is not populated yet, not upgrading it.")
             sys.exit(0)
         if not self.is_migration_needed():
