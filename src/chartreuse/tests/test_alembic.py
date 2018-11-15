@@ -23,11 +23,11 @@ class AlembicTestCase(unittest.TestCase):
         Test that is_postgres_empty returns empty even if alembic table exists
         """
         table_list = ['alembic_version']
-        self.assertFalse(self.alembicMigrationHelper._is_postgres_empty(table_list))
+        self.assertTrue(self.alembicMigrationHelper._is_postgres_empty(table_list))
 
     def test_respect_not_empty_database(self):
         """
         Test that is_postgres_empty says OK when tables exist
         """
         table_list = ['alembic_version', 'foobar']
-        self.assertTrue(self.alembicMigrationHelper._is_postgres_empty(table_list))
+        self.assertFalse(self.alembicMigrationHelper._is_postgres_empty(table_list))
