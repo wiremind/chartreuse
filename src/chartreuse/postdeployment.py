@@ -15,7 +15,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", None)
 
 
-if __name__ == "__main__":
+def main():
     chartreuse = Chartreuse(
         DATABASE_URL, ELASTICSEARCH_URL,
         allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE
@@ -24,3 +24,7 @@ if __name__ == "__main__":
         chartreuse.stop_pods()
         chartreuse.migrate()
         chartreuse.start_pods()
+
+
+if __name__ == "__main__":
+    main()
