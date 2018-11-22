@@ -13,13 +13,15 @@ class Chartreuse(object):
         self.alembic_migration_helper = AlembicMigrationHelper(
             database_url, allow_migration_for_empty_database
         )
-        if elasticsearch_url:
-            self.eslembic_migration_helper = EslembicMigrationHelper(elasticsearch_url)
+
+        self.eslembic_migration_helper = \
+            EslembicMigrationHelper(elasticsearch_url) if elasticsearch_url \
+            else None
 
     def is_migration_possible(self):
         alembic_migration_possible = self.alembic_migration_helper.check_migration_possible()
         eslembic_migration_possible =  \
-            self.eslembic_migration_helper.check_migration_possible() if self.eslembic_enabled \
+            self.eslembic_migration_helper.check_migration_possible() if self.eslembic_migration_helper \
             else False
         return alembic_migration_possible or eslembic_migration_possible
 
