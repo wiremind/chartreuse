@@ -70,7 +70,7 @@ class EslembicMigrationHelper(object):
 
     def migrate_db(self):
         print("Elasticsearch needs to be upgraded. Proceeding.")
-        _run_command("eslembic history -r current:head")
+        _run_command("eslembic history")
 
         print("Upgrading Elasticsearch...")
         _run_command("eslembic upgrade head")
