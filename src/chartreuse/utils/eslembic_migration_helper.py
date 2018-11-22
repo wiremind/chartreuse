@@ -69,6 +69,7 @@ class EslembicMigrationHelper(object):
         return True
 
     def migrate_db(self):
+        os.chdir("/app/eslembic")
         print("Elasticsearch needs to be upgraded. Proceeding.")
         _run_command("eslembic history")
 
