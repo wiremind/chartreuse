@@ -14,15 +14,21 @@ certifi==2018.10.15       # via kubernetes, requests
 cffi==1.11.5              # via cryptography
 chardet==3.0.4            # via requests
 cryptography==2.4.1       # via adal
+elasticsearch==6.3.1      # via eslembic
 enum34==1.1.6             # via cryptography
+eslembic==1.1.3
+funcsigs==1.0.2           # via mock
 future==0.17.1
 google-auth==1.6.1        # via kubernetes
 idna==2.7                 # via cryptography, requests
 ipaddress==1.0.22         # via cryptography, kubernetes
 kubernetes==8.0.0         # via wiremind-kubernetes
-mako==1.0.7               # via alembic
+mako==1.0.7               # via alembic, eslembic
 markupsafe==1.1.0         # via mako
+mock==2.0.0               # via eslembic
+nose==1.3.7               # via eslembic
 oauthlib==2.1.0           # via requests-oauthlib
+pbr==5.1.1                # via mock
 psycopg2==2.7.6.1
 pyasn1-modules==0.2.2     # via google-auth
 pyasn1==0.4.4             # via pyasn1-modules, rsa
@@ -30,12 +36,15 @@ pycparser==2.19           # via cffi
 pyjwt==1.6.4              # via adal
 python-dateutil==2.7.5    # via adal, alembic, kubernetes
 python-editor==1.0.3      # via alembic
+pytz==2018.7              # via eslembic
 pyyaml==4.1               # via kubernetes
 requests-oauthlib==1.0.0  # via kubernetes
-requests==2.20.1
+requests==2.20.1          # via adal, kubernetes, requests-oauthlib
 rsa==4.0                  # via google-auth
-six==1.11.0               # via cryptography, google-auth, kubernetes, python-dateutil, websocket-client
+simplejson==3.16.0        # via eslembic
+six==1.11.0               # via cryptography, google-auth, kubernetes, mock, python-dateutil, websocket-client
 sqlalchemy==1.2.14        # via alembic
-urllib3==1.24.1           # via kubernetes, requests
+tqdm==4.28.1              # via eslembic
+urllib3==1.24.1           # via elasticsearch, kubernetes, requests
 websocket-client==0.54.0  # via kubernetes
 wiremind-kubernetes==0.0.3
