@@ -101,6 +101,7 @@ class AlembicMigrationHelper(object):
         return True
 
     def migrate_db(self):
+        os.chdir("/app/alembic")
         print("Database needs to be upgraded. Proceeding.")
         _run_command("alembic history -r current:head")
 
