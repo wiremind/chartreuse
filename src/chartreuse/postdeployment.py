@@ -7,6 +7,8 @@ import os
 
 from .utils import Chartreuse
 
+import wiremind_kubernetes
+
 # XXX: extract wiremind_configuration from wiremind_python to make it a standalone lib and use it?
 ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
     os.environ.get("ALLOW_MIGRATION_FOR_EMPTY_DATABASE", "")
@@ -21,9 +23,10 @@ def main():
         allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE
     )
     if chartreuse.is_migration_possible():
-        chartreuse.stop_pods()
+        deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager()
+        deployment_manager.stop_pods()
         chartreuse.migrate()
-        chartreuse.start_pods()
+        deployment_manager.start_pods()
 
 
 if __name__ == "__main__":
