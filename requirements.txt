@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file setup.txt setup.py
 #
---extra-index-url https://upload:laegoos9Sha1ohg@pypi.wiremind.fr
 
 adal==1.2.0               # via kubernetes
 alembic==1.0.2
