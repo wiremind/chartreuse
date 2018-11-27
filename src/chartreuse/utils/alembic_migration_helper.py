@@ -45,7 +45,7 @@ class AlembicMigrationHelper(object):
             print("Database is not populated yet, not upgrading it.")
             return False
         if not self.is_migration_needed():
-            print("Database does not need migration, exiting.")
+            print("Database does not need migration.")
             return False
         return True
 
@@ -93,9 +93,8 @@ class AlembicMigrationHelper(object):
 
     def is_migration_needed(self):
         os.chdir("/app/alembic")
-        head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
+        head_re = re.compile(r"\(head\)", re.MULTILINE)
         alembic_current, _ = _run_command("alembic current")
-        print("Current revision: %s" % alembic_current)
         if head_re.search(alembic_current):
             return False
         return True

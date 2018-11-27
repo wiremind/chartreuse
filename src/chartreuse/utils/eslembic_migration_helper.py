@@ -40,7 +40,7 @@ class EslembicMigrationHelper(object):
         #     print("Elasticsearch is not populated yet, not upgrading it.")
         #     return False
         if not self.is_migration_needed():
-            print("Database does not need migration, exiting.")
+            print("Elasticsearch does not need migration.")
             return False
         return True
 
@@ -63,7 +63,6 @@ class EslembicMigrationHelper(object):
         os.chdir("/app/eslembic")
         head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
         eslembic_current, _ = _run_command("eslembic current")
-        print("Current revision: %s" % eslembic_current)
         if head_re.search(eslembic_current):
             return False
         return True
