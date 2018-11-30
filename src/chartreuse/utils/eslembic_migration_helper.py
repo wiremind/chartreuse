@@ -8,7 +8,8 @@ import re
 import socket
 
 import requests
-from wiremind_kubernetes import _run_command
+
+from chartreuse.utils.helpers import run_command
 
 
 class EslembicMigrationHelper(object):
@@ -27,7 +28,7 @@ class EslembicMigrationHelper(object):
         print("Eslembic: configuring for %s" % self.elasticsearch_url)
         os.chdir("/app/eslembic")
         cleaned_url = self.elasticsearch_url.replace("/", r"\/")
-        _run_command(
+        run_command(
             "sed -i -e 's/elasticsearch_urls.*=.*/elasticsearch_urls=%s/' %s"
             % (cleaned_url, "eslembic.ini")
         )
@@ -61,8 +62,9 @@ class EslembicMigrationHelper(object):
 
     def is_migration_needed(self):
         os.chdir("/app/eslembic")
-        head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
-        eslembic_current, _ = _run_command("eslembic current")
+        head_re = re.compile(r"\(head\)", re.MULTILINE)
+        eslembic_current, _ = run_command("eslembic current")
+        print(eslembic_current)
         if head_re.search(eslembic_current):
             return False
         return True
@@ -70,9 +72,9 @@ class EslembicMigrationHelper(object):
     def migrate_db(self):
         os.chdir("/app/eslembic")
         print("Elasticsearch needs to be upgraded. Proceeding.")
-        _run_command("eslembic history")
+        run_command("eslembic history")
 
         print("Upgrading Elasticsearch...")
-        _run_command("eslembic upgrade head")
+        run_command("eslembic upgrade head")
 
         print("Done upgrading Elasticsearch.")

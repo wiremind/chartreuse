@@ -4,6 +4,8 @@
 
 import unittest
 
+import mock
+
 import chartreuse.utils
 
 
@@ -32,3 +34,39 @@ class AlembicTestCase(unittest.TestCase):
         """
         table_list = ['alembic_version', 'foobar']
         self.assertFalse(self.alembicMigrationHelper._is_postgres_empty(table_list))
+
+    def test_detect_needed_migration(self):
+        """
+        Test that chartreuse detects that a migration is needed.
+        """
+        sample_alembic_output = """
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql://***/public
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - redis instance at localhost is  activated
+2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Context impl PostgresqlImpl.
+2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Will assume transactional DDL.
+e1f79bafdfa2
+        """
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.run_command',
+                    return_value=(sample_alembic_output, 'foo')
+            ):
+                self.assertTrue(self.alembicMigrationHelper.is_migration_needed())
+
+    def test_detect_not_needed_migration(self):
+        """
+        Test that chartreuse detects that a migration is not needed.
+        """
+        sample_alembic_output = """
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql://***/public
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - redis instance at localhost is  activated
+2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Context impl PostgresqlImpl.
+2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Will assume transactional DDL.
+e1f79bafdfa2 (head)
+        """
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.run_command',
+                    return_value=(sample_alembic_output, 'foo')
+            ):
+                self.assertFalse(self.alembicMigrationHelper.is_migration_needed())

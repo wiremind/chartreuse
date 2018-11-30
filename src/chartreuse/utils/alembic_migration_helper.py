@@ -10,7 +10,7 @@ import urllib.parse
 
 import sqlalchemy
 
-from wiremind_kubernetes import _run_command
+from chartreuse.utils.helpers import run_command
 
 
 class AlembicMigrationHelper(object):
@@ -29,7 +29,7 @@ class AlembicMigrationHelper(object):
     def _configure(self):
         os.chdir("/app/alembic")
         cleaned_url = self.database_url.replace("/", r"\/")
-        _run_command(
+        run_command(
             "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
             % (cleaned_url, "alembic.ini")
         )
@@ -93,8 +93,9 @@ class AlembicMigrationHelper(object):
 
     def is_migration_needed(self):
         os.chdir("/app/alembic")
-        head_re = re.compile(r"\(head\)", re.MULTILINE)
-        alembic_current, _ = _run_command("alembic current")
+        head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
+        # XXX get head through alembic python interface instead of relying on command
+        alembic_current, _ = run_command("alembic current")
         if head_re.search(alembic_current):
             return False
         return True
@@ -102,9 +103,9 @@ class AlembicMigrationHelper(object):
     def migrate_db(self):
         os.chdir("/app/alembic")
         print("Database needs to be upgraded. Proceeding.")
-        _run_command("alembic history -r current:head")
+        run_command("alembic history -r current:head")
 
         print("Upgrading database...")
-        _run_command("alembic upgrade head")
+        run_command("alembic upgrade head")
 
         print("Done upgrading database.")

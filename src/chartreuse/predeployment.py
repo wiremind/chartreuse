@@ -5,7 +5,7 @@ install_aliases()
 
 import os
 
-from .utils import Chartreuse
+from . import Chartreuse
 
 import wiremind_kubernetes
 
