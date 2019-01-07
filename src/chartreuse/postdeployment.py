@@ -27,10 +27,10 @@ def main():
         if chartreuse.is_migration_possible():
             deployment_manager.stop_pods()
             chartreuse.migrate()
+        deployment_manager.start_pods()
     except Exception as e:
-        deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager()
+        deployment_manager.start_pods()
         raise e
-    deployment_manager.start_pods()
 
 
 if __name__ == "__main__":
