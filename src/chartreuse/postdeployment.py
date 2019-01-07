@@ -18,15 +18,19 @@ ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", None)
 
 
 def main():
-    chartreuse = Chartreuse(
-        DATABASE_URL, ELASTICSEARCH_URL,
-        allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE
-    )
-    if chartreuse.is_migration_possible():
+    deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager()
+    try:
+        chartreuse = Chartreuse(
+            DATABASE_URL, ELASTICSEARCH_URL,
+            allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE
+        )
+        if chartreuse.is_migration_possible():
+            deployment_manager.stop_pods()
+            chartreuse.migrate()
+    except Exception as e:
         deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager()
-        deployment_manager.stop_pods()
-        chartreuse.migrate()
-        deployment_manager.start_pods()
+        raise e
+    deployment_manager.start_pods()
 
 
 if __name__ == "__main__":
