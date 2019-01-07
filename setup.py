@@ -41,7 +41,7 @@ setup(
         "eslembic",
         "future",
         "psycopg2",
-        "wiremind-kubernetes>=0.0.3",
+        "wiremind-kubernetes",
     ],
     extras_require={
         'dev': [
