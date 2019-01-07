@@ -1,4 +1,4 @@
-include: 'https://wiremind.gitlab.wiremind.io/gitlab-ci-common/v0.0.7/gitlab-ci-common-libraries.yml'
+include: 'https://wiremind.gitlab.wiremind.io/gitlab-ci-common/v3.0.1/gitlab-ci-common-libraries.yml'
 
 variables:
   PACKAGE_NAME: chartreuse
