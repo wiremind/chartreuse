@@ -80,8 +80,11 @@ class AlembicMigrationHelper(object):
 
     def is_postgres_empty(self):
         os.chdir("/app/alembic")
-        table_list = sqlalchemy.create_engine(self.database_url).table_names()
-        self._is_postgres_empty(table_list)
+        table_list = self._get_table_list()
+        return self._is_postgres_empty(table_list)
+
+    def _get_table_list(self):
+        return sqlalchemy.create_engine(self.database_url).table_names()
 
     def _is_postgres_empty(self, table_list):
         """

@@ -83,3 +83,39 @@ e1f79bafdfa2 (head)
                     return_value=(sample_alembic_output, 'foo')
             ):
                 self.assertTrue(self.alembicMigrationHelper.is_migration_needed())
+
+    def test_detect_database_is_empty(self):
+        """
+        Test that chartreuse detects that a database is empty and don't trigger migration.
+        """
+        sample_alembic_output = """
+        """
+        table_list = ["alembic_version"]
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.run_command',
+                    return_value=(sample_alembic_output, 'foo')
+            ):
+                with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.AlembicMigrationHelper._get_table_list',
+                    return_value=(table_list)
+                ):
+                    self.assertTrue(self.alembicMigrationHelper.is_postgres_empty())
+
+    def test_detect_database_is_not_empty(self):
+        """
+        Test that chartreuse detects that a database is not empty and allow migration.
+        """
+        sample_alembic_output = """
+        """
+        table_list = ["alembic_version", "foo"]
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.run_command',
+                    return_value=(sample_alembic_output, 'foo')
+            ):
+                with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.AlembicMigrationHelper._get_table_list',
+                    return_value=(table_list)
+                ):
+                    self.assertFalse(self.alembicMigrationHelper.is_postgres_empty())
