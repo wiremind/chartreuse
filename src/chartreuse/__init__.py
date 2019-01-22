@@ -22,6 +22,7 @@ class Chartreuse(object):
         return alembic_migration_possible or eslembic_migration_possible
 
     def migrate(self):
-        self.alembic_migration_helper.migrate_db()
-        if self.eslembic_migration_helper:
+        if self.alembic_migration_helper.check_migration_possible():
+            self.alembic_migration_helper.migrate_db()
+        if self.eslembic_migration_helper and self.eslembic_migration_helper.check_migration_possible():
             self.eslembic_migration_helper.migrate_db()
