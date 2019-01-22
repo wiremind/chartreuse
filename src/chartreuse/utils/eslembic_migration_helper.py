@@ -43,6 +43,7 @@ class EslembicMigrationHelper(object):
         if not self.is_migration_needed():
             print("Elasticsearch does not need migration.")
             return False
+        print("Elasticsearch database can be migrated.")
         return True
 
     def _is_elasticsearch_reachable(self):

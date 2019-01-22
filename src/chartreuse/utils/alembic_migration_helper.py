@@ -41,12 +41,17 @@ class AlembicMigrationHelper(object):
         if not self.is_postgres_reachable():
             print("Postgres server does not answer, not upgrading database.")
             return False
-        if (not self.allow_migration_for_empty_database and self.is_postgres_empty()):
-            print("Database is not populated yet, not upgrading it.")
-            return False
+        if self.allow_migration_for_empty_database:
+            print("Postgres: Migration for empty database is allowed.")
+        else:
+            print("Postgres: Migration for empty database is forbidden.")
+            if self.is_postgres_empty():
+                print("Database is not populated yet, not upgrading it.")
+                return False
         if not self.is_migration_needed():
-            print("Database does not need migration.")
+            print("Postgres database does not need migration.")
             return False
+        print("Postgres database can be migrated.")
         return True
 
     def is_postgres_domain_name_resolvable(self):

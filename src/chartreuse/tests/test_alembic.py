@@ -70,3 +70,16 @@ e1f79bafdfa2 (head)
                     return_value=(sample_alembic_output, 'foo')
             ):
                 self.assertFalse(self.alembicMigrationHelper.is_migration_needed())
+
+    def test_detect_needed_migration_non_existent(self):
+        """
+        Test that chartreuse detects that a migration is not needed.
+        """
+        sample_alembic_output = """
+        """
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.alembic_migration_helper.run_command',
+                    return_value=(sample_alembic_output, 'foo')
+            ):
+                self.assertTrue(self.alembicMigrationHelper.is_migration_needed())
