@@ -71,11 +71,15 @@ class AlembicMigrationHelper(object):
         os.chdir("/app/alembic")
         try:
             sqlalchemy.create_engine(self.database_url).table_names()
-        except sqlalchemy.exc.OperationalError:
-            print(
-                "Could not reach postgresql, assuming postgres server does not exist yet or is down."
-            )
-            return False
+        except sqlalchemy.exc.OperationalError as e:
+            if 'Connection refused' in e.orig.args[0]:
+                print(
+                    "Could not reach postgresql, assuming postgres server does not exist yet or is down."
+                )
+                print(e.orig.args[0])
+                return False
+            # Raise any other error instead of swallowing it.
+            raise e
         return True
 
     def is_postgres_empty(self):
