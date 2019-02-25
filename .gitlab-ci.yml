@@ -1,5 +1,10 @@
-include: 'https://wiremind.gitlab.wiremind.io/gitlab-ci-common/v3.3.5/gitlab-ci-common-libraries.yml'
+include:
+  - project: 'wiremind/gitlab-ci-common'
+    ref: v4.1.1
+    file: 'gitlab-ci-common-libraries.yml'
+
 
 variables:
   PACKAGE_NAME: chartreuse
+  EGG_NAME: chartreuse
 
