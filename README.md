@@ -19,10 +19,11 @@ TBD
 The steps are:
 
  - Pre-deployment job (i.e a script that is run n kubernetes BEFORE deploying the new version of your app in kubernetes):
-    - Detect if an alembic migration is required, if not, exit
-    - Stop all celeries, nginx-uwsgi, cron
- - Run normal kubernetes deployment
+    - Detect if an alembic/eslembic migration is required, if not, exit
+    - Stop all celeries, nginx-uwsgi, cron by scaling down all related deployments to 0
+ - Run normal kubernetes deployment (which could re-scale-up deployments, no guarantee here)
  - Post-deployment job:
-    - Detect if an alembic migration is required, if not, exit
-    - Do alembic migration
+    - Detect if an alembic/eslembic migration is required, if not, exit
+    - Stop all celeries, nginx-uwsgi, cron by scaling down all related deployments to 0
+    - Do alembic/eslembic migration
     - Restart all pods that have been stopped before
