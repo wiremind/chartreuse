@@ -113,6 +113,11 @@ class AlembicMigrationHelper(object):
         return True
 
     def migrate_db(self):
+        """
+        When used in a Helm post-install hook, exceptions that this function raises should never be catched.
+        We need to guarantee that: if  "migrate_db" fails then "post-deploy" fails
+        It would be great if this fct returns the status of the migration (failed/succeeded)
+        """
         os.chdir("/app/alembic")
         print("Database needs to be upgraded. Proceeding.")
         run_command("alembic history -r current:head")

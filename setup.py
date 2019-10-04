@@ -54,6 +54,7 @@ setup(
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",
             "chartreuse-post-deployment=chartreuse.postdeployment:main",
+            "chartreuse-post-rollback=chartreuse.postrollback:main",
         ]
     },
 )
