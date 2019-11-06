@@ -35,7 +35,7 @@ spec:
             - /bin/sh
           args:
             - -c
-            - "export COMMAND='chartreuse-post-deployment'; if command -v $COMMAND; then $COMMAND; else echo \"File $COMMAND not found, not migrating.\"; fi"
+            - "export COMMAND='chartreuse-post-deployment'; if command -v $COMMAND; then $COMMAND; else echo \"File $COMMAND not found, used chartreuse version:\" && pip freeze | grep chartreuse && exit 1; fi"
           envFrom:
           - secretRef:
               name: {{ template "chartreuse.fullname" . }}
