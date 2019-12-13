@@ -36,10 +36,10 @@ setup(
     include_package_data=True,
     zip_safe=True,
     cmdclass={"test": NoseTestCommand},
+    python_requires='>=3.5.0',
     install_requires=[
         "alembic",
         "eslembic",
-        "future",
         "psycopg2",
         "wiremind-kubernetes>=2.0.0",
     ],

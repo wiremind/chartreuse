@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # noqa: W0212
 # pylint: disable=W0212
 
