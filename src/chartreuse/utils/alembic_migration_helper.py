@@ -10,7 +10,7 @@ import urllib.parse
 
 import sqlalchemy
 
-from chartreuse.utils.helpers import run_command
+from wiremind_kubernetes.utils import run_command
 
 
 class AlembicMigrationHelper(object):
@@ -107,7 +107,7 @@ class AlembicMigrationHelper(object):
         os.chdir("/app/alembic")
         head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
         # XXX get head through alembic python interface instead of relying on command
-        alembic_current, _ = run_command("alembic current")
+        alembic_current, _ = run_command("alembic current", return_output=True)
         if head_re.search(alembic_current):
             return False
         return True

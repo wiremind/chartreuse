@@ -9,7 +9,7 @@ import socket
 
 import requests
 
-from chartreuse.utils.helpers import run_command
+from wiremind_kubernetes.utils import run_command
 
 
 class EslembicMigrationHelper(object):
@@ -64,7 +64,7 @@ class EslembicMigrationHelper(object):
     def is_migration_needed(self):
         os.chdir("/app/eslembic")
         head_re = re.compile(r"\(head\)", re.MULTILINE)
-        eslembic_current, _ = run_command("eslembic current")
+        eslembic_current, _ = run_command("eslembic current", return_output=True)
         print(eslembic_current)
         if head_re.search(eslembic_current):
             return False
