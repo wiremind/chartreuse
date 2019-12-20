@@ -3,10 +3,7 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-chartreuse-post-deployment
   labels:
-    app: {{ template "chartreuse.name" . }}
-    chart: {{ template "chartreuse.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "chartreuse.labels" . | indent 4 }}
     component: "post-deployment"
   annotations:
     "helm.sh/hook": post-install,post-upgrade
@@ -17,11 +14,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "chartreuse.name" . }}
-        chart: {{ template "chartreuse.chart" . }}
-        release: {{ .Release.Name }}
-        component: "post-deployment"
-        logFormat: json
+{{ include "chartreuse.labels" . | indent 8 }}
         {{ .Release.Name }}-postgresql-client: "true"
     spec:
       restartPolicy: "Never"

@@ -3,10 +3,7 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-chartreuse-post-rollback
   labels:
-    app: {{ template "chartreuse.name" . }}
-    chart: {{ template "chartreuse.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "chartreuse.labels" . | indent 4 }}
     component: "post-rollback"
   annotations:
     "helm.sh/hook": post-rollback
@@ -17,11 +14,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "chartreuse.name" . }}
-        chart: {{ template "chartreuse.chart" . }}
-        release: {{ .Release.Name }}
-        component: "post-rollback"
-        logFormat: json
+{{ include "chartreuse.labels" . | indent 8 }}
         {{ .Release.Name }}-postgresql-client: "true"
     spec:
       restartPolicy: "Never"

@@ -13,6 +13,9 @@ customSecret: true
 
 allowMigrationFromEmptyDatabase: false
 
+rbac:
+  create: true
+
 serviceAccount:
   create: true
   name:
