@@ -14,3 +14,9 @@ data:
   {{- else }}
   ALLOW_MIGRATION_FOR_EMPTY_DATABASE: ""
   {{- end }}
+
+  {{- if .Values.eslembic.cleanIndex }}
+  CHARTREUSE_ESLEMBIC_CLEAN_INDEX: "1"
+  {{- else }}
+  CHARTREUSE_ESLEMBIC_CLEAN_INDEX: ""
+  {{- end }}

@@ -51,3 +51,26 @@ class EslembicTestCase(unittest.TestCase):
                     return_value=(sample_eslembic_output, 'foo')
             ):
                 self.assertFalse(self.eslembicMigrationHelper.is_migration_needed())
+
+    def test_clean_index(self):
+        """
+        Test that chartreuse correctly call eslembic if clean_index is set.
+        """
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.eslembic_migration_helper.run_command',
+            ) as mocked_run_command:
+                self.eslembicMigrationHelper = chartreuse.utils.EslembicMigrationHelper('foo', True)
+                self.eslembicMigrationHelper.migrate_db()
+                mocked_run_command.assert_called_with('eslembic upgrade head --clean-index')
+
+    def test_no_clean_index(self):
+        """
+        Test that chartreuse correctly call eslembic if clean_index is not set (default).
+        """
+        with mock.patch('os.chdir'):
+            with mock.patch(
+                    'chartreuse.utils.eslembic_migration_helper.run_command',
+            ) as mocked_run_command:
+                self.eslembicMigrationHelper.migrate_db()
+                mocked_run_command.assert_called_with('eslembic upgrade head')

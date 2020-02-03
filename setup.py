@@ -39,7 +39,7 @@ setup(
     python_requires='>=3.5.0',
     install_requires=[
         "alembic",
-        "eslembic",
+        "eslembic>=5.0.1",
         "psycopg2",
         "wiremind-kubernetes>=2.0.0",
     ],

@@ -13,6 +13,9 @@ customSecret: true
 
 allowMigrationFromEmptyDatabase: false
 
+eslembic:
+  cleanIndex: false
+
 rbac:
   create: true
 

@@ -8,14 +8,12 @@ from wiremind_kubernetes.utils import run_command
 
 
 class EslembicMigrationHelper(object):
-    elasticsearch_url = None
-    allow_migration_for_empty_database = False
-
-    def __init__(self, elasticsearch_url):
+    def __init__(self, elasticsearch_url, clean_index=False):
         if not elasticsearch_url:
             raise EnvironmentError("elasticsearch_url not set, not upgrading elasticsearch.")
 
         self.elasticsearch_url = elasticsearch_url
+        self.clean_index = clean_index
 
         self._configure()
 
@@ -71,6 +69,9 @@ class EslembicMigrationHelper(object):
         run_command("eslembic history")
 
         print("Upgrading Elasticsearch...")
-        run_command("eslembic upgrade head")
+        upgrade_command = "eslembic upgrade head"
+        if self.clean_index:
+            upgrade_command += " --clean-index"
+        run_command(upgrade_command)
 
         print("Done upgrading Elasticsearch.")
