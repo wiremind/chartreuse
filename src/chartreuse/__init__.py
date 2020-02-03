@@ -17,8 +17,7 @@ class Chartreuse(object):
         )
         self.eslembic_migration_helper = (
             EslembicMigrationHelper(
-                elasticsearch_url,
-                clean_index=chartreuse_eslembic_clean_index,
+                elasticsearch_url, clean_index=chartreuse_eslembic_clean_index,
             )
             if elasticsearch_url
             else None

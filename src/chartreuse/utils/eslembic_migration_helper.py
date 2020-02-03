@@ -10,7 +10,9 @@ from wiremind_kubernetes.utils import run_command
 class EslembicMigrationHelper(object):
     def __init__(self, elasticsearch_url, clean_index=False):
         if not elasticsearch_url:
-            raise EnvironmentError("elasticsearch_url not set, not upgrading elasticsearch.")
+            raise EnvironmentError(
+                "elasticsearch_url not set, not upgrading elasticsearch."
+            )
 
         self.elasticsearch_url = elasticsearch_url
         self.clean_index = clean_index

@@ -6,7 +6,7 @@ Copyright 2018, wiremind.
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-with open('VERSION') as version_file:
+with open("VERSION") as version_file:
     version = version_file.read().strip()
 
 
@@ -36,21 +36,14 @@ setup(
     include_package_data=True,
     zip_safe=True,
     cmdclass={"test": NoseTestCommand},
-    python_requires='>=3.5.0',
+    python_requires=">=3.5.0",
     install_requires=[
         "alembic",
         "eslembic>=5.0.1",
         "psycopg2",
         "wiremind-kubernetes>=2.0.0",
     ],
-    extras_require={
-        'dev': [
-            'nose>=1.0',
-            'mock',
-            'coverage',
-            'pip-tools>=3.7.0',
-        ]
-    },
+    extras_require={"dev": ["nose>=1.0", "mock", "coverage", "pip-tools>=3.7.0",]},
     entry_points={
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",

@@ -23,9 +23,10 @@ def main():
     """
     deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager()
     chartreuse = Chartreuse(
-        DATABASE_URL, ELASTICSEARCH_URL,
+        DATABASE_URL,
+        ELASTICSEARCH_URL,
         allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
-        chartreuse_eslembic_clean_index=CHARTREUSE_ESLEMBIC_CLEAN_INDEX
+        chartreuse_eslembic_clean_index=CHARTREUSE_ESLEMBIC_CLEAN_INDEX,
     )
     if chartreuse.is_migration_possible():
         # If ever Helm has scaled up the pods that were stopped in predeployment.
@@ -42,7 +43,9 @@ def main():
         try:
             deployment_manager.start_pods()
         except:  # noqa: E722
-            logger.error("Couldn't scale up new pods in postdeployment after migration, SHOULD BE DONE MANUALLY ! ")
+            logger.error(
+                "Couldn't scale up new pods in postdeployment after migration, SHOULD BE DONE MANUALLY ! "
+            )
 
 
 if __name__ == "__main__":
