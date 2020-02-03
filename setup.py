@@ -36,14 +36,16 @@ setup(
     include_package_data=True,
     zip_safe=True,
     cmdclass={"test": NoseTestCommand},
-    python_requires=">=3.5.0",
+    python_requires=">=3.6.0",
     install_requires=[
         "alembic",
-        "eslembic>=5.0.1",
+        "eslembic>=5.1.0",
         "psycopg2",
         "wiremind-kubernetes>=2.0.0",
     ],
-    extras_require={"dev": ["nose>=1.0", "mock", "coverage", "pip-tools>=3.7.0",]},
+    extras_require={
+        "dev": ["nose>=1.0", "mock", "coverage", "pip-tools>=3.7.0",]  # noqa: E231
+    },
     entry_points={
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",

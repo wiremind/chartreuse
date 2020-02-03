@@ -9,7 +9,7 @@ class Chartreuse(object):
         database_url,
         elasticsearch_url,
         allow_migration_for_empty_database,
-        chartreuse_eslembic_clean_index,
+        eslembic_clean_index: bool = False,
     ):
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
         self.alembic_migration_helper = AlembicMigrationHelper(
@@ -17,7 +17,7 @@ class Chartreuse(object):
         )
         self.eslembic_migration_helper = (
             EslembicMigrationHelper(
-                elasticsearch_url, clean_index=chartreuse_eslembic_clean_index,
+                elasticsearch_url, clean_index=eslembic_clean_index,
             )
             if elasticsearch_url
             else None

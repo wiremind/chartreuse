@@ -9,7 +9,9 @@ from wiremind_kubernetes.utils import run_command
 
 
 class AlembicMigrationHelper(object):
-    def __init__(self, database_url, allow_migration_for_empty_database=False):
+    def __init__(
+        self, database_url: str, allow_migration_for_empty_database: bool = False
+    ):
         if not database_url:
             raise EnvironmentError("database_url not set, not upgrading database.")
 

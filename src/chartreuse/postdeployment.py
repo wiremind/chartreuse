@@ -26,7 +26,7 @@ def main():
         DATABASE_URL,
         ELASTICSEARCH_URL,
         allow_migration_for_empty_database=ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
-        chartreuse_eslembic_clean_index=CHARTREUSE_ESLEMBIC_CLEAN_INDEX,
+        eslembic_clean_index=CHARTREUSE_ESLEMBIC_CLEAN_INDEX,
     )
     if chartreuse.is_migration_possible():
         # If ever Helm has scaled up the pods that were stopped in predeployment.

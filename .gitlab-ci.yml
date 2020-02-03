@@ -7,3 +7,13 @@ variables:
   PACKAGE_NAME: chartreuse
   EGG_NAME: chartreuse
   WIREMIND_PYTHON_IMAGE: python:3.6
+
+test-python3.5:
+  only:
+    - never
+
+linting-python3.5:
+  only:
+    - never
+
+
