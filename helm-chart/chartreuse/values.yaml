@@ -11,10 +11,14 @@ image:
 # XXX implement creation of secret
 customSecret: true
 
-allowMigrationFromEmptyDatabase: false
+alembic:
+  allowMigrationFromEmptyDatabase: false
 
 eslembic:
-  cleanIndex: false
+  cleanIndex:
+    enabled: false
+  upgrade:
+    enabled: false  # Note: not yet properly tested, enable at your own risks
 
 rbac:
   create: true

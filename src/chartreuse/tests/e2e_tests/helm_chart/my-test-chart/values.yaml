@@ -1,0 +1,37 @@
+replicaCount: 1
+image: gcr.io/google_containers/pause-amd64:3.1
+
+postgresql:
+  image:
+    debug: true
+  postgresqlUsername: foo
+  postgresqlPassword: foo
+  postgresqlDatabase: foo
+  postgresqlConfiguration:
+    fsync: off
+    synchronous_commit: off
+    full_page_writes: off
+  pgHbaConfiguration: |-
+    local all all trust
+    host all all all trust
+  persistence:
+    enabled: false
+  securityContext:
+    enabled: false
+  service:
+    type: NodePort
+    nodePort:
+
+elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch-oss
+  #imageTag: "6.8.0"
+  singleNode: true
+  roles:
+    master: "true"
+    ingest: "true"
+    data: "true"
+  replicas: 1
+  minimumMasterNodes: 1
+  esJavaOpts: "-Xmx128m -Xms128m"
+  persistence:
+    enabled: false

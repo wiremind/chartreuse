@@ -25,10 +25,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /bin/sh
-          args:
-            - -c
-            - "export COMMAND='chartreuse-pre-deployment'; if command -v $COMMAND; then $COMMAND; else echo \"File $COMMAND not found, used chartreuse version:\" && pip freeze | grep chartreuse && exit 1; fi"
+            - chartreuse-pre-deployment
           envFrom:
           - secretRef:
               name: {{ template "chartreuse.fullname" . }}
@@ -36,3 +33,4 @@ spec:
               name: {{ template "chartreuse.fullname" . }}
           env:
       serviceAccountName: {{ template "chartreuse.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 0

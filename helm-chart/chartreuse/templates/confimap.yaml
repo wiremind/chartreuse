@@ -9,14 +9,23 @@ metadata:
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": "before-hook-creation"
 data:
-  {{- if .Values.allowMigrationFromEmptyDatabase }}
-  ALLOW_MIGRATION_FOR_EMPTY_DATABASE: "1"
+  {{- if .Values.alembic.allowMigrationFromEmptyDatabase }}
+  CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: "1"
   {{- else }}
-  ALLOW_MIGRATION_FOR_EMPTY_DATABASE: ""
+  CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: ""
   {{- end }}
 
-  {{- if .Values.eslembic.cleanIndex }}
+  {{- if .Values.eslembic.cleanIndex.enabled }}
   CHARTREUSE_ESLEMBIC_CLEAN_INDEX: "1"
   {{- else }}
   CHARTREUSE_ESLEMBIC_CLEAN_INDEX: ""
   {{- end }}
+
+  {{- if .Values.eslembic.upgrade.enabled }}
+  CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE: "1"
+  {{- else }}
+  CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE: ""
+  {{- end }}
+
+  CONTAINER_IMAGE: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+  RELEASE_NAME: {{ .Release.Name }}

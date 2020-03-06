@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-chartreuse-post-deployment
+  name: {{ .Release.Name }}-chartreuse-eslembic-migrate
   labels:
 {{ include "chartreuse.labels" . | indent 4 }}
     component: "post-deployment"
@@ -25,13 +25,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /bin/sh
-          args:
-            - -c
-            - "export COMMAND='chartreuse-post-deployment'; if command -v $COMMAND; then $COMMAND; else echo \"File $COMMAND not found, used chartreuse version:\" && pip freeze | grep chartreuse && exit 1; fi"
+            - chartreuse-post-deployment
           envFrom:
           - secretRef:
               name: {{ template "chartreuse.fullname" . }}
           - configMapRef:
               name: {{ template "chartreuse.fullname" . }}
       serviceAccountName: {{ template "chartreuse.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 0

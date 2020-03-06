@@ -1,16 +1,17 @@
-import os
 import re
-import socket
-import urllib.parse
+from subprocess import SubprocessError
+from typing import List
 
 import sqlalchemy
 
 from wiremind_kubernetes.utils import run_command
 
+ALEMBIC_DIRECTORY_PATH = "/app/alembic"
+
 
 class AlembicMigrationHelper(object):
     def __init__(
-        self, database_url: str, allow_migration_for_empty_database: bool = False
+        self, database_url: str, allow_migration_for_empty_database: bool = False, configure: bool = True
     ):
         if not database_url:
             raise EnvironmentError("database_url not set, not upgrading database.")
@@ -18,76 +19,23 @@ class AlembicMigrationHelper(object):
         self.database_url = database_url
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
 
-        self._configure()
+        if configure:
+            self._configure()
+
+        self.is_migration_needed = self._check_migration_needed()
 
     def _configure(self):
-        os.chdir("/app/alembic")
         cleaned_url = self.database_url.replace("/", r"\/")
         run_command(
-            "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url=%s/' %s"
-            % (cleaned_url, "alembic.ini")
+            f"sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={cleaned_url}/' alembic.ini",
+            cwd=ALEMBIC_DIRECTORY_PATH
         )
 
-    def check_migration_possible(self):
-        if not self.is_postgres_domain_name_resolvable():
-            print("Postgres server does not exist yet, not upgrading database.")
-            return False
-        if not self.is_postgres_reachable():
-            print("Postgres server does not answer, not upgrading database.")
-            return False
-        if self.allow_migration_for_empty_database:
-            print("Postgres: Migration for empty database is allowed.")
-        else:
-            print("Postgres: Migration for empty database is forbidden.")
-            if self.is_postgres_empty():
-                print("Database is not populated yet, not upgrading it.")
-                return False
-        if not self.is_migration_needed():
-            print("Postgres database does not need migration.")
-            return False
-        print("Postgres database can be migrated.")
-        return True
-
-    def is_postgres_domain_name_resolvable(self):
-        os.chdir("/app/alembic")
-        hostname = urllib.parse.urlparse(self.database_url).hostname
-        try:
-            socket.gethostbyname(hostname)
-        except socket.gaierror:
-            print(
-                "Could not resolve hostname %s, assuming postgres server does not exist yet."
-                % hostname
-            )
-            return False
-        return True
-
-    def is_postgres_reachable(self):
-        os.chdir("/app/alembic")
-        try:
-            sqlalchemy.create_engine(self.database_url).table_names()
-        except sqlalchemy.exc.OperationalError as e:
-            if "Connection refused" in e.orig.args[0]:
-                print(
-                    "Could not reach postgresql, assuming postgres server does not exist yet or is down."
-                )
-                print(e.orig.args[0])
-                return False
-            # Raise any other error instead of swallowing it.
-            raise e
-        return True
-
-    def is_postgres_empty(self):
-        os.chdir("/app/alembic")
-        table_list = self._get_table_list()
-        return self._is_postgres_empty(table_list)
-
-    def _get_table_list(self):
+    def _get_table_list(self) -> List[str]:
         return sqlalchemy.create_engine(self.database_url).table_names()
 
-    def _is_postgres_empty(self, table_list):
-        """
-        Internal method called by is_postgres_empty to ease testing.
-        """
+    def is_postgres_empty(self) -> bool:
+        table_list = self._get_table_list()
         print("Tables in database: %s" % table_list)
         # Don't count "alembic" table
         table_name = "alembic_version"
@@ -97,13 +45,25 @@ class AlembicMigrationHelper(object):
             return False
         return True
 
-    def is_migration_needed(self):
-        os.chdir("/app/alembic")
-        head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
-        # XXX get head through alembic python interface instead of relying on command
-        alembic_current, _ = run_command("alembic current", return_output=True)
-        if head_re.search(alembic_current):
+    def _get_alembic_current(self) -> str:
+        alembic_current, stderr, returncode = run_command("alembic current", return_result=True, cwd=ALEMBIC_DIRECTORY_PATH)
+        if returncode != 0:
+            raise SubprocessError(f"alembic current failed: {alembic_current}, {stderr}")
+        return alembic_current
+
+    def _check_migration_needed(self):
+        if self.is_postgres_empty() and not self.allow_migration_for_empty_database:
+            print(
+                "Database is not populated yet but migration for empty database is forbidden, not upgrading."
+            )
             return False
+
+        head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
+        alembic_current = self._get_alembic_current()
+        if head_re.search(alembic_current):
+            print("Postgres database does not need migration.")
+            return False
+        print("Postgres database can be migrated.")
         return True
 
     def migrate_db(self):
@@ -112,11 +72,10 @@ class AlembicMigrationHelper(object):
         We need to guarantee that: if  "migrate_db" fails then "post-deploy" fails
         It would be great if this fct returns the status of the migration (failed/succeeded)
         """
-        os.chdir("/app/alembic")
         print("Database needs to be upgraded. Proceeding.")
-        run_command("alembic history -r current:head")
+        run_command("alembic history -r current:head", cwd=ALEMBIC_DIRECTORY_PATH)
 
         print("Upgrading database...")
-        run_command("alembic upgrade head")
+        run_command("alembic upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
 
         print("Done upgrading database.")

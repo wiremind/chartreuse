@@ -1,22 +1,23 @@
 include:
   - project: 'wiremind/gitlab-ci-common'
-    ref: v10.3.5
-    file: 'gitlab-ci-common-libraries.yml'
+    ref: 'master'
+    file: 'abstract.yml'
+  - project: 'wiremind/gitlab-ci-common'
+    ref: master
+    file: 'libraries/platform.yml'
 
 variables:
   PACKAGE_NAME: chartreuse
   EGG_NAME: chartreuse
+  # We don't need wiremind-python here, so we just set python as base image
   WIREMIND_PYTHON_IMAGE: python:3.6
 
-safety-check:
-  allow_failure: true
+e2e-tests:
+  variables:
+    PACKAGES_TO_INSTALL: "curl git build-base python3-dev libffi-dev libressl-dev musl-dev openssl bash jq postgresql-dev python3-dev"
+  extends: .platform-e2e-test
 
-test-python3.5:
-  only:
-    - never
-
-linting-python3.5:
-  only:
-    - never
-
-
+.test:
+  # Note: Extends abstract.yml
+  variables:
+    TEST_DIR: src/$PACKAGE_NAME/tests/unit_tests

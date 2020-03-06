@@ -1,0 +1,9 @@
+dependencies:
+- name: postgresql
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 8.6.3
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 7.6.1
+digest: sha256:72147deb7ee7bfda1db038dc97a6447e512a2ff089c038fa71cdf2e17d9d090e
+generated: "2020-03-27T18:03:07.800247+01:00"

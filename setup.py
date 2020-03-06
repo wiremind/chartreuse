@@ -1,32 +1,29 @@
 """
-alembic-kubernetes-migrator
+Chartreuse
 
-Copyright 2018, wiremind.
+Copyright 2018-2020, wiremind.
 """
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 with open("VERSION") as version_file:
     version = version_file.read().strip()
 
 
-class NoseTestCommand(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        # Run nose ensuring that argv simulates running nosetests directly
-        import nose
-
-        nose.run_exit(argv=["nosetests"])
+extra_require_test = [
+    "mock",
+    "pytest",
+    "pytest-mock",
+]
+extra_require_mypy = [
+    "mypy",
+]
+extra_require_dev = ["black", "flake8", "flake8-mutable", "pip-tools>=3.7.0",] + extra_require_mypy + extra_require_test
 
 
 setup(
     name="chartreuse",
     version=version,
-    description="Helper for Alembic migrations within Kubernetes.",
+    description="Helper for Alembic / Eslembic migrations within Kubernetes.",
     author="wiremind",
     author_email="dev@wiremind.fr",
     url="https://gitlab.cayzn.com/wiremind/utils/chartreuse.git",
@@ -35,21 +32,15 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=True,
-    cmdclass={"test": NoseTestCommand},
     python_requires=">=3.6.0",
-    install_requires=[
-        "alembic",
-        "eslembic>=5.1.0",
-        "psycopg2",
-        "wiremind-kubernetes>=2.0.0,<4.0.0",
-    ],
-    extras_require={
-        "dev": ["nose>=1.0", "mock", "coverage", "pip-tools>=3.7.0",]  # noqa: E231
-    },
+    # install_requires=["alembic", "eslembic>=6.0.2", "psycopg2", "wiremind-kubernetes>=4.0.0",],
+    install_requires=["alembic", "eslembic>=6.0.2", "psycopg2", "wiremind-kubernetes==4.0.0.dev2",],
+    extras_require={"dev": extra_require_dev, "mypy": extra_require_mypy, "test": extra_require_test,},
     entry_points={
         "console_scripts": [
             "chartreuse-pre-deployment=chartreuse.predeployment:main",
             "chartreuse-post-deployment=chartreuse.postdeployment:main",
+            "chartreuse-post-upgrade=chartreuse.postupgrade:main",
             "chartreuse-post-rollback=chartreuse.postrollback:main",
         ]
     },
