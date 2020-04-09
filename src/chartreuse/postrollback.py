@@ -11,7 +11,7 @@ def main():
     postrollback will rollback, in case the release fails, manual actions that Helm doesn't manage, in this case
     it only make sure the pods we stopped in predeployment and postdeployment are scaled up.
     """
-    RELEASE_NAME = os.environ["RELEASE_NAME"]
+    RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
 
     deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
 

@@ -60,7 +60,7 @@ def assert_elasticsearch_not_cleaned(mocked_eslembic_run_command):
 
 
 def are_pods_scaled_down():
-    return KubernetesDeploymentManager(release_name=TEST_RELEASE, use_kubeconfig=None).is_deployment_stopped(
+    return KubernetesDeploymentManager(CHARTREUSE_RELEASE_NAME=TEST_RELEASE, use_kubeconfig=None).is_deployment_stopped(
         "e2e-test-release-my-test-chart"
     )
 
@@ -74,12 +74,12 @@ def test_chartreuse_post_deployment(populate_cluster, mocker):
         os.environ,
         dict(
             CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
-            CHARTREUSE_ESLEMBIC_CLEAN_INDEX="1",
+            CHARTREUSE_ESLEMBIC_ENABLE_CLEAN="1",
             CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
-            DATABASE_URL=POSTGRESQL_URL,
-            ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-            CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
-            RELEASE_NAME=TEST_RELEASE,
+            CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
+            CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+            CHARTREUSE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
+            CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
         ),
     )
 
@@ -100,9 +100,9 @@ def test_chartreuse_pre_deployment(populate_cluster, mocker):
     mocker.patch.dict(
         os.environ,
         dict(
-            DATABASE_URL=POSTGRESQL_URL,
-            ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-            RELEASE_NAME=TEST_RELEASE,
+            CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
+            CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+            CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
             CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
         ),
     )
@@ -122,7 +122,12 @@ def test_chartreuse_post_rollback(populate_cluster, mocker):
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
     mocked_eslembic_run_command = mocker.spy(chartreuse.utils.eslembic_migration_helper, "run_command")
     mocker.patch.dict(
-        os.environ, dict(DATABASE_URL=POSTGRESQL_URL, ELASTICSEARCH_URL=ELASTICSEARCH_URL, RELEASE_NAME=TEST_RELEASE),
+        os.environ,
+        dict(
+            CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
+            CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+            CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
+        ),
     )
 
     chartreuse.postrollback.main()
@@ -143,12 +148,12 @@ def test_chartreuse_post_upgrade(populate_cluster, mocker):
         os.environ,
         dict(
             CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
-            CHARTREUSE_ESLEMBIC_CLEAN_INDEX="1",
+            CHARTREUSE_ESLEMBIC_ENABLE_CLEAN="1",
             CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
-            DATABASE_URL=POSTGRESQL_URL,
-            ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-            CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
-            RELEASE_NAME=TEST_RELEASE,
+            CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
+            CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+            CHARTREUSE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
+            CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
         ),
     )
 

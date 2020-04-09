@@ -8,27 +8,27 @@ import wiremind_kubernetes
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main() -> None:
     """
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
-    CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE = bool(
+    POSTGRESQL_URL: str = os.environ["CHARTREUSE_POSTGRESQL_URL"]
+    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ELASTICSEARCH_URL"]
+    RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
+    ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
     )
-    DATABASE_URL = os.environ["DATABASE_URL"]
-    ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", None)
-    RELEASE_NAME = os.environ["RELEASE_NAME"]
-    CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE = os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"]
-    CHARTREUSE_ESLEMBIC_CLEAN_INDEX = os.environ["CHARTREUSE_ESLEMBIC_CLEAN_INDEX"]
+    ESLEMBIC_ENABLE_UPGRADE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"])
+    ESLEMBIC_ENABLE_CLEAN: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"])
 
     deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
-        postgresql_url=DATABASE_URL,
+        postgresql_url=POSTGRESQL_URL,
         elasticsearch_url=ELASTICSEARCH_URL,
-        alembic_allow_migration_for_empty_database=CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
+        alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
         release_name=RELEASE_NAME,
-        eslembic_enable_upgrade=CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE,
-        eslembic_clean_index=CHARTREUSE_ESLEMBIC_CLEAN_INDEX,
+        eslembic_enable_upgrade=ESLEMBIC_ENABLE_UPGRADE,
+        eslembic_clean_index=ESLEMBIC_ENABLE_CLEAN,
     )
     if chartreuse.is_migration_needed:
         # If ever Helm has scaled up the pods that were stopped in predeployment.

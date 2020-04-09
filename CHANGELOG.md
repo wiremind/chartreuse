@@ -1,7 +1,10 @@
 # 2.0.0 (Unreleased)
 ## BREAKING CHANGES
 - helm: move most alembic/eslembic parameters to eslembic and alembic prefix.
+- Rename most environment variables used by chartreuse.
 ## Features
+- helm: Add support for built-in secret.
+- helm: delete all roles, serviceaccounts, secrets, configmap after success
 - eslembic: Split eslembic upgrade to eslembic migrate and eslembic upgrade as a post job
 - eslembic: allow to disable/enable eslembic upgrade
 ## Fixes
@@ -17,7 +20,7 @@ Please note that python code and helm chart versions are now synchronized.
 ## BREAKING CHANGES
 - Drop python 3.5.
 ## Features
-- Add CHARTREUSE_ESLEMBIC_CLEAN_INDEX environment variable to clean index (wiremind.chartreuse.eslembic.cleanIndex variable in helm).
+- Add CHARTREUSE_ESLEMBIC_ENABLE_CLEAN environment variable to clean index (wiremind.chartreuse.eslembic.cleanIndex variable in helm).
 - Upgrade eslembic to v5.0.1
 
 # 0.9.3 (2019-12-22)

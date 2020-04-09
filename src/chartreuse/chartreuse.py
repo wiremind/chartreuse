@@ -15,7 +15,7 @@ def configure_logging() -> None:
 
 
 def _get_container_image() -> str:
-    return os.environ["CONTAINER_IMAGE"]
+    return os.environ["CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE"]
 
 
 class Chartreuse(object):
@@ -52,12 +52,14 @@ class Chartreuse(object):
         return alembic_migration_possible or eslembic_migration_possible
 
     def create_post_upgrade_job(self):
+        if not self.eslembic_migration_helper:
+            raise ValueError("ESlembic is not enabled.")
         job_name = "chartreuse-post-upgrade"
         environment = dict(ELASTICSEARCH_URL=self.eslembic_migration_helper.elasticsearch_url,)
         if self.eslembic_clean_index:
-            environment["CHARTREUSE_ESLEMBIC_CLEAN_INDEX"] = "1"
+            environment["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"] = "1"
         else:
-            environment["CHARTREUSE_ESLEMBIC_CLEAN_INDEX"] = ""
+            environment["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"] = ""
 
         job: kubernetes.client.V1Job = self.kubernetes_helper.generate_job(
             job_name=job_name, container_image=_get_container_image(), environment_variables=environment

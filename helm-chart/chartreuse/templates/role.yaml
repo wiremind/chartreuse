@@ -6,9 +6,9 @@ metadata:
   labels:
 {{ include "chartreuse.labels" . | indent 4 }}
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade,post-rollback
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
 rules:
   - apiGroups: [""]
     resources: ["replicationcontrollers/scale"]

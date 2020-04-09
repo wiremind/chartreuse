@@ -7,14 +7,14 @@ image:
   tag: latest # Change me to a real image from a tag
   pullPolicy: IfNotPresent
 
-# Enable if you want to provide your own Secret, otherwise will be created by Helm
-# XXX implement creation of secret
-customSecret: true
-
 alembic:
+  enabled: true
+  url: postgresql://user:password@url
   allowMigrationFromEmptyDatabase: false
 
 eslembic:
+  enabled: true
+  url: http://my-url:9200
   cleanIndex:
     enabled: false
   upgrade:
