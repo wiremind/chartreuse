@@ -1,3 +1,7 @@
+# 1.0.1 (2020-04-10)
+## Fixes
+- setup.py: prevent upgrade to incompatible major version of wiremind-kube.
+
 # 1.0.0 (2020-02-03)
 Please note that python code and helm chart versions are now synchronized.
 ## BREAKING CHANGES

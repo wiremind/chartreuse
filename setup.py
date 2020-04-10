@@ -41,7 +41,7 @@ setup(
         "alembic",
         "eslembic>=5.1.0",
         "psycopg2",
-        "wiremind-kubernetes>=2.0.0",
+        "wiremind-kubernetes>=2.0.0<4.0.0",
     ],
     extras_require={
         "dev": ["nose>=1.0", "mock", "coverage", "pip-tools>=3.7.0",]  # noqa: E231
