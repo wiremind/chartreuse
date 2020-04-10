@@ -8,6 +8,9 @@ variables:
   EGG_NAME: chartreuse
   WIREMIND_PYTHON_IMAGE: python:3.6
 
+safety-check:
+  allow_failure: true
+
 test-python3.5:
   only:
     - never
