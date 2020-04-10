@@ -62,7 +62,10 @@ class Chartreuse(object):
             environment["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"] = ""
 
         job: kubernetes.client.V1Job = self.kubernetes_helper.generate_job(
-            job_name=job_name, container_image=_get_container_image(), environment_variables=environment
+            job_name=job_name,
+            container_image=_get_container_image(),
+            environment_variables=environment,
+            labels={"app.kubernetes.io/component": "chartreuse-port-upgrade"},
         )
         self.kubernetes_helper.create_job(job)
 
