@@ -21,6 +21,7 @@ postgresql:
   service:
     type: NodePort
     nodePort:
+  terminationGracePeriodSeconds: 1
 
 elasticsearch:
   image: docker.elastic.co/elasticsearch/elasticsearch-oss
@@ -35,3 +36,4 @@ elasticsearch:
   esJavaOpts: "-Xmx128m -Xms128m"
   persistence:
     enabled: false
+  terminationGracePeriod: 1

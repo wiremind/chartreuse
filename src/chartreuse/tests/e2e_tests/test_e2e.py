@@ -4,13 +4,12 @@ import os
 import elasticsearch
 import sqlalchemy
 
-from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
-
 import chartreuse.postdeployment
 import chartreuse.postrollback
 import chartreuse.postupgrade
 import chartreuse.predeployment
 import chartreuse.utils.eslembic_migration_helper
+from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager, KubernetesHelper
 
 from .conftest import E2E_TESTS_PATH, TEST_NAMESPACE, TEST_RELEASE
 
@@ -43,24 +42,19 @@ def assert_elasticsearch_not_upgraded():
     assert "my_index-0" not in es.indices.get("*").keys()
 
 
-def assert_elasticsearch_migrated(mocked_eslembic_run_command):
-    mocked_eslembic_run_command.assert_any_call("eslembic migrate", cwd=SAMPLE_ESLEMBIC_PATH)
-
-
-def assert_elasticsearch_not_migrated(mocked_eslembic_run_command):
-    assert True  # XXX TODO not tested
-
-
-def assert_elasticsearch_cleaned(mocked_eslembic_run_command):
-    mocked_eslembic_run_command.assert_any_call("eslembic clean", cwd=SAMPLE_ESLEMBIC_PATH)
-
-
-def assert_elasticsearch_not_cleaned(mocked_eslembic_run_command):
-    assert True  # XXX TODO not tested
+def assert_elasticsearch_migrating():
+    # Only test that a job has been created with post-upgrade chartreuse command
+    client_batchv1_api = KubernetesHelper(use_kubeconfig=None).client_batchv1_api
+    job = client_batchv1_api.read_namespaced_job(
+        namespace=TEST_NAMESPACE, name=f"{TEST_RELEASE}-chartreuse-post-upgrade"
+    )
+    env = job.spec.template.spec.containers[0].env
+    assert env[0].to_dict() == {"name": "ELASTICSEARCH_URL", "value": ELASTICSEARCH_URL, "value_from": None}
+    assert env[1].to_dict() == {"name": "CHARTREUSE_ESLEMBIC_ENABLE_CLEAN", "value": "1", "value_from": None}
 
 
 def are_pods_scaled_down():
-    return KubernetesDeploymentManager(CHARTREUSE_RELEASE_NAME=TEST_RELEASE, use_kubeconfig=None).is_deployment_stopped(
+    return KubernetesDeploymentManager(release_name=TEST_RELEASE, use_kubeconfig=None).is_deployment_stopped(
         "e2e-test-release-my-test-chart"
     )
 
@@ -69,7 +63,6 @@ def test_chartreuse_post_deployment(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocked_eslembic_run_command = mocker.spy(chartreuse.utils.eslembic_migration_helper, "run_command")
     mocker.patch.dict(
         os.environ,
         dict(
@@ -78,7 +71,7 @@ def test_chartreuse_post_deployment(populate_cluster, mocker):
             CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-            CHARTREUSE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
+            CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
             CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
         ),
     )
@@ -87,8 +80,6 @@ def test_chartreuse_post_deployment(populate_cluster, mocker):
 
     assert_sql_migrated()
     assert_elasticsearch_upgraded()
-    assert_elasticsearch_not_migrated(mocked_eslembic_run_command)
-    assert_elasticsearch_not_cleaned(mocked_eslembic_run_command)
     assert not are_pods_scaled_down()
 
 
@@ -96,7 +87,6 @@ def test_chartreuse_pre_deployment(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocked_eslembic_run_command = mocker.spy(chartreuse.utils.eslembic_migration_helper, "run_command")
     mocker.patch.dict(
         os.environ,
         dict(
@@ -111,8 +101,6 @@ def test_chartreuse_pre_deployment(populate_cluster, mocker):
 
     assert_sql_not_migrated()
     assert_elasticsearch_not_upgraded()
-    assert_elasticsearch_not_migrated(mocked_eslembic_run_command)
-    assert_elasticsearch_not_cleaned(mocked_eslembic_run_command)
     assert are_pods_scaled_down()
 
 
@@ -120,7 +108,6 @@ def test_chartreuse_post_rollback(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocked_eslembic_run_command = mocker.spy(chartreuse.utils.eslembic_migration_helper, "run_command")
     mocker.patch.dict(
         os.environ,
         dict(
@@ -134,8 +121,6 @@ def test_chartreuse_post_rollback(populate_cluster, mocker):
 
     assert_sql_not_migrated()
     assert_elasticsearch_not_upgraded()
-    assert_elasticsearch_not_migrated(mocked_eslembic_run_command)
-    assert_elasticsearch_not_cleaned(mocked_eslembic_run_command)
     assert not are_pods_scaled_down()
 
 
@@ -143,7 +128,6 @@ def test_chartreuse_post_upgrade(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocked_eslembic_run_command = mocker.spy(chartreuse.utils.eslembic_migration_helper, "run_command")
     mocker.patch.dict(
         os.environ,
         dict(
@@ -152,7 +136,7 @@ def test_chartreuse_post_upgrade(populate_cluster, mocker):
             CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
-            CHARTREUSE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
+            CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
             CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
         ),
     )
@@ -160,6 +144,5 @@ def test_chartreuse_post_upgrade(populate_cluster, mocker):
     chartreuse.postdeployment.main()
     chartreuse.postupgrade.main()
 
-    assert_elasticsearch_migrated(mocked_eslembic_run_command)
-    assert_elasticsearch_cleaned(mocked_eslembic_run_command)
+    assert_elasticsearch_migrating()
     assert not are_pods_scaled_down()

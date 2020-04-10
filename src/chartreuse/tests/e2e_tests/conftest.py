@@ -43,4 +43,4 @@ def populate_cluster():
 
     kubectl_exec_postgresql.kill()
     kubectl_exec_elasticsearch.kill()
-    run_command(f"kubectl delete namespace {TEST_NAMESPACE}")
+    run_command(f"kubectl delete namespace {TEST_NAMESPACE} --grace-period=1")
