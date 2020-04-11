@@ -38,7 +38,7 @@ class Chartreuse(object):
 
         self.kubernetes_helper = wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
             use_kubeconfig=None, release_name=release_name
-        )  # XXX Check that it still works in-cluster
+        )
 
         configure_logging()
 
@@ -65,7 +65,11 @@ class Chartreuse(object):
             job_name=job_name,
             container_image=_get_container_image(),
             environment_variables=environment,
-            labels={"app.kubernetes.io/component": "chartreuse-port-upgrade"},
+            labels={
+                "app.kubernetes.io/component": "chartreuse-port-upgrade",
+                "app.kubernetes.io/instance": self.kubernetes_helper.release_name,
+                "app.kubernetes.io/managed-by": "chartreuse",
+            },
         )
         self.kubernetes_helper.create_job(job)
 

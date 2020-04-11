@@ -29,5 +29,11 @@ data:
   CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE: ""
 {{- end }}
 
+{{- if .Values.stopPods }}
+  CHARTREUSE_ENABLE_STOP_PODS: "1"
+{{- else }}
+  CHARTREUSE_ENABLE_STOP_PODS: ""
+{{- end }}
+
   CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
   CHARTREUSE_RELEASE_NAME: {{ .Release.Name }}

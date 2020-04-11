@@ -3,9 +3,13 @@ import logging
 
 from .chartreuse import Chartreuse
 
-import wiremind_kubernetes
+from wiremind_kubernetes import KubernetesDeploymentManager
 
 logger = logging.getLogger(__name__)
+
+
+def stop_pods(deployment_manager: KubernetesDeploymentManager):
+    deployment_manager.stop_pods()
 
 
 def main() -> None:
@@ -13,15 +17,16 @@ def main() -> None:
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
     POSTGRESQL_URL: str = os.environ["CHARTREUSE_POSTGRESQL_URL"]
-    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ELASTICSEARCH_URL"]
-    RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
     )
-    ESLEMBIC_ENABLE_UPGRADE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"])
+    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ELASTICSEARCH_URL"]
     ESLEMBIC_ENABLE_CLEAN: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"])
+    ESLEMBIC_ENABLE_UPGRADE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"])
+    ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
+    RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
 
-    deployment_manager = wiremind_kubernetes.KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
+    deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
         postgresql_url=POSTGRESQL_URL,
         elasticsearch_url=ELASTICSEARCH_URL,
@@ -31,23 +36,23 @@ def main() -> None:
         eslembic_clean_index=ESLEMBIC_ENABLE_CLEAN,
     )
     if chartreuse.is_migration_needed:
-        # If ever Helm has scaled up the pods that were stopped in predeployment.
-        deployment_manager.stop_pods()
+        if ENABLE_STOP_PODS:
+            # If ever Helm has scaled up the pods that were stopped in predeployment.
+            stop_pods(deployment_manager)
 
         # The exceptions this method raises should NEVER be caught.
         # If the migration fails, the post-install should fail and the release will fail
         # we will end up with the old release.
         chartreuse.migrate()
 
-        # After migration is done, we may need to create
-
-        # Scale up the new pods.
-        # We can fail and abort all, but if we're not that demanding we can start the pods manually
-        # via mayo for example
-        try:
-            deployment_manager.start_pods()
-        except:  # noqa: E722
-            logger.error("Couldn't scale up new pods in postdeployment after migration, SHOULD BE DONE MANUALLY ! ")
+        if ENABLE_STOP_PODS:
+            # Scale up the new pods.
+            # We can fail and abort all, but if we're not that demanding we can start the pods manually
+            # via mayo for example
+            try:
+                deployment_manager.start_pods()
+            except:  # noqa: E722
+                logger.error("Couldn't scale up new pods in postdeployment after migration, SHOULD BE DONE MANUALLY ! ")
 
 
 if __name__ == "__main__":

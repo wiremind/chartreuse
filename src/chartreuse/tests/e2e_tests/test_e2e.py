@@ -12,6 +12,8 @@ import chartreuse.utils.eslembic_migration_helper
 from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager, KubernetesHelper
 
 from .conftest import E2E_TESTS_PATH, TEST_NAMESPACE, TEST_RELEASE
+from ..conftest import configure_os_environ_mock
+
 
 # Calculated from deployed test helm chart + kubectl exec
 ELASTICSEARCH_URL = "http://localhost:9200"
@@ -63,12 +65,9 @@ def test_chartreuse_post_deployment(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocker.patch.dict(
-        os.environ,
-        dict(
-            CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
-            CHARTREUSE_ESLEMBIC_ENABLE_CLEAN="1",
-            CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
+    configure_os_environ_mock(
+        mocker=mocker,
+        additional_environment=dict(
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
             CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
@@ -87,13 +86,13 @@ def test_chartreuse_pre_deployment(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocker.patch.dict(
-        os.environ,
-        dict(
+    configure_os_environ_mock(
+        mocker=mocker,
+        additional_environment=dict(
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
+            CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
             CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
-            CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
         ),
     )
 
@@ -108,9 +107,9 @@ def test_chartreuse_post_rollback(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocker.patch.dict(
-        os.environ,
-        dict(
+    configure_os_environ_mock(
+        mocker=mocker,
+        additional_environment=dict(
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
             CHARTREUSE_RELEASE_NAME=TEST_RELEASE,
@@ -128,12 +127,9 @@ def test_chartreuse_post_upgrade(populate_cluster, mocker):
     mocker.patch("chartreuse.utils.eslembic_migration_helper.ESLEMBIC_DIRECTORY_PATH", SAMPLE_ESLEMBIC_PATH)
     mocker.patch("chartreuse.utils.alembic_migration_helper.ALEMBIC_DIRECTORY_PATH", SAMPLE_ALEMBIC_PATH)
     mocker.patch("wiremind_kubernetes.kubernetes_helper._get_namespace_from_kube", return_value=TEST_NAMESPACE)
-    mocker.patch.dict(
-        os.environ,
-        dict(
-            CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE="1",
-            CHARTREUSE_ESLEMBIC_ENABLE_CLEAN="1",
-            CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE="0",  # XXX ENABLE
+    configure_os_environ_mock(
+        mocker=mocker,
+        additional_environment=dict(
             CHARTREUSE_POSTGRESQL_URL=POSTGRESQL_URL,
             CHARTREUSE_ELASTICSEARCH_URL=ELASTICSEARCH_URL,
             CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE=f"docker.wiremind.fr/wiremind/devops/chartreuse:latest",
