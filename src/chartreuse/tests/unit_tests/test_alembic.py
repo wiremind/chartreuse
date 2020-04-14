@@ -102,3 +102,17 @@ def test_detect_database_is_not_empty(mocker):
     alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper("foo", configure=False)
 
     assert alembic_migration_helper.is_postgres_empty() is False
+
+
+def test_additional_parameters(mocker):
+    """
+    Test that alembic additional parameters are respected.
+    """
+    mocker.patch("chartreuse.utils.AlembicMigrationHelper._get_table_list", return_value="foo")
+    mocker.patch("chartreuse.utils.AlembicMigrationHelper._get_alembic_current", return_value="bar")
+
+    mocked_run_command = mocker.patch("chartreuse.utils.alembic_migration_helper.run_command")
+
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper("foo", configure=False, additional_parameters="foo bar")
+    alembic_migration_helper.migrate_db()
+    mocked_run_command.assert_called_with(f"alembic foo bar upgrade head", cwd='/app/alembic')

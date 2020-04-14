@@ -20,6 +20,7 @@ def main() -> None:
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
     )
+    ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
     ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ELASTICSEARCH_URL"]
     ESLEMBIC_ENABLE_CLEAN: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"])
     ESLEMBIC_ENABLE_UPGRADE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"])
@@ -31,6 +32,7 @@ def main() -> None:
         postgresql_url=POSTGRESQL_URL,
         elasticsearch_url=ELASTICSEARCH_URL,
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
+        alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
         release_name=RELEASE_NAME,
         eslembic_enable_upgrade=ESLEMBIC_ENABLE_UPGRADE,
         eslembic_clean_index=ESLEMBIC_ENABLE_CLEAN,

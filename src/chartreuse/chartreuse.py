@@ -25,11 +25,14 @@ class Chartreuse(object):
         elasticsearch_url: str,
         release_name: str,
         alembic_allow_migration_for_empty_database: bool,
-        eslembic_clean_index: bool,
-        eslembic_enable_upgrade: bool,
+        eslembic_clean_index: bool = False,
+        eslembic_enable_upgrade: bool = False,
+        alembic_additional_parameters: str = "",
     ):
         self.alembic_migration_helper = AlembicMigrationHelper(
-            postgresql_url, allow_migration_for_empty_database=alembic_allow_migration_for_empty_database
+            postgresql_url,
+            allow_migration_for_empty_database=alembic_allow_migration_for_empty_database,
+            additional_parameters=alembic_additional_parameters,
         )
         if elasticsearch_url:
             self.eslembic_migration_helper = EslembicMigrationHelper(elasticsearch_url)

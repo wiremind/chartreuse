@@ -32,8 +32,6 @@ def main():
         elasticsearch_url=ELASTICSEARCH_URL,
         release_name=RELEASE_NAME,
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
-        eslembic_clean_index=False,
-        eslembic_enable_upgrade=False,
     )
     if chartreuse.is_migration_needed and ENABLE_STOP_PODS:
         # pre-upgrade (pre-install) hook = predeployment.py FAILS means that the Helm release had failed

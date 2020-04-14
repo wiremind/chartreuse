@@ -13,6 +13,7 @@ alembic:
   enabled: true
   url: postgresql://user:password@url
   allowMigrationFromEmptyDatabase: false
+  additionalParameters: ""  # like "-x env_type=staging"
 
 eslembic:
   enabled: true

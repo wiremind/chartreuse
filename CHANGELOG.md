@@ -6,6 +6,7 @@
 - helm: Add support for built-in secret.
 - helm: delete all roles, serviceaccounts, secrets, configmap after success
 - Allow to keep pods started and not do stop-pods.
+- alembic: allow to give additional parameters to alembic.
 - eslembic: Split eslembic upgrade to eslembic migrate and eslembic upgrade as a post job
 - eslembic: allow to disable/enable eslembic upgrade
 ## Fixes

@@ -37,3 +37,5 @@ data:
 
   CHARTREUSE_POST_UPGRADE_CONTAINER_IMAGE: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
   CHARTREUSE_RELEASE_NAME: {{ .Release.Name }}
+
+  CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS: {{ .Values.alembic.additionalParameters }}

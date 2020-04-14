@@ -11,13 +11,14 @@ ALEMBIC_DIRECTORY_PATH = "/app/alembic"
 
 class AlembicMigrationHelper(object):
     def __init__(
-        self, database_url: str, allow_migration_for_empty_database: bool = False, configure: bool = True
+        self, database_url: str, additional_parameters: str = "", allow_migration_for_empty_database: bool = False, configure: bool = True
     ):
         if not database_url:
             raise EnvironmentError("database_url not set, not upgrading database.")
 
         self.database_url = database_url
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
+        self.additional_parameters = additional_parameters
 
         if configure:
             self._configure()
@@ -76,6 +77,6 @@ class AlembicMigrationHelper(object):
         run_command("alembic history -r current:head", cwd=ALEMBIC_DIRECTORY_PATH)
 
         print("Upgrading database...")
-        run_command("alembic upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
+        run_command(f"alembic {self.additional_parameters} upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
 
         print("Done upgrading database.")
