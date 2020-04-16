@@ -24,7 +24,7 @@ TEST_CHART = os.path.join(E2E_TESTS_PATH, "helm_chart/my-test-chart")
 def populate_cluster():
     run_command(f"kubectl create namespace {TEST_NAMESPACE}")
 
-    run_command(f"kubectl apply -f customResourceDescription-expecteddeploymentscales.yaml", cwd=f"{ROOT_PATH}")
+    run_command(f"kubectl apply -f {E2E_TESTS_PATH}/CustomResourceDefinition-expecteddeploymentscales.yaml",)
 
     run_command(
         f"helm upgrade --install --debug --wait {TEST_RELEASE} {TEST_CHART} --namespace {TEST_NAMESPACE} --timeout 1800s",

@@ -22,7 +22,7 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments/scale", "replicasets/scale"]
     verbs: ["get", "list", "update", "patch"]
-  - apiGroups: ["wiremind.fr"]
+  - apiGroups: ["wiremind.io"]
     resources: ["expecteddeploymentscales"]
     verbs: ["get", "list"]
 

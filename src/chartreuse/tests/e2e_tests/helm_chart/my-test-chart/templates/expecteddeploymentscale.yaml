@@ -1,4 +1,4 @@
-apiVersion: "wiremind.fr/v1"
+apiVersion: "wiremind.io/v1"
 kind: ExpectedDeploymentScale
 metadata:
   name: {{ include "my-test-chart.fullname" . }}
