@@ -37,15 +37,13 @@ setup(
         "alembic==1.*",
         "eslembic==6.*,>=6.0.2",
         "psycopg2==2.*",
-        "wiremind-kubernetes==5.*,>=5.0.0-dev0",
+        "wiremind-kubernetes==5.*,>=5.0.0-dev12",
     ],
     extras_require={"dev": extra_require_dev, "mypy": extra_require_mypy, "test": extra_require_test,},
     entry_points={
         "console_scripts": [
-            "chartreuse-pre-deployment=chartreuse.predeployment:main",
-            "chartreuse-post-deployment=chartreuse.postdeployment:main",
-            "chartreuse-post-upgrade=chartreuse.postupgrade:main",
-            "chartreuse-post-rollback=chartreuse.postrollback:main",
+            "chartreuse-upgrade=chartreuse.chartreuse_upgrade:main",
+            "chartreuse-migrate=chartreuse.chartreuse_migrate:main",
         ]
     },
 )

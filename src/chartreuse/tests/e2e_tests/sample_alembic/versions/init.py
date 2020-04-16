@@ -17,11 +17,11 @@ def upgrade():
     from alembic import op
 
     op.create_table(
-        "migrated",
+        "upgraded",
     )
 
 
 def downgrade():
     from alembic import op
 
-    op.drop_table("migrated")
+    op.drop_table("upgraded")

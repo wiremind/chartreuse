@@ -2,14 +2,17 @@
 ## BREAKING CHANGES
 - helm: move most alembic/eslembic parameters to eslembic and alembic prefix.
 - Rename most environment variables used by chartreuse.
+- Remove pre-deployment job that stop-pods before deployment, since helm 3 will re-start them anyway.
 ## Features
+- Chartreuse: add a runMigrationInPreDeployment value allowing to move chartreuse migration to pre-deployment instead of post-deployment, false by default. Note that in such case, a deployment failure may cause new database schema version but old code to be on the environment (you may want to disable helmDefaults.atomic parameter in helmfile.yaml of your project)
+- Chartreuse: Allow to keep pods started and not do stop-pods.
+- alembic: allow to give additional parameters to alembic.
+- eslembic: Split eslembic upgrade to eslembic upgrade and eslembic migrate as a post job
+- eslembic: allow to enable eslembic upgrade through `eslembic.upgrade.enabled` value
+- helm: Add `additionalEnvironmentVariables` parameter to inject envvars into Chartreuse Pods.
 - helm: Add support for built-in secret.
 - helm: delete all roles, serviceaccounts, secrets, configmap after success
-- Allow to keep pods started and not do stop-pods.
-- alembic: allow to give additional parameters to alembic.
-- eslembic: Split eslembic upgrade to eslembic migrate and eslembic upgrade as a post job
-- eslembic: allow to disable/enable eslembic upgrade
-## Fixes
+- helm: delete post-rollback job that is useless with helm 3
 - Upgrade to eslembic v6.x.x
 
 # 1.1.0 (2020-03-10)

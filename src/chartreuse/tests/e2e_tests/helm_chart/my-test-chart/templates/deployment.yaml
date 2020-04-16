@@ -7,10 +7,12 @@ spec:
   selector:
     matchLabels:
       {{- include "my-test-chart.selectorLabels" . | nindent 6 }}
+      component: dummy-deployment
   template:
     metadata:
       labels:
         {{- include "my-test-chart.selectorLabels" . | nindent 8 }}
+        component: dummy-deployment
     spec:
       containers:
         - name: {{ .Chart.Name }}

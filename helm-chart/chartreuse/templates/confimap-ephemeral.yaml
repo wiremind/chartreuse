@@ -1,9 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "chartreuse.fullname" . }}
+  name: {{ template "chartreuse.fullname" . }}-ephemeral
   labels:
 {{ include "chartreuse.labels" . | indent 4 }}
+  annotations:
+{{ include "chartreuse.annotations.ephemeral" . | indent 4 }}
 data:
   # Note: Chartreuse expects false values to be empty string (falsy value) and true values to be non-empty string.
 {{- if .Values.alembic.allowMigrationFromEmptyDatabase }}

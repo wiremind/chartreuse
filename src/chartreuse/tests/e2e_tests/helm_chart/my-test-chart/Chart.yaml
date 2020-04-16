@@ -18,8 +18,12 @@ version: 0.1.0
 
 dependencies:
 - name: postgresql
-  version: "*"
+  version: "8.6.3"
   repository: "https://kubernetes-charts.storage.googleapis.com"
 - name: elasticsearch
   repository: "https://helm.elastic.co"
+  version: "7.6.1"
+- name: chartreuse
+  repository: "file://../../../../../../helm-chart/chartreuse"
   version: "*"
+  condition: chartreuse.enabled

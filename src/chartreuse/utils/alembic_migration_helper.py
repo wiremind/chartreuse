@@ -62,21 +62,12 @@ class AlembicMigrationHelper(object):
         head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
         alembic_current = self._get_alembic_current()
         if head_re.search(alembic_current):
-            print("Postgres database does not need migration.")
+            print("SQL database schema does not need upgrade.")
             return False
-        print("Postgres database can be migrated.")
+        print("SQL database schema can be upgraded.")
         return True
 
-    def migrate_db(self):
-        """
-        When used in a Helm post-install hook, exceptions that this function raises should never be catched.
-        We need to guarantee that: if  "migrate_db" fails then "post-deploy" fails
-        It would be great if this fct returns the status of the migration (failed/succeeded)
-        """
+    def upgrade_db(self):
         print("Database needs to be upgraded. Proceeding.")
-        run_command("alembic history -r current:head", cwd=ALEMBIC_DIRECTORY_PATH)
-
-        print("Upgrading database...")
         run_command(f"alembic {self.additional_parameters} upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
-
         print("Done upgrading database.")

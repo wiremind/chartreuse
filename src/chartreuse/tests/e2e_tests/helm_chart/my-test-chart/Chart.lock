@@ -5,5 +5,8 @@ dependencies:
 - name: elasticsearch
   repository: https://helm.elastic.co
   version: 7.6.1
-digest: sha256:72147deb7ee7bfda1db038dc97a6447e512a2ff089c038fa71cdf2e17d9d090e
-generated: "2020-03-27T18:03:07.800247+01:00"
+- name: chartreuse
+  repository: file://../../../../../../helm-chart/chartreuse
+  version: 2.0.0-dev17
+digest: sha256:645976325650e4f4047fbd66cf3fe85ec455a8301b4ac78fd4a94ce97b293eee
+generated: "2020-04-22T07:37:19.38084+02:00"

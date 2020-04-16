@@ -38,27 +38,20 @@ class EslembicMigrationHelper(object):
         eslembic_current = self._get_eslembic_current()
         print(eslembic_current)
         if head_re.search(eslembic_current):
-            print("Elasticsearch does not need migration.")
+            print("Elasticsearch does not need schema upgrade.")
             return False
-        print("Elasticsearch database can be migrated.")
+        print("Elasticsearch schema can be upgraded.")
         return True
 
     def upgrade_db(self):
         print("Upgrading Elasticsearch...")
-        run_command("eslembic history", cwd=ESLEMBIC_DIRECTORY_PATH)
-
-        print("Upgrading Elasticsearch...")
-        upgrade_command = "eslembic upgrade head"
-        run_command(upgrade_command, cwd=ESLEMBIC_DIRECTORY_PATH)
-
+        run_command("eslembic upgrade head", cwd=ESLEMBIC_DIRECTORY_PATH)
         print("Done upgrading Elasticsearch.")
 
     def migrate_db(self):
         print("Migrating Elasticsearch...")
-        upgrade_command = "eslembic migrate"
-        run_command(upgrade_command, cwd=ESLEMBIC_DIRECTORY_PATH)
-
-        print("Done migrated Elasticsearch.")
+        run_command("eslembic migrate", cwd=ESLEMBIC_DIRECTORY_PATH)
+        print("Done migrating Elasticsearch.")
 
     def clean_index(self):
         print("Cleaning Elasticsearch...")

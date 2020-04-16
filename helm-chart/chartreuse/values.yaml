@@ -6,22 +6,34 @@ image:
   repository: overrideme
   tag: latest # Change me to a real image from a tag
   pullPolicy: IfNotPresent
+  pullSecret: ""  # Note: singular, this is a string and allows a single secret
 
+## Wether to run migration at pre-deployment (i.e before deployment) stage or in post-deployment (i.e after deployment) stage
+## Note that in case of initial deployment ("install" in helm dialect), it will be run during deployment
+runMigrationInPreDeployment: false
+
+## Whether or not to scale down deployments with ExpectedDeploymentScale before migrating (if migration is needed)
 stopPods: true
+
+## Additional environment variables injected within chartreuse Pods
+additionalEnvironmentVariables: {}
 
 alembic:
   enabled: true
-  url: postgresql://user:password@url
-  allowMigrationFromEmptyDatabase: false
+  username: my-dummy-username
+  password: my-dummy-password
+  database: my-dummy-database
+  allowMigrationFromEmptyDatabase: true
   additionalParameters: ""  # like "-x env_type=staging"
+  urlSuffix: "-postgresql"  # Suffix to append to the Release name to obtain postgresql URL
 
 eslembic:
   enabled: true
-  url: http://my-url:9200
   cleanIndex:
     enabled: false
-  upgrade:
-    enabled: false  # Note: not yet properly tested, enable at your own risks
+  migrate:
+    enabled: false
+  urlSuffix: "-elasticsearch-hot"
 
 rbac:
   create: true

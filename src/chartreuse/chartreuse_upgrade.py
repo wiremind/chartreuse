@@ -16,14 +16,14 @@ def main() -> None:
     """
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
-    POSTGRESQL_URL: str = os.environ["CHARTREUSE_POSTGRESQL_URL"]
+    POSTGRESQL_URL: str = os.environ["CHARTREUSE_ALEMBIC_URL"]
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
     )
     ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
-    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ELASTICSEARCH_URL"]
+    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ESLEMBIC_URL"]
     ESLEMBIC_ENABLE_CLEAN: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"])
-    ESLEMBIC_ENABLE_UPGRADE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_UPGRADE"])
+    ESLEMBIC_ENABLE_MIGRATE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_MIGRATE"])
     ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
     RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
 
@@ -34,8 +34,9 @@ def main() -> None:
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
         alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
         release_name=RELEASE_NAME,
-        eslembic_enable_upgrade=ESLEMBIC_ENABLE_UPGRADE,
+        eslembic_enable_migrate=ESLEMBIC_ENABLE_MIGRATE,
         eslembic_clean_index=ESLEMBIC_ENABLE_CLEAN,
+        kubernetes_helper=deployment_manager,
     )
     if chartreuse.is_migration_needed:
         if ENABLE_STOP_PODS:
@@ -45,7 +46,7 @@ def main() -> None:
         # The exceptions this method raises should NEVER be caught.
         # If the migration fails, the post-install should fail and the release will fail
         # we will end up with the old release.
-        chartreuse.migrate()
+        chartreuse.upgrade()
 
         if ENABLE_STOP_PODS:
             # Scale up the new pods.
@@ -54,7 +55,9 @@ def main() -> None:
             try:
                 deployment_manager.start_pods()
             except:  # noqa: E722
-                logger.error("Couldn't scale up new pods in postdeployment after migration, SHOULD BE DONE MANUALLY ! ")
+                logger.error(
+                    "Couldn't scale up new pods in chartreuse_upgrade after migration, SHOULD BE DONE MANUALLY ! "
+                )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-chartreuse{{ template "chartreuse.hook.suffix" . }}
+  labels:
+{{ include "chartreuse.labels" . | indent 4 }}
+    app.kubernetes.io/component: "chartreuse-upgrade"
+  annotations:
+{{ include "chartreuse.annotations" . | indent 4 }}
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 1800
+  template:
+    metadata:
+      labels:
+{{ include "chartreuse.labels" . | indent 8 }}
+        app.kubernetes.io/component: chartreuse-upgrade{{ template "chartreuse.hook.suffix" . }}
+        {{ .Release.Name }}-postgresql-client: "true"
+        {{ .Release.Name }}-elasticsearch-hot-client: "true"
+    spec:
+      restartPolicy: "Never"
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      initContainers:
+{{- if .Values.alembic.enabled }}
+        - name: postgresql-wait
+          image: bitnami/postgresql:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              until pg_isready "--dbname=$CHARTREUSE_ALEMBIC_URL"; do
+                echo "Waiting for Postgresql to be ready...";
+                sleep 1;
+              done;
+          envFrom:
+          - secretRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+          - configMapRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+{{- end }}
+{{- if .Values.eslembic.enabled }}
+        - name: elasticsearch-wait
+          image: curlimages/curl:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              until curl -X GET "$CHARTREUSE_ESLEMBIC_URL/_cluster/health?wait_for_status=yellow"; do
+                echo "Waiting for Elasticsearch to be ready...";
+                sleep 1;
+              done;
+          envFrom:
+          - secretRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+          - configMapRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+{{- end }}
+      containers:
+        - name: chartreuse
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - chartreuse-upgrade
+          envFrom:
+          - secretRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+          - configMapRef:
+              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
+          env:
+      serviceAccountName: {{ template "chartreuse.serviceAccountName" . }}{{ template "chartreuse.hook.suffix" . }}
+      terminationGracePeriodSeconds: 0
