@@ -33,12 +33,7 @@ setup(
     include_package_data=True,
     zip_safe=True,
     python_requires=">=3.6.0",
-    install_requires=[
-        "alembic==1.*",
-        "eslembic==6.*,>=6.0.2",
-        "psycopg2==2.*",
-        "wiremind-kubernetes==5.*,>=5.0.0-dev12",
-    ],
+    install_requires=["alembic==1.*", "eslembic==6.*,>=6.0.2", "psycopg2==2.*", "wiremind-kubernetes==5.*",],
     extras_require={"dev": extra_require_dev, "mypy": extra_require_mypy, "test": extra_require_test,},
     entry_points={
         "console_scripts": [

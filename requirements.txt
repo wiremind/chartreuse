@@ -33,7 +33,7 @@ sqlalchemy==1.3.16        # via alembic
 tqdm==4.45.0              # via eslembic
 urllib3==1.25.9           # via elasticsearch, kubernetes, requests
 websocket-client==0.57.0  # via kubernetes
-wiremind-kubernetes==5.0.0.dev12  # via chartreuse (setup.py)
+wiremind-kubernetes==5.0.0  # via chartreuse (setup.py)
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

@@ -7,6 +7,6 @@ dependencies:
   version: 7.6.1
 - name: chartreuse
   repository: file://../../../../../../helm-chart/chartreuse
-  version: 2.0.0-dev17
-digest: sha256:645976325650e4f4047fbd66cf3fe85ec455a8301b4ac78fd4a94ce97b293eee
-generated: "2020-04-22T07:37:19.38084+02:00"
+  version: 2.0.0
+digest: sha256:47f8499e64b3ee5437b11cabef2d0e5c442f4de9bfe3d8da13254b57ff923bdb
+generated: "2020-04-23T18:34:45.380604+02:00"

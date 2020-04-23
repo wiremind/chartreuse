@@ -16,6 +16,8 @@ def configure_os_environ_mock(mocker, additional_environment: Union[Dict[str, st
         CHARTREUSE_MIGRATE_IMAGE_PULL_SECRET="foo",
         CHARTREUSE_RELEASE_NAME="foo",
         CLASSIC_K8S_CONFIG=os.environ.get("CLASSIC_K8S_CONFIG", ""),
+        CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT="",
+        HELM_IS_INSTALL="",
     )
     if additional_environment:
         new_environ.update(additional_environment)

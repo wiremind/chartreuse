@@ -1,10 +1,10 @@
-# 2.0.0 (Unreleased)
+# 2.0.0 (2020-04-23)
 ## BREAKING CHANGES
 - helm: move most alembic/eslembic parameters to eslembic and alembic prefix.
 - Rename most environment variables used by chartreuse.
 - Remove pre-deployment job that stop-pods before deployment, since helm 3 will re-start them anyway.
 ## Features
-- Chartreuse: add a runMigrationInPreDeployment value allowing to move chartreuse migration to pre-deployment instead of post-deployment, false by default. Note that in such case, a deployment failure may cause new database schema version but old code to be on the environment (you may want to disable helmDefaults.atomic parameter in helmfile.yaml of your project)
+- Chartreuse: add a upgradeBeforeDeployment value allowing to move chartreuse migration to pre-deployment instead of post-deployment, false by default. Note that in such case, a deployment failure may cause new database schema version but old code to be on the environment (you may want to disable helmDefaults.atomic parameter in helmfile.yaml of your project)
 - Chartreuse: Allow to keep pods started and not do stop-pods.
 - alembic: allow to give additional parameters to alembic.
 - eslembic: Split eslembic upgrade to eslembic upgrade and eslembic migrate as a post job

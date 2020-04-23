@@ -58,15 +58,15 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
 
     run_command(f"kubectl apply -f {E2E_TESTS_PATH}/CustomResourceDefinition-expecteddeploymentscales.yaml",)
 
-    run_command(f"kubectl create namespace {TEST_NAMESPACE}")
-
     try:
+        run_command(f"kubectl create namespace {TEST_NAMESPACE}")
+
         additional_args = ""
         if include_chartreuse:
             if pre_upgrade:
-                additional_args = "--set chartreuse.enabled=true --set chartreuse.runMigrationInPreDeployment=true"
+                additional_args = "--set chartreuse.enabled=true --set chartreuse.upgradeBeforeDeployment=true"
             else:
-                additional_args = "--set chartreuse.enabled=true --set chartreuse.runMigrationInPreDeployment=false"
+                additional_args = "--set chartreuse.enabled=true --set chartreuse.upgradeBeforeDeployment=false"
         run_command(
             f"helm upgrade --install --wait {TEST_RELEASE} {TEST_CHART} --namespace {TEST_NAMESPACE} --timeout 1200s {additional_args}",
             cwd=ABSOLUTE_PATH,

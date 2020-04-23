@@ -8,9 +8,9 @@ image:
   pullPolicy: IfNotPresent
   pullSecret: ""  # Note: singular, this is a string and allows a single secret
 
-## Wether to run migration at pre-deployment (i.e before deployment) stage or in post-deployment (i.e after deployment) stage
-## Note that in case of initial deployment ("install" in helm dialect), it will be run during deployment
-runMigrationInPreDeployment: false
+## Wether to run schema upgrade before deployment or after deployment
+## Note that in case of initial deployment ("install" in helm dialect), chartreuse will be run during deployment as a normal job
+upgradeBeforeDeployment: false
 
 ## Whether or not to scale down deployments with ExpectedDeploymentScale before migrating (if migration is needed)
 stopPods: true
