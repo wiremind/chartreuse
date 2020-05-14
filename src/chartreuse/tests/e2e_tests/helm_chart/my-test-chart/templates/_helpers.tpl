@@ -49,6 +49,7 @@ Selector labels
 {{- define "my-test-chart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "my-test-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+release: {{ .Release.Name }}
 {{- end -}}
 
 {{/*

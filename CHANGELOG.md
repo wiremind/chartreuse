@@ -1,3 +1,7 @@
+# 2.1.0 (2020-05-15)
+## Fix
+- Add the appropriate roles to support interacting with wiremind.fr's EDSs. See wiremind-kubernetes==5.1.0's ChangeLog.
+
 # 2.0.0 (2020-04-23)
 ## BREAKING CHANGES
 - helm: move most alembic/eslembic parameters to eslembic and alembic prefix.

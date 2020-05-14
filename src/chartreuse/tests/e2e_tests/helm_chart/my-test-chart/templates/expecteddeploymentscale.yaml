@@ -7,3 +7,20 @@ metadata:
 spec:
   deploymentName: {{ include "my-test-chart.fullname" . }}
   expectedScale: {{ .Values.replicaCount}}
+
+
+---
+
+# Remove once the wiremind.fr EDSs disappear from the cluster.
+# We will have some overriding here https://gitlab.cayzn.com/wiremind/devops/wiremind-kubernetes/-/blob/21e203b4c8fa897f3397afc3a598317a10cb857c/src/wiremind_kubernetes/kubernetes_helper.py#L307,
+# but this is not a problem
+
+apiVersion: "wiremind.fr/v1"
+kind: ExpectedDeploymentScale
+metadata:
+  name: {{ include "my-test-chart.fullname" . }}
+  labels:
+{{ include "my-test-chart.selectorLabels" . | indent 4 }}
+spec:
+  deploymentName: {{ include "my-test-chart.fullname" . }}
+  expectedScale: {{ .Values.replicaCount}}
