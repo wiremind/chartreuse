@@ -1,5 +1,5 @@
 apiVersion: v1
 name: chartreuse
 # Note: when setting a development version, please explicitely specify it in e2e test helm chart, otherwise just put *.
-version: 2.0.0
+version: 2.1.0
 description: Migrate databases with ease
