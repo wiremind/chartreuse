@@ -66,7 +66,7 @@ Create the name of the service account to use
 
 
 {{- define "chartreuse.annotations" -}}
-{{- if .Values.runMigrationInPreDeployment }}
+{{- if or .Values.runMigrationInPreDeployment .Values.upgradeBeforeDeployment -}}
 {{- if .Release.IsInstall }}
 # No hook: we deploy this job during the initial install, as part of the Helm Release
 {{- end }}
@@ -85,7 +85,7 @@ Create the name of the service account to use
 {{- end -}}
 
 {{- define "chartreuse.annotations.ephemeral" -}}
-{{- if .Values.runMigrationInPreDeployment }}
+{{- if or .Values.runMigrationInPreDeployment .Values.upgradeBeforeDeployment -}}
 "helm.sh/hook": pre-upgrade
 {{- else }}
 "helm.sh/hook": post-install,post-upgrade
@@ -96,7 +96,7 @@ Create the name of the service account to use
 
 # Adds suffix -ephemeral if it is a helm hook
 {{- define "chartreuse.hook.suffix" -}}
-{{- if .Values.runMigrationInPreDeployment -}}
+{{- if or .Values.runMigrationInPreDeployment .Values.upgradeBeforeDeployment -}}
 {{- if .Release.IsUpgrade -}}
 -ephemeral
 {{- end -}}

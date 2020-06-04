@@ -1,3 +1,9 @@
+
+# 2.2.0 (2020-06-04)
+## Fix
+- unify `.Values.runMigrationInPreDeployment` and `.Values.upgradeBeforeDeployment` with backward compatibility.
+`.Values.runMigrationInPreDeployment` will be deprecated in the next major version.
+
 # 2.1.0 (2020-05-15)
 ## Fix
 - Add the appropriate roles to support interacting with wiremind.fr's EDSs. See wiremind-kubernetes==5.1.0's ChangeLog.
