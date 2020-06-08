@@ -1,3 +1,8 @@
+# ChangeLog
+
+# 2.2.1 (2020-06-08)
+## Fix
+- attribute error when ES upgrade/migration is not wanted.
 
 # 2.2.0 (2020-06-04)
 ## Fix

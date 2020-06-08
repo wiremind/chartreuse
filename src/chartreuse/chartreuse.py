@@ -77,14 +77,14 @@ class Chartreuse(object):
     def check_migration_needed(self):
         alembic_migration_possible = self.alembic_migration_helper.is_migration_needed
         eslembic_migration_possible = (
-            self.eslembic_migration_helper and self.eslembic_migration_helper.is_migration_needed
+            self._eslembic_migration_is_enabled() and self.eslembic_migration_helper.is_migration_needed
         )
         if eslembic_migration_possible:
             self._check_no_migrate_job_is_running_and_delete_finished()
         return alembic_migration_possible or eslembic_migration_possible
 
     def create_post_upgrade_job(self):
-        if not self.eslembic_migration_helper:
+        if not self._eslembic_migration_is_enabled():
             raise ValueError("ESlembic is not enabled.")
         environment = dict(CHARTREUSE_ESLEMBIC_URL=self.eslembic_migration_helper.elasticsearch_url,)
         if self.eslembic_clean_index:
@@ -114,8 +114,11 @@ class Chartreuse(object):
         if self.alembic_migration_helper.is_migration_needed:
             self.alembic_migration_helper.upgrade_db()
 
-        if self.eslembic_migration_helper and self.eslembic_migration_helper.is_migration_needed:
+        if self._eslembic_migration_is_enabled() and self.eslembic_migration_helper.is_migration_needed:
             # Note: in eslembic, "upgrade" is to upgrade index itself, aka schema, while "migrate" is to migrate all data
             self.eslembic_migration_helper.upgrade_db()
             if self.eslembic_enable_migrate or self.eslembic_clean_index:
                 self.create_post_upgrade_job()
+
+    def _eslembic_migration_is_enabled(self) -> bool:
+        return hasattr(self, "eslembic_migration_helper")
