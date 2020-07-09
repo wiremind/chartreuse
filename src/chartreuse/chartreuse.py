@@ -24,7 +24,7 @@ def _get_image_pull_secrets() -> List[str]:
     return [kubernetes.client.V1LocalObjectReference(os.environ["CHARTREUSE_MIGRATE_IMAGE_PULL_SECRET"])]
 
 
-class Chartreuse(object):
+class Chartreuse:
     def __init__(
         self,
         postgresql_url: str,

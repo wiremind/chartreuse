@@ -9,12 +9,12 @@ from wiremind_kubernetes.utils import run_command
 ALEMBIC_DIRECTORY_PATH = "/app/alembic"
 
 
-class AlembicMigrationHelper(object):
+class AlembicMigrationHelper:
     def __init__(
         self, database_url: str, additional_parameters: str = "", allow_migration_for_empty_database: bool = False, configure: bool = True
     ):
         if not database_url:
-            raise EnvironmentError("database_url not set, not upgrading database.")
+            raise OSError("database_url not set, not upgrading database.")
 
         self.database_url = database_url
         self.allow_migration_for_empty_database = allow_migration_for_empty_database

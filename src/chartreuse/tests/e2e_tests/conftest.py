@@ -16,7 +16,7 @@ import chartreuse
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
 
-ABSOLUTE_PATH = os.path.dirname(os.path.join((os.path.abspath(chartreuse.__file__))))
+ABSOLUTE_PATH = os.path.dirname(os.path.join(os.path.abspath(chartreuse.__file__)))
 E2E_TESTS_PATH = os.path.join(ABSOLUTE_PATH, "tests/e2e_tests")
 ROOT_PATH = os.path.join(ABSOLUTE_PATH, "..", "..")
 TEST_CHART = os.path.join(E2E_TESTS_PATH, "helm_chart/my-test-chart")
