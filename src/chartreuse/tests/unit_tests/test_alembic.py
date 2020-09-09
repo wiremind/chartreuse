@@ -115,4 +115,4 @@ def test_additional_parameters(mocker):
 
     alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper("foo", configure=False, additional_parameters="foo bar")
     alembic_migration_helper.upgrade_db()
-    mocked_run_command.assert_called_with(f"alembic foo bar upgrade head", cwd='/app/alembic')
+    mocked_run_command.assert_called_with("alembic foo bar upgrade head", cwd='/app/alembic')

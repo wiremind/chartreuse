@@ -23,7 +23,7 @@ TEST_CHART = os.path.join(E2E_TESTS_PATH, "helm_chart/my-test-chart")
 
 # Calculated from deployed test helm chart + kubectl exec
 ELASTICSEARCH_URL = "http://localhost:9200"
-POSTGRESQL_URL = f"postgresql://foo:foo@localhost/foo?sslmode=prefer"
+POSTGRESQL_URL = "postgresql://foo:foo@localhost/foo?sslmode=prefer"
 
 SAMPLE_ESLEMBIC_PATH = os.path.join(E2E_TESTS_PATH, "sample_eslembic")
 SAMPLE_ALEMBIC_PATH = os.path.join(E2E_TESTS_PATH, "sample_alembic")
@@ -43,20 +43,26 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
         )
         if os.environ.get("CLASSIC_K8S_CONFIG"):
             run_command(
-                "kind load docker-image dummy-e2e-chartreuse-image:latest", cwd=ROOT_PATH,
+                "kind load docker-image dummy-e2e-chartreuse-image:latest",
+                cwd=ROOT_PATH,
             )
 
     run_command(
-        f"helm repo add stable https://kubernetes-charts.storage.googleapis.com/", cwd=TEST_CHART,
+        "helm repo add stable https://kubernetes-charts.storage.googleapis.com/",
+        cwd=TEST_CHART,
     )
     run_command(
-        f"helm repo add elastic https://helm.elastic.co", cwd=TEST_CHART,
+        "helm repo add elastic https://helm.elastic.co",
+        cwd=TEST_CHART,
     )
     run_command(
-        f"helm dep up", cwd=TEST_CHART,
+        "helm dep up",
+        cwd=TEST_CHART,
     )
 
-    run_command(f"kubectl apply -f {E2E_TESTS_PATH}/CustomResourceDefinition-expecteddeploymentscales.yaml",)
+    run_command(
+        f"kubectl apply -f {E2E_TESTS_PATH}/CustomResourceDefinition-expecteddeploymentscales.yaml",
+    )
 
     try:
         run_command(f"kubectl create namespace {TEST_NAMESPACE}")

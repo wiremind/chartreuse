@@ -17,7 +17,16 @@ extra_require_test = [
 extra_require_mypy = [
     "mypy",
 ]
-extra_require_dev = ["black", "flake8", "flake8-mutable", "pip-tools>=3.7.0",] + extra_require_mypy + extra_require_test
+extra_require_dev = (
+    [
+        "black",
+        "flake8",
+        "flake8-mutable",
+        "pip-tools>=3.7.0",
+    ]
+    + extra_require_mypy
+    + extra_require_test
+)
 
 
 setup(
@@ -33,8 +42,17 @@ setup(
     include_package_data=True,
     zip_safe=True,
     python_requires=">=3.6.0",
-    install_requires=["alembic==1.*", "eslembic==6.*,>=6.0.2", "psycopg2==2.*", "wiremind-kubernetes==6.*,>=6.0.1",],
-    extras_require={"dev": extra_require_dev, "mypy": extra_require_mypy, "test": extra_require_test,},
+    install_requires=[
+        "alembic==1.*",
+        "eslembic==6.*,>=6.0.2",
+        "psycopg2==2.*",
+        "wiremind-kubernetes==6.*,>=6.0.1",
+    ],
+    extras_require={
+        "dev": extra_require_dev,
+        "mypy": extra_require_mypy,
+        "test": extra_require_test,
+    },
     entry_points={
         "console_scripts": [
             "chartreuse-upgrade=chartreuse.chartreuse_upgrade:main",

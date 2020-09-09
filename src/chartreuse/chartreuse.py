@@ -12,7 +12,9 @@ CHARTREUSE_MIGRATE_JOB_NAME = "chartreuse-migrate"
 
 def configure_logging() -> None:
     logging.basicConfig(
-        format="%(asctime)s %(levelname)s: %(message)s", datefmt="%H:%M:%S", level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%H:%M:%S",
+        level=logging.INFO,
     )
 
 
@@ -86,7 +88,9 @@ class Chartreuse:
     def create_post_upgrade_job(self):
         if not self._eslembic_migration_is_enabled():
             raise ValueError("ESlembic is not enabled.")
-        environment = dict(CHARTREUSE_ESLEMBIC_URL=self.eslembic_migration_helper.elasticsearch_url,)
+        environment = dict(
+            CHARTREUSE_ESLEMBIC_URL=self.eslembic_migration_helper.elasticsearch_url,
+        )
         if self.eslembic_clean_index:
             environment["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"] = "1"
         else:
