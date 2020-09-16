@@ -18,6 +18,9 @@ spec:
         {{ .Release.Name }}-postgresql-client: "true"
         {{ .Release.Name }}-elasticsearch-hot-client: "true"
     spec:
+      {{- if .Values.priorityClassName }}
+      priorityClassName: "{{ .Values.priorityClassName }}"
+      {{- end }}
       restartPolicy: "Never"
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}

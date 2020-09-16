@@ -1,8 +1,10 @@
 # ChangeLog
 
-# 2.2.2 (2020-09-09)
-## Fix
-- migrate job: do not leave orphaned migrate Pods when chartreuse deletes the Job thanks to wiremind-kubernetes v6.0.1.
+# 2.3.0 (2020-09-21)
+## Features
+- Add the possibility to specify a priorityClassName for the pods chartreuse launches
+- Check the compatibility between Chartreuse's package version and Chartreuse's Helm Chart version.
+- Chartreuse now runs on Python >=3.7.0
 
 # 2.2.1 (2020-06-08)
 ## Fix

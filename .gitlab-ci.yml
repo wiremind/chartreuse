@@ -9,6 +9,7 @@ include:
 variables:
   PACKAGE_NAME: chartreuse
   EGG_NAME: chartreuse
+  # We don't need wiremind-python here, so we just set python as base image
   DOCKER_BASE_IMAGE: python:3.7
 
 e2e-tests:
@@ -20,3 +21,5 @@ e2e-tests:
   # Note: Extends abstract.yml
   variables:
     TEST_DIR: src/$PACKAGE_NAME/tests/unit_tests
+
+

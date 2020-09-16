@@ -6,11 +6,10 @@ from wiremind_kubernetes.kubernetes_helper import KubernetesHelper
 from .conftest import (
     TEST_NAMESPACE,
     TEST_RELEASE,
-    assert_sql_upgraded,
-    assert_elasticsearch_upgraded,
     are_pods_scaled_down,
+    assert_elasticsearch_upgraded,
+    assert_sql_upgraded,
 )
-
 
 logger = logging.getLogger(__name__)
 

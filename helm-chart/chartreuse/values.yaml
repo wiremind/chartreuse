@@ -42,6 +42,8 @@ serviceAccount:
   create: true
   name:
 
+priorityClassName: ""
+
 resources: {}
 
 nodeSelector: {}

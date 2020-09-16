@@ -3,7 +3,6 @@ from subprocess import SubprocessError
 from typing import List
 
 import sqlalchemy
-
 from wiremind_kubernetes.utils import run_command
 
 ALEMBIC_DIRECTORY_PATH = "/app/alembic"

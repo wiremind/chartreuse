@@ -41,12 +41,12 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=True,
-    python_requires=">=3.6.0",
+    python_requires=">=3.7.0",
     install_requires=[
         "alembic==1.*",
         "eslembic==6.*,>=6.0.2",
         "psycopg2==2.*",
-        "wiremind-kubernetes==6.*,>=6.0.1",
+        "wiremind-kubernetes==6.*",
     ],
     extras_require={
         "dev": extra_require_dev,

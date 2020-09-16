@@ -4,7 +4,6 @@ import subprocess
 import time
 
 import elasticsearch
-import pytest
 import sqlalchemy
 from wiremind_kubernetes.kube_config import load_kubernetes_config
 from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager, KubernetesHelper
@@ -12,6 +11,7 @@ from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUp
 from wiremind_kubernetes.utils import run_command
 
 import chartreuse
+import pytest
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"

@@ -1,6 +1,7 @@
 import os
-
 from typing import Dict, Union
+
+from chartreuse import get_version
 
 
 def configure_os_environ_mock(mocker, additional_environment: Union[Dict[str, str], None] = None):
@@ -18,6 +19,7 @@ def configure_os_environ_mock(mocker, additional_environment: Union[Dict[str, st
         CLASSIC_K8S_CONFIG=os.environ.get("CLASSIC_K8S_CONFIG", ""),
         CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT="",
         HELM_IS_INSTALL="",
+        HELM_CHART_VERSION=get_version(),
     )
     if additional_environment:
         new_environ.update(additional_environment)

@@ -26,7 +26,11 @@ def _get_image_pull_secrets() -> List[str]:
     return [kubernetes.client.V1LocalObjectReference(os.environ["CHARTREUSE_MIGRATE_IMAGE_PULL_SECRET"])]
 
 
-class Chartreuse:
+def _get_priorityclass_name() -> str:
+    return os.environ["CHARTREUSE_UPGRADE_PRIORITYCLASS_NAME"]
+
+
+class Chartreuse(object):
     def __init__(
         self,
         postgresql_url: str,
@@ -111,6 +115,7 @@ class Chartreuse:
                 "app.kubernetes.io/managed-by": "chartreuse",
             },
             image_pull_secrets=_get_image_pull_secrets(),
+            priority_class_name=_get_priorityclass_name(),
         )
         self.kubernetes_helper.create_job(job)
 

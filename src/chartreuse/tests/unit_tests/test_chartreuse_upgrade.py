@@ -1,7 +1,7 @@
 import chartreuse.chartreuse_upgrade
 
-from .conftest import configure_chartreuse_mock
 from ..conftest import configure_os_environ_mock
+from .conftest import configure_chartreuse_mock
 
 
 def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(mocker):

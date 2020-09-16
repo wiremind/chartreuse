@@ -1,17 +1,39 @@
-import os
 import logging
-
-from .chartreuse import Chartreuse
+import os
+from typing import List
 
 from wiremind_kubernetes import KubernetesDeploymentManager
 
+from chartreuse import get_version
+
+from .chartreuse import Chartreuse
+
 logger = logging.getLogger(__name__)
+
+
+def ensure_safe_run() -> None:
+    """
+    The compatibility between the Chartreuse package and Chartreuse Helm Chart is only ensured for
+    versions with the same "major.minor".
+    """
+    helm_chart_v: str = get_version()
+    # Get "1.2" from "1.2.3"
+    helm_chart_v_major_minor: List[str] = helm_chart_v.rsplit(".", 1)
+
+    package_v: str = os.environ["HELM_CHART_VERSION"]
+    package_v_major_minor: List[str] = package_v.rsplit(".", 1)
+    if helm_chart_v_major_minor != package_v_major_minor:
+        raise Exception(
+            f"Chartreuse's Helm Chart version '{helm_chart_v}' and the package's version '{package_v}' "
+            f"don't have the same 'major.minor', they may be incompatible. Align them and retry, ABORTING!"
+        )
 
 
 def main() -> None:
     """
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
+    ensure_safe_run()
     POSTGRESQL_URL: str = os.environ["CHARTREUSE_ALEMBIC_URL"]
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]

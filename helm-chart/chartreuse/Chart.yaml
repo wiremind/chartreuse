@@ -3,6 +3,7 @@ name: chartreuse
 # NOTE: when setting a development version, please explicitly specify it in e2e test helm chart, otherwise just put *.
 # NOTE: Because the Chartreuse and its Chart share the same repo (the same git tag), to avoid confusion and having to deal/define
 # the compatibilities between the two entities, the two versions below should be kept sync, don't forget to sync VERSION.
-appVersion: 2.2.0
-version: 2.2.0
+# This will be done automatically in the future, the source of truth will be VERSION
+appVersion: 2.3.0
+version: 2.3.0
 description: Migrate databases with ease

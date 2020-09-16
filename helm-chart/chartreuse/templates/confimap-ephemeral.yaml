@@ -49,6 +49,10 @@ data:
   CHARTREUSE_RELEASE_NAME: {{ .Release.Name }}
   CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS: "{{ .Values.alembic.additionalParameters }}"
 
+  CHARTREUSE_UPGRADE_PRIORITYCLASS_NAME: "{{ .Values.priorityClassName }}"
+
+  HELM_CHART_VERSION: {{ .Chart.Version }}
+
 {{- with .Values.additionalEnvironmentVariables }}
 {{ toYaml . | indent 2 }}
 {{- end }}
