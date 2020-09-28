@@ -1,6 +1,8 @@
 import chartreuse.chartreuse_upgrade
 import pytest
 
+from chartreuse import get_version
+
 from ..conftest import configure_os_environ_mock
 from .conftest import configure_chartreuse_mock
 
@@ -12,7 +14,7 @@ def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(mocker):
     configure_chartreuse_mock(mocker=mocker, is_migration_needed=True)
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
-    configure_os_environ_mock(mocker=mocker)
+    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_VERSION": get_version()})
 
     chartreuse.chartreuse_upgrade.main()
     mocked_stop_pods.assert_called()
@@ -25,7 +27,9 @@ def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(mocker):
     configure_chartreuse_mock(mocker=mocker, is_migration_needed=True)
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
-    configure_os_environ_mock(mocker=mocker, additional_environment=dict(CHARTREUSE_ENABLE_STOP_PODS=""))
+    configure_os_environ_mock(
+        mocker=mocker, additional_environment=dict(CHARTREUSE_ENABLE_STOP_PODS="", HELM_CHART_VERSION=get_version())
+    )
 
     chartreuse.chartreuse_upgrade.main()
     mocked_stop_pods.assert_not_called()
@@ -38,7 +42,7 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker):
     configure_chartreuse_mock(mocker=mocker, is_migration_needed=False)
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
-    configure_os_environ_mock(mocker=mocker)
+    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_VERSION": get_version()})
 
     chartreuse.chartreuse_upgrade.main()
     mocked_stop_pods.assert_not_called()
@@ -47,8 +51,8 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker):
 @pytest.mark.parametrize(
     "helm_chart_version, package_version, should_raise",
     [
-        (None, "1.2.3", False),
-        ("", "1.2.9", False),
+        (None, "1.2.3", True),
+        ("", "1.2.9", True),
         ("1.2.4", "1.2.4", False),
         ("1.2.9", "1.2.7", False),
         ("1.2.1", "1.2.9", False),
@@ -70,6 +74,6 @@ def test_chartreuse_upgrade_compatibility_check(mocker, helm_chart_version, pack
     if should_raise:
         with pytest.raises(Exception) as excinfo:
             chartreuse.chartreuse_upgrade.main()
-            assert "they may be incompatible. Align them and retry, ABORTING!" in str(excinfo.value)
+            assert "ABORTING!" in str(excinfo.value)
     else:
         chartreuse.chartreuse_upgrade.main()

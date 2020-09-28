@@ -21,12 +21,10 @@ def ensure_safe_run() -> None:
 
     helm_chart_v: str = os.environ.get("HELM_CHART_VERSION", "")
     if not helm_chart_v:
-        logger.info(
+        raise Exception(
             "Couldn't get the Chartreuse's Helm Chart version from the env var HELM_CHART_VERSION,"
-            " couldn't make sure that the package is of a compatible version!"
+            " couldn't make sure that the package is of a compatible version, ABORTING!"
         )
-        return
-
     helm_chart_v_major_minor: str = helm_chart_v.rsplit(".", 1)[0]
     if helm_chart_v_major_minor != package_v_major_minor:
         raise Exception(
