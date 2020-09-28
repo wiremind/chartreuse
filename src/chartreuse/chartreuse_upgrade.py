@@ -16,12 +16,19 @@ def ensure_safe_run() -> None:
     The compatibility between the Chartreuse package and Chartreuse Helm Chart is only ensured for
     versions with the same "major.minor".
     """
-    helm_chart_v: str = get_version()
+    package_v: str = get_version()
     # Get "1.2" from "1.2.3"
-    helm_chart_v_major_minor: List[str] = helm_chart_v.rsplit(".", 1)
-
-    package_v: str = os.environ["HELM_CHART_VERSION"]
     package_v_major_minor: List[str] = package_v.rsplit(".", 1)
+
+    helm_chart_v: str = os.environ.get("HELM_CHART_VERSION", "")
+    if not helm_chart_v:
+        logger.info(
+            "Couldn't get the Chartreuse's Helm Chart version,"
+            " couldn't make sure that the package is of a compatible version!"
+        )
+        return
+
+    helm_chart_v_major_minor: List[str] = helm_chart_v.rsplit(".", 1)
     if helm_chart_v_major_minor != package_v_major_minor:
         raise Exception(
             f"Chartreuse's Helm Chart version '{helm_chart_v}' and the package's version '{package_v}' "

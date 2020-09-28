@@ -1,5 +1,9 @@
 # ChangeLog
 
+# 2.3.1 (2020-09-28)
+## Fixes
+- Be less agressive even if this allows users to upgrade the package without upgrading the Chart.
+
 # 2.3.0 (2020-09-21)
 ## Features
 - Add the possibility to specify a priorityClassName for the pods chartreuse launches
