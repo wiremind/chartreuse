@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import List
 
 from wiremind_kubernetes import KubernetesDeploymentManager
 
@@ -18,21 +17,22 @@ def ensure_safe_run() -> None:
     """
     package_v: str = get_version()
     # Get "1.2" from "1.2.3"
-    package_v_major_minor: List[str] = package_v.rsplit(".", 1)
+    package_v_major_minor: str = package_v.rsplit(".", 1)[0]
 
     helm_chart_v: str = os.environ.get("HELM_CHART_VERSION", "")
     if not helm_chart_v:
         logger.info(
-            "Couldn't get the Chartreuse's Helm Chart version,"
+            "Couldn't get the Chartreuse's Helm Chart version from the env var HELM_CHART_VERSION,"
             " couldn't make sure that the package is of a compatible version!"
         )
         return
 
-    helm_chart_v_major_minor: List[str] = helm_chart_v.rsplit(".", 1)
+    helm_chart_v_major_minor: str = helm_chart_v.rsplit(".", 1)[0]
     if helm_chart_v_major_minor != package_v_major_minor:
         raise Exception(
             f"Chartreuse's Helm Chart version '{helm_chart_v}' and the package's version '{package_v}' "
-            f"don't have the same 'major.minor', they may be incompatible. Align them and retry, ABORTING!"
+            f"don't have the same 'major.minor' ({helm_chart_v_major_minor} != {package_v_major_minor}),"
+            " they may be incompatible. Align them and retry, ABORTING!"
         )
 
 

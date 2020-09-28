@@ -1,5 +1,9 @@
 # ChangeLog
 
+# 2.3.2 (2020-09-28)
+## Fixes
+- ensure_safe_run now allows running Chartreuse inside a Chart with a different patch version
+
 # 2.3.1 (2020-09-28)
 ## Fixes
 - Be less agressive even if this allows users to upgrade the package without upgrading the Chart.
