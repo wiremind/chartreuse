@@ -3,6 +3,7 @@
 # 3.0.0 (Unreleased)
 ## BREAKING CHANGE
 - Check the compatibility between Chartreuse's package version and Chartreuse's Helm Chart version. This requires using the Chartreuse Chart 3.0.Y that is embedded in Wiremind Chart >= 22.0.0
+- helm-chart: Deprecate `.Values.runMigrationInPreDeployment`, use `.Values.upgradeBeforeDeployment` instead.
 
 # 2.3.2 (2020-09-28)
 ## Fixes
