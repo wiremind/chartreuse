@@ -22,7 +22,7 @@ extra_require_dev = (
         "black",
         "flake8",
         "flake8-mutable",
-        "pip-tools>=3.7.0",
+        "pip-tools",
     ]
     + extra_require_mypy
     + extra_require_test
@@ -35,7 +35,7 @@ setup(
     description="Helper for Alembic / Eslembic migrations within Kubernetes.",
     author="wiremind",
     author_email="dev@wiremind.io",
-    url="https://gitlab.cayzn.com/wiremind/utils/chartreuse.git",
+    url="https://gitlab.wiremind.io/wiremind/utils/chartreuse.git",
     license="MIT",
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
