@@ -1,7 +1,12 @@
+import logging
 import re
 from subprocess import SubprocessError
 
 from wiremind_kubernetes.utils import run_command
+
+
+logger = logging.getLogger(__name__)
+
 
 ESLEMBIC_DIRECTORY_PATH = "/app/eslembic"
 
@@ -18,7 +23,7 @@ class EslembicMigrationHelper:
         self.is_migration_needed = self.check_migration_needed()
 
     def _configure(self):
-        print("Eslembic: configuring for %s" % self.elasticsearch_url)
+        logger.info("Eslembic: configuring for %s" % self.elasticsearch_url)
         cleaned_url = self.elasticsearch_url.replace("/", r"\/")
         run_command(
             f"sed -i -e 's/elasticsearch_urls.*=.*/elasticsearch_urls={cleaned_url}/' eslembic.ini",
@@ -36,24 +41,24 @@ class EslembicMigrationHelper:
     def check_migration_needed(self) -> bool:
         head_re = re.compile(r"\(head\)", re.MULTILINE)
         eslembic_current = self._get_eslembic_current()
-        print(eslembic_current)
+        logger.info(eslembic_current)
         if head_re.search(eslembic_current):
-            print("Elasticsearch does not need schema upgrade.")
+            logger.info("Elasticsearch does not need schema upgrade.")
             return False
-        print("Elasticsearch schema can be upgraded.")
+        logger.info("Elasticsearch schema can be upgraded.")
         return True
 
     def upgrade_db(self):
-        print("Upgrading Elasticsearch...")
+        logger.info("Upgrading Elasticsearch...")
         run_command("eslembic upgrade head", cwd=ESLEMBIC_DIRECTORY_PATH)
-        print("Done upgrading Elasticsearch.")
+        logger.info("Done upgrading Elasticsearch.")
 
     def migrate_db(self):
-        print("Migrating Elasticsearch...")
+        logger.info("Migrating Elasticsearch...")
         run_command("eslembic migrate", cwd=ESLEMBIC_DIRECTORY_PATH)
-        print("Done migrating Elasticsearch.")
+        logger.info("Done migrating Elasticsearch.")
 
     def clean_index(self):
-        print("Cleaning Elasticsearch...")
+        logger.info("Cleaning Elasticsearch...")
         run_command("eslembic clean", cwd=ESLEMBIC_DIRECTORY_PATH)
-        print("Done cleaning Elasticsearch.")
+        logger.info("Done cleaning Elasticsearch.")

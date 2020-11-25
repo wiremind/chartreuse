@@ -1,3 +1,4 @@
+import logging
 import re
 from subprocess import SubprocessError
 from typing import List
@@ -6,6 +7,9 @@ import sqlalchemy
 from wiremind_kubernetes.utils import run_command
 
 ALEMBIC_DIRECTORY_PATH = "/app/alembic"
+
+
+logger = logging.getLogger(__name__)
 
 
 class AlembicMigrationHelper:
@@ -36,7 +40,7 @@ class AlembicMigrationHelper:
 
     def is_postgres_empty(self) -> bool:
         table_list = self._get_table_list()
-        print("Tables in database: %s" % table_list)
+        logger.info("Tables in database: %s" % table_list)
         # Don't count "alembic" table
         table_name = "alembic_version"
         if table_name in table_list:
@@ -53,7 +57,7 @@ class AlembicMigrationHelper:
 
     def _check_migration_needed(self):
         if self.is_postgres_empty() and not self.allow_migration_for_empty_database:
-            print(
+            logger.info(
                 "Database is not populated yet but migration for empty database is forbidden, not upgrading."
             )
             return False
@@ -61,12 +65,12 @@ class AlembicMigrationHelper:
         head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)
         alembic_current = self._get_alembic_current()
         if head_re.search(alembic_current):
-            print("SQL database schema does not need upgrade.")
+            logger.info("SQL database schema does not need upgrade.")
             return False
-        print("SQL database schema can be upgraded.")
+        logger.info("SQL database schema can be upgraded.")
         return True
 
     def upgrade_db(self):
-        print("Database needs to be upgraded. Proceeding.")
+        logger.info("Database needs to be upgraded. Proceeding.")
         run_command(f"alembic {self.additional_parameters} upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
-        print("Done upgrading database.")
+        logger.info("Done upgrading database.")
