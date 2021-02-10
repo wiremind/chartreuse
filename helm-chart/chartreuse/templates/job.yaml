@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-chartreuse{{ template "chartreuse.hook.suffix" . }}
+  name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
   labels:
 {{ include "chartreuse.labels" . | indent 4 }}
     app.kubernetes.io/component: "chartreuse-upgrade"

@@ -12,10 +12,10 @@ variables:
   DOCKER_BASE_IMAGE: python:3.7
 
 e2e-tests:
-  variables:
-    PACKAGES_TO_INSTALL: "curl git build-base python3-dev libffi-dev libressl-dev musl-dev openssl bash jq postgresql-dev python3-dev"
   extends: .platform-e2e-test
-
+  variables:
+    PACKAGES_TO_INSTALL: "curl git build-base python3-dev libffi-dev libressl-dev musl-dev openssl bash jq py3-pip postgresql-dev"
+  
 .test:
   # Note: Extends abstract.yml
   variables:

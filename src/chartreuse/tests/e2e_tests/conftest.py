@@ -48,7 +48,7 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
             )
 
     run_command(
-        "helm repo add stable https://kubernetes-charts.storage.googleapis.com/",
+        "helm repo add stable https://charts.helm.sh/stable",
         cwd=TEST_CHART,
     )
     run_command(

@@ -2,10 +2,11 @@
 
 # 3.0.0 (Unreleased)
 ## BREAKING CHANGE
-- Check the compatibility between Chartreuse's package version and Chartreuse's Helm Chart version. This requires using the Chartreuse Chart 3.0.Y that is embedded in Wiremind Chart >= 22.0.0
+- Check the compatibility between Chartreuse's python package version and Chartreuse's Helm Chart version. Raise if the versions are not compatible.
 - helm-chart: Deprecate `.Values.runMigrationInPreDeployment`, use `.Values.upgradeBeforeDeployment` instead.
 ## Fixes
 - Uses logger instead of print in eslembic_migration_helper and alembic_migration_helper.
+- helm-chart: Add `.Chart.Name` to the Job name to be able to use Chartreuse chart multiple times on a umbrella chart
 
 # 2.3.2 (2020-09-28)
 ## Fixes
