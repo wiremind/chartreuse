@@ -6,7 +6,7 @@ metadata:
 {{ include "chartreuse.labels" . | indent 4 }}
     app.kubernetes.io/component: "chartreuse-upgrade"
   annotations:
-{{ include "chartreuse.annotations" . | indent 4 }}
+{{ include "chartreuse.upgradeJobAnnotations" . | indent 4 }}
 spec:
   backoffLimit: 0
   ttlSecondsAfterFinished: 1800

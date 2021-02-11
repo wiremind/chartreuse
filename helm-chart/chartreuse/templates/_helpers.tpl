@@ -65,7 +65,7 @@ Create the name of the service account to use
 {{- end -}}
 
 
-{{- define "chartreuse.annotations" -}}
+{{- define "chartreuse.upgradeJobAnnotations" -}}
 {{- if .Values.upgradeBeforeDeployment -}}
 {{- if .Release.IsInstall }}
 # No hook: we deploy this job during the initial install, as part of the Helm Release
@@ -73,13 +73,13 @@ Create the name of the service account to use
 {{- if .Release.IsUpgrade }}
 # Should be run in pre-upgrade only (not pre-install)
 "helm.sh/hook": pre-upgrade
-"helm.sh/hook-weight": "1"
+"helm.sh/hook-weight": {{ .Values.upgradeJobWeight | quote }}
 "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
 {{- end }}
 {{- else }}
 # Should be run in post-install,post-upgrade wherever it is install or upgrade.
 "helm.sh/hook": post-install,post-upgrade
-"helm.sh/hook-weight": "1"
+"helm.sh/hook-weight": {{ .Values.upgradeJobWeight | quote }}
 "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
 {{- end }}
 {{- end -}}
@@ -90,7 +90,7 @@ Create the name of the service account to use
 {{- else }}
 "helm.sh/hook": post-install,post-upgrade
 {{- end }}
-"helm.sh/hook-weight": "0"
+"helm.sh/hook-weight": "-1"
 "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
 {{- end -}}
 

@@ -18,6 +18,11 @@ stopPods: true
 ## Additional environment variables injected within chartreuse Pods
 additionalEnvironmentVariables: {}
 
+## In the case of having multiple upgradeJobs of multiple Chartreuses running, this will allow
+## to control the order of their execution, they are executed in weighted order.
+## Make sure the weights are > 0
+upgradeJobWeight: "1"
+
 alembic:
   enabled: true
   username: my-dummy-username

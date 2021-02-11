@@ -4,6 +4,8 @@
 ## BREAKING CHANGE
 - Check the compatibility between Chartreuse's python package version and Chartreuse's Helm Chart version. Raise if the versions are not compatible.
 - helm-chart: Deprecate `.Values.runMigrationInPreDeployment`, use `.Values.upgradeBeforeDeployment` instead.
+## Feature
+- Make it possible to control the upgradeJobs execution order (via `.Values.upgradeJobWeight`) in the case of multiple Chartreuses running.
 ## Fixes
 - Uses logger instead of print in eslembic_migration_helper and alembic_migration_helper.
 - helm-chart: Add `.Chart.Name` to the Job name to be able to use Chartreuse chart multiple times on a umbrella chart
