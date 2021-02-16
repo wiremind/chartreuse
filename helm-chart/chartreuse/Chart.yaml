@@ -4,6 +4,6 @@ name: chartreuse
 # NOTE: Because the Chartreuse and its Chart share the same repo (the same git tag), to avoid confusion and having to deal/define
 # the compatibilities between the two entities, the two versions below should be kept sync, don't forget to sync VERSION.
 # This will be done automatically in the future, the source of truth will be VERSION
-appVersion: 3.0.0-dev-yo-1
-version: 3.0.0-dev-yo-1
+appVersion: 3.0.0-dev-yo-2
+version: 3.0.0-dev-yo-2
 description: Migrate databases with ease
