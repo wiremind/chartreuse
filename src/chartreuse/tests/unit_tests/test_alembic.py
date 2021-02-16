@@ -106,7 +106,7 @@ def test_detect_database_is_not_empty(mocker):
 
 def test_additional_parameters(mocker):
     """
-    Test that alembic additional parameters are respected.
+    Test that alembic additional parameters are respectedf for upgrade_db
     """
     mocker.patch("chartreuse.utils.AlembicMigrationHelper._get_table_list", return_value="foo")
     mocker.patch("chartreuse.utils.AlembicMigrationHelper._get_alembic_current", return_value="bar")
@@ -116,3 +116,16 @@ def test_additional_parameters(mocker):
     alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper("foo", configure=False, additional_parameters="foo bar")
     alembic_migration_helper.upgrade_db()
     mocked_run_command.assert_called_with("alembic foo bar upgrade head", cwd='/app/alembic')
+
+
+def test_additional_parameters_current(mocker):
+    """
+    Test that alembic additional parameters are respected in _get_alembic_current
+    """
+    mocker.patch("chartreuse.utils.AlembicMigrationHelper._get_table_list", return_value="foo")
+    mocked_run_command = mocker.patch("chartreuse.utils.alembic_migration_helper.run_command")
+    mocked_run_command.return_value = ("bar", None, 0)
+
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper("foo", configure=False, additional_parameters="foo bar")
+    alembic_migration_helper._get_alembic_current()
+    mocked_run_command.assert_called_with("alembic foo bar current", cwd='/app/alembic', return_result=True)
