@@ -50,7 +50,7 @@ class AlembicMigrationHelper:
         return True
 
     def _get_alembic_current(self) -> str:
-        alembic_current, stderr, returncode = run_command("alembic current", return_result=True, cwd=ALEMBIC_DIRECTORY_PATH)
+        alembic_current, stderr, returncode = run_command(f"alembic {self.additional_parameters} current", return_result=True, cwd=ALEMBIC_DIRECTORY_PATH)
         if returncode != 0:
             raise SubprocessError(f"alembic current failed: {alembic_current}, {stderr}")
         return alembic_current
