@@ -100,7 +100,7 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
 
     kubectl_port_forwardpostgresql.kill()
     kubectl_port_forwardelasticsearch.kill()
-    run_command(f"kubectl delete namespace {TEST_NAMESPACE} --grace-period=1")
+    run_command(f"kubectl delete namespace {TEST_NAMESPACE} --grace-period=60")
 
 
 @pytest.fixture
