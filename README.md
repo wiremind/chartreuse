@@ -25,6 +25,11 @@ The state diagram of your application while upgrading using Helm and using Chart
 source code is located at `doc/chartreuse_sd.xml`, feel free
 to correct it or make it more understandable.
 
+Notes:
+- When running Chartreuse in pre-upgrade mode (`upgradeBeforeDeployment: true`), it will not start running (The Chartreuse Pod will hang in `Init` state) until one PG Pod (and ES Pod if ES is used) is running, see [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L37) and [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L56), so make sure these Pods are available to Chartreuse. To fix that:
+- You will need to delete the Chartreuse Job so the upgrade can resume and fix you PG and ES pods (or create them if they don't exist), then you can redeploy so your migrations can run.
+- You can also try the `upgradeBeforeDeployment: false` mode.
+
 # Test
 
 There are three kind of tests:
