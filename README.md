@@ -3,7 +3,9 @@
 Chartreuse is a wrapper around [Alembic](https://alembic.sqlalchemy.org) and [Eslembic](https://gitlab.cayzn.com/wiremind/commons/eslembic) to ease,
 detect and automate migrations on deployed applications.
 
-Chartreuse is made to work as Helm hooks. You need to use Chartreuse a a sub-chart of your project.
+Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), the Hooks are defined in Chartreuse [Chart](./helm-chart). Please make sure Chartreuse Python **Package version** and Chartreuse **Chart version**, you use, share `major.minor` otherwise Chartreuse won't start.
+
+<!-- Add how to fetch those versions -->
 
 # Install
 
@@ -27,8 +29,8 @@ to correct it or make it more understandable.
 
 Notes:
 - When running Chartreuse in pre-upgrade mode (`upgradeBeforeDeployment: true`), it will not start running (The Chartreuse Pod will hang in `Init` state) until one PG Pod (and ES Pod if ES is used) is running, see [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L37) and [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L56), so make sure these Pods are available to Chartreuse. To fix that:
-- You will need to delete the Chartreuse Job so the upgrade can resume and fix you PG and ES pods (or create them if they don't exist), then you can redeploy so your migrations can run.
-- You can also try the `upgradeBeforeDeployment: false` mode.
+  - You will need to delete the Chartreuse Job so the upgrade can resume and fix you PG and ES pods (or create them if they don't exist), then you can redeploy so your migrations can run.
+  - You can also try the `upgradeBeforeDeployment: false` mode (maybe temporarily).
 
 # Test
 
