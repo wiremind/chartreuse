@@ -1,5 +1,7 @@
 # Chartreuse: Alembic migration within kubernetes
 
+**"How to automate management of database schema migration at scale without having to write backward/forward compatible migrations, using CI/CD and Kubernetes"**
+
 Chartreuse is a wrapper around [Alembic](https://alembic.sqlalchemy.org) and [Eslembic](https://gitlab.cayzn.com/wiremind/commons/eslembic) to ease,
 detect and automate migrations on deployed applications.
 
