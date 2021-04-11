@@ -54,18 +54,21 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    patroni_postgresql: bool = "patroni_postgresql" in context.get_x_argument(as_dictionary=True)
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
+            # Switch to "wiremind_owner" role for PG managed/configured by postgres-operator
+            # The default privileges are set according to this user
+            # See: https://github.com/zalando/postgres-operator/issues/1170
+            if patroni_postgresql:
+                context.execute("SET ROLE wiremind_owner")
             context.run_migrations()
 
 

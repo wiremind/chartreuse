@@ -21,15 +21,15 @@ def ensure_safe_run() -> None:
     # Get "1.2" from "1.2.3"
     package_v_major_minor: List[str] = package_v.split(".", 2)[:2]
 
-    helm_chart_v: str = os.environ.get("HELM_CHART_VERSION", "")
+    helm_chart_v: str = os.getenv("HELM_CHART_VERSION", "")
     if not helm_chart_v:
-        raise Exception(
+        raise ValueError(
             "Couldn't get the Chartreuse's Helm Chart version from the env var HELM_CHART_VERSION,"
             " couldn't make sure that the package is of a compatible version, ABORTING!"
         )
     helm_chart_v_major_minor: List[str] = helm_chart_v.split(".", 2)[:2]
     if helm_chart_v_major_minor != package_v_major_minor:
-        raise Exception(
+        raise ValueError(
             f"Chartreuse's Helm Chart version '{helm_chart_v}' and the package's version '{package_v}' "
             f"don't have the same 'major.minor' ({helm_chart_v_major_minor} != {package_v_major_minor}),"
             " they may be incompatible. Make sure they're semver, align them and retry, ABORTING!"

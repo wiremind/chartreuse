@@ -81,7 +81,7 @@ def test_chartreuse_upgrade_compatibility_check(mocker, helm_chart_version, pack
     configure_chartreuse_mock(mocker=mocker, is_migration_needed=False)
 
     if should_raise:
-        with pytest.raises(Exception) as excinfo:
+        with pytest.raises(ValueError) as excinfo:
             chartreuse.chartreuse_upgrade.main()
             assert "ABORTING!" in str(excinfo.value)
     else:

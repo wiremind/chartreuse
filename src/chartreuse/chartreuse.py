@@ -22,7 +22,7 @@ def _get_container_image() -> str:
     return os.environ["CHARTREUSE_MIGRATE_CONTAINER_IMAGE"]
 
 
-def _get_image_pull_secrets() -> List[str]:
+def _get_image_pull_secrets() -> List[kubernetes.client.V1LocalObjectReference]:
     return [kubernetes.client.V1LocalObjectReference(os.environ["CHARTREUSE_MIGRATE_IMAGE_PULL_SECRET"])]
 
 
@@ -42,6 +42,9 @@ class Chartreuse(object):
         alembic_additional_parameters: str = "",
         kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager = None,
     ):
+
+        configure_logging()
+
         self.alembic_migration_helper = AlembicMigrationHelper(
             postgresql_url,
             allow_migration_for_empty_database=alembic_allow_migration_for_empty_database,
@@ -58,8 +61,6 @@ class Chartreuse(object):
             self.kubernetes_helper = wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
                 use_kubeconfig=None, release_name=release_name
             )
-
-        configure_logging()
 
         self.is_migration_needed = self.check_migration_needed()
 

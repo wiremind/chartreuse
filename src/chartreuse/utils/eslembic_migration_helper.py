@@ -14,7 +14,7 @@ ESLEMBIC_DIRECTORY_PATH = "/app/eslembic"
 class EslembicMigrationHelper:
     def __init__(self, elasticsearch_url: str, configure: bool = True):
         if not elasticsearch_url:
-            raise OSError("elasticsearch_url not set, not upgrading elasticsearch.")
+            raise ValueError("elasticsearch_url not set, not upgrading elasticsearch.")
 
         self.elasticsearch_url = elasticsearch_url
 

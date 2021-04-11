@@ -4,7 +4,6 @@
 #
 #    pip-compile setup.py
 #
---extra-index-url https://readonly:Va7neicoosuoteu@pypi.wiremind.fr
 
 alembic==1.5.8
     # via chartreuse (setup.py)
@@ -25,8 +24,6 @@ future==0.18.2
     # via eslembic
 google-auth==1.28.1
     # via kubernetes
-greenlet==1.0.0
-    # via sqlalchemy
 idna==2.10
     # via requests
 kubernetes==12.0.1
@@ -73,8 +70,10 @@ six==1.15.0
     #   kubernetes
     #   python-dateutil
     #   websocket-client
-sqlalchemy==1.4.7
-    # via alembic
+sqlalchemy==1.3.24
+    # via
+    #   alembic
+    #   chartreuse (setup.py)
 tqdm==4.60.0
     # via eslembic
 urllib3==1.26.4
