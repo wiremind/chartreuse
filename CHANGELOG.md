@@ -1,5 +1,10 @@
 # ChangeLog
 
+# 3.0.1 (2020-04-13)
+## Fix
+- ensure_safe_run: Support more sem versions.
+- Upgrade dependencies
+
 # 3.0.0 (2020-02-17)
 ## BREAKING CHANGE
 - Check the compatibility between Chartreuse's python package version and Chartreuse's Helm Chart version. Raise if the versions are not compatible.
