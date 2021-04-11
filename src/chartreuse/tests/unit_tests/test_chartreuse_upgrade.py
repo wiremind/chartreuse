@@ -28,7 +28,8 @@ def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(mocker):
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
     configure_os_environ_mock(
-        mocker=mocker, additional_environment=dict(CHARTREUSE_ENABLE_STOP_PODS="", HELM_CHART_VERSION=get_version())
+        mocker=mocker,
+        additional_environment=dict(CHARTREUSE_ENABLE_STOP_PODS="", HELM_CHART_VERSION=get_version()),
     )
 
     chartreuse.chartreuse_upgrade.main()
@@ -56,9 +57,17 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker):
         ("1.2.4", "1.2.4", False),
         ("1.2.9", "1.2.7", False),
         ("1.2.1", "1.2.9", False),
+        ("1.32.1", "1.32.21-dev", False),
+        ("1.32.1", "1.32.21-dev.12", False),
+        ("12.32.1", "12.32.33.dev.yes.we.can", False),
         ("2.0.0", "", True),
         ("2.0.0", "2.2.3", True),
         ("2.2.0", "1.8.5", True),
+        ("2.0", "2.0.3.344", False),
+        ("2.0.", "2.0.3.344", False),
+        ("2.0.", "2.0", False),
+        ("2", "2.0", True),
+        ("2", "2.0.0", True),
     ],
 )
 def test_chartreuse_upgrade_compatibility_check(mocker, helm_chart_version, package_version, should_raise):
