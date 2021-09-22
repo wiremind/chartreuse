@@ -10,6 +10,22 @@ variables:
   PACKAGE_NAME: chartreuse
   EGG_NAME: chartreuse
   DOCKER_BASE_IMAGE: python:3.7
+  HELM_VERSION: v3.3.4
+  HELM_PUSH_VERSION: v0.9.0
+  CHART_REPO_NAME_GITLAB: wiremind-private-gitlab
+  HELM_CHARTS_PRIVATE_PROJECT_ID: 97
+
+.push:
+  image: python:3.8-buster
+  script:
+    # Equivalent to helm-charts-private helm-install
+    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh --version ${HELM_VERSION}
+    # Equivalent to helm-charts-private helm-dep-build
+    - helm repo add ${CHART_REPO_NAME_GITLAB} --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_API_V4_URL/projects/${HELM_CHARTS_PRIVATE_PROJECT_ID}/packages/helm/stable
+    - helm plugin install https://github.com/chartmuseum/helm-push.git --version ${HELM_PUSH_VERSION}
+    # Push to gitlab chart registry
+    - helm push ${CHART_RELATIVE_PATH} ${CHART_REPO_NAME_GITLAB}
+
 
 e2e-tests:
   extends: .platform-e2e-test
@@ -20,3 +36,11 @@ e2e-tests:
   # Note: Extends abstract.yml
   variables:
     TEST_DIR: src/$PACKAGE_NAME/tests/unit_tests
+
+chartreuse-chart-push:
+  stage: build
+  extends: .push
+  variables:
+    CHART_RELATIVE_PATH: "helm-chart/chartreuse"
+  except:
+    - branches
