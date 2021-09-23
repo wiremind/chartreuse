@@ -42,10 +42,16 @@ class AlembicMigrationHelper:
         self.is_migration_needed = self._check_migration_needed()
 
     def _configure(self):
+        command_sq: str = "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={sqlalchemy_url}/' alembic.ini"
         cleaned_url = self.database_url.replace("/", r"\/")
-        run_command(
-            f"sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={cleaned_url}/' alembic.ini", cwd=ALEMBIC_DIRECTORY_PATH
+        stdout, _, returncode = run_command(
+            command_sq.format(sqlalchemy_url=cleaned_url), cwd=ALEMBIC_DIRECTORY_PATH, return_result=True
         )
+        if returncode == 0:
+            logger.info("alembic.ini was configured.")
+        else:
+            # To avoid displaying the password. sed can still display a part of the URL
+            raise SubprocessError(f"{command_sq.format(sqlalchemy_url='REDACTED')} has failed: {stdout}")
 
     def _wait_postgres_is_configured(self) -> None:
         """

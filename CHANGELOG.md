@@ -1,5 +1,14 @@
 # ChangeLog
 
+# 4.0.0 (2021-10-01)
+## Breaking Changes
+- Drop eslembic support
+- drop wiremind.fr CRD
+## Fix
+- Avoid logging the PG password when `sed`ing alembic.ini.
+### Chore
+- Open source
+
 # 3.1.0 (2021-05-03)
 ## Feature
 - Add support for PG clusters managed by postgres-operator (Patroni PG):
