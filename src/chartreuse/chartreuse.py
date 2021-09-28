@@ -30,7 +30,7 @@ def _get_priorityclass_name() -> str:
     return os.environ["CHARTREUSE_UPGRADE_PRIORITYCLASS_NAME"]
 
 
-class Chartreuse(object):
+class Chartreuse:
     def __init__(
         self,
         postgresql_url: str,
