@@ -12,22 +12,10 @@ data:
   CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: ""
 {{- end }}
 
-{{- if .Values.eslembic.cleanIndex.enabled }}
-  CHARTREUSE_ESLEMBIC_ENABLE_CLEAN: "1"
-{{- else }}
-  CHARTREUSE_ESLEMBIC_ENABLE_CLEAN: ""
-{{- end }}
-
 {{- if .Release.IsInstall }}
   HELM_IS_INSTALL: "1"
 {{- else }}
   HELM_IS_INSTALL: ""
-{{- end }}
-
-{{- if .Values.eslembic.migrate.enabled }}
-  CHARTREUSE_ESLEMBIC_ENABLE_MIGRATE: "1"
-{{- else }}
-  CHARTREUSE_ESLEMBIC_ENABLE_MIGRATE: ""
 {{- end }}
 
 {{- if .Values.stopPods }}

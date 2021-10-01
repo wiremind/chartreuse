@@ -1,7 +1,5 @@
 """
 Chartreuse
-
-Copyright 2018-2020, wiremind.
 """
 from setuptools import setup, find_packages
 
@@ -32,11 +30,11 @@ extra_require_dev = (
 setup(
     name="chartreuse",
     version=version,
-    description="Helper for Alembic / Eslembic migrations within Kubernetes.",
+    description="Helper for Alembic migrations within Kubernetes.",
     author="wiremind",
     author_email="dev@wiremind.io",
-    url="https://gitlab.wiremind.io/wiremind/utils/chartreuse.git",
-    license="MIT",
+    url="https://github.com/wiremind/chartreuse",
+    license="LGPL",
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
     include_package_data=True,
@@ -44,7 +42,6 @@ setup(
     python_requires=">=3.7.0",
     install_requires=[
         "alembic==1.*",
-        "eslembic==6.*,>=6.0.2",
         "psycopg2==2.*",
         "wiremind-kubernetes==6.*",
     ],
@@ -53,10 +50,5 @@ setup(
         "mypy": extra_require_mypy,
         "test": extra_require_test,
     },
-    entry_points={
-        "console_scripts": [
-            "chartreuse-upgrade=chartreuse.chartreuse_upgrade:main",
-            "chartreuse-migrate=chartreuse.chartreuse_migrate:main",
-        ]
-    },
+    entry_points={"console_scripts": ["chartreuse-upgrade=chartreuse.chartreuse_upgrade:main"]},
 )

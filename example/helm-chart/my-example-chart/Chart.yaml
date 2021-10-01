@@ -20,10 +20,7 @@ dependencies:
 - name: postgresql
   version: "8.6.3"
   repository: "https://charts.helm.sh/stable"
-- name: elasticsearch
-  repository: "https://helm.elastic.co"
-  version: "7.6.1"
 - name: chartreuse
-  repository: "file://../../../../../../helm-chart/chartreuse"
+  repository: "file://../../../helm-chart/chartreuse"
   version: "*"
   condition: chartreuse.enabled

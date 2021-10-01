@@ -30,9 +30,6 @@ rules:
   - apiGroups: ["wiremind.io"]
     resources: ["expecteddeploymentscales"]
     verbs: ["get", "list"]
-  - apiGroups: ["wiremind.fr"]
-    resources: ["expecteddeploymentscales"]
-    verbs: ["get", "list"]
 
 ---
 

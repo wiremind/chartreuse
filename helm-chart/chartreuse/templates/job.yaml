@@ -16,7 +16,6 @@ spec:
 {{ include "chartreuse.labels" . | indent 8 }}
         app.kubernetes.io/component: chartreuse-upgrade{{ template "chartreuse.hook.suffix" . }}
         {{ .Release.Name }}-postgresql-client: "true"
-        {{ .Release.Name }}-elasticsearch-hot-client: "true"
     spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: "{{ .Values.priorityClassName }}"
@@ -36,25 +35,6 @@ spec:
             - |
               until pg_isready "--dbname=$CHARTREUSE_ALEMBIC_URL"; do
                 echo "Waiting for Postgresql to be ready...";
-                sleep 1;
-              done;
-          envFrom:
-          - secretRef:
-              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
-          - configMapRef:
-              name: {{ template "chartreuse.fullname" . }}{{ template "chartreuse.hook.suffix" . }}
-{{- end }}
-{{- if .Values.eslembic.enabled }}
-        - name: elasticsearch-wait
-          image: curlimages/curl:latest
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-          args:
-            - -c
-            - |
-              until curl -X GET "$CHARTREUSE_ESLEMBIC_URL/_cluster/health?wait_for_status=yellow"; do
-                echo "Waiting for Elasticsearch to be ready...";
                 sleep 1;
               done;
           envFrom:

@@ -3,10 +3,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: overrideme
+  repository: python:3.9 # Change me to a real image from a tag containing chartreuse python package and your migration code
   tag: latest # Change me to a real image from a tag
   pullPolicy: IfNotPresent
-  pullSecret: ""  # Note: singular, this is a string and allows a single secret
+  pullSecret: "" # Note: singular, this is a string and allows a single secret
 
 ## Wether to run schema upgrade before deployment or after deployment
 ## Note that in case of initial deployment ("install" in helm dialect), chartreuse will be run during deployment as a normal job
@@ -29,16 +29,8 @@ alembic:
   password: my-dummy-password
   database: my-dummy-database
   allowMigrationFromEmptyDatabase: true
-  additionalParameters: ""  # like "-x env_type=staging"
-  urlSuffix: "-postgresql"  # Suffix to append to the Release name to obtain postgresql URL
-
-eslembic:
-  enabled: true
-  cleanIndex:
-    enabled: false
-  migrate:
-    enabled: false
-  urlSuffix: "-elasticsearch-hot"
+  additionalParameters: "" # like "-x env_type=staging"
+  urlSuffix: "-postgresql" # Suffix to append to the Release name to obtain postgresql URL
 
 rbac:
   create: true

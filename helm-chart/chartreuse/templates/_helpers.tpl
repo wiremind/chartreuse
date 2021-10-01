@@ -60,10 +60,6 @@ Create the name of the service account to use
 {{ printf "postgresql://%s:%s@%s%s:5432/%s?sslmode=prefer" .Values.alembic.username .Values.alembic.password .Release.Name .Values.alembic.urlSuffix .Values.alembic.database }}
 {{- end -}}
 
-{{- define "chartreuse.eslembic.url" -}}
-{{ printf "http://%s%s:9200" .Release.Name .Values.eslembic.urlSuffix }}
-{{- end -}}
-
 
 {{- define "chartreuse.upgradeJobAnnotations" -}}
 {{- if .Values.upgradeBeforeDeployment -}}

@@ -46,9 +46,6 @@ def main() -> None:
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
     )
     ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
-    ELASTICSEARCH_URL: str = os.environ["CHARTREUSE_ESLEMBIC_URL"]
-    ESLEMBIC_ENABLE_CLEAN: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_CLEAN"])
-    ESLEMBIC_ENABLE_MIGRATE: bool = bool(os.environ["CHARTREUSE_ESLEMBIC_ENABLE_MIGRATE"])
     ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
     RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
     UPGRADE_BEFORE_DEPLOYMENT: bool = bool(os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"])
@@ -57,12 +54,9 @@ def main() -> None:
     deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
         postgresql_url=POSTGRESQL_URL,
-        elasticsearch_url=ELASTICSEARCH_URL,
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
         alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
         release_name=RELEASE_NAME,
-        eslembic_enable_migrate=ESLEMBIC_ENABLE_MIGRATE,
-        eslembic_clean_index=ESLEMBIC_ENABLE_CLEAN,
         kubernetes_helper=deployment_manager,
     )
     if chartreuse.is_migration_needed:
