@@ -3,7 +3,7 @@
 **"How to automate management of Alembic database schema migration at scale using CI/CD and Kubernetes"**
 
 Chartreuse is a wrapper around [Alembic](https://alembic.sqlalchemy.org) to ease,
-detect and automate migrations on deployed applications.
+detect and automate migrations on deployed Python applications.
 
 Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), the Hooks are defined in [Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse).
 
