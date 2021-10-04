@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v4.0.1 (2021-10-04)
+### Fixes
+- setup.py: require wiremind-kubernetes>=6.3.2 that itself requires kubernetes>=18.
+
 # 4.0.0 (2021-10-01)
 ## Breaking Changes
 - Drop eslembic support

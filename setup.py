@@ -34,7 +34,7 @@ setup(
     author="wiremind",
     author_email="dev@wiremind.io",
     url="https://github.com/wiremind/chartreuse",
-    license="LGPL",
+    license="LGPLv3+",
     packages=find_packages("src", exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_dir={"": "src"},
     include_package_data=True,
@@ -43,7 +43,7 @@ setup(
     install_requires=[
         "alembic==1.*",
         "psycopg2==2.*",
-        "wiremind-kubernetes==6.*",
+        "wiremind-kubernetes>=6.3.2",
     ],
     extras_require={
         "dev": extra_require_dev,
