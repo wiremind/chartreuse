@@ -12,7 +12,7 @@ Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), th
 ### Requirements
 
 - Python >= 3.7
-
+- Using Helm to deploy you application
 - This Python package requires the `expecteddeploymentscales.wiremind.io` Kubernetes `Custom Resource Definition` from `wiremind-kubernetes` repository:
 
 ```bash
@@ -33,7 +33,9 @@ All you have to do is build your own container image containing:
 - Your Alembic migrations in an `alembic` directory
 - All required dependencies to run your alembic migrations.
 
-and state in the Chartreuse Helm Chart values.yaml:
+Usually, it will be the same container image for your project with your code as usual, with Chartreuse added as dependency in your setup.py.
+
+and state in the [Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse) values.yaml:
 
 - the image repository and tag
 - URL to connect to your PostgreSQL
