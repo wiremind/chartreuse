@@ -8,7 +8,9 @@ from .conftest import (
 logger = logging.getLogger(__name__)
 
 
-def test_chartreuse_blackbox_post_upgrade(build_docker_image, populate_cluster_with_chartreuse_post_upgrade, mocker):
+def test_chartreuse_blackbox_post_upgrade(
+    prepare_container_image_and_helm_chart, populate_cluster_with_chartreuse_post_upgrade, mocker
+):
     """
     Test chartreuse considered as a blackbox, in post-install,post-upgrade configuration
     """
@@ -16,7 +18,9 @@ def test_chartreuse_blackbox_post_upgrade(build_docker_image, populate_cluster_w
     assert not are_pods_scaled_down()
 
 
-def test_chartreuse_blackbox_pre_upgrade(build_docker_image, populate_cluster_with_chartreuse_pre_upgrade, mocker):
+def test_chartreuse_blackbox_pre_upgrade(
+    prepare_container_image_and_helm_chart, populate_cluster_with_chartreuse_pre_upgrade, mocker
+):
     """
     Test chartreuse considered as a blackbox, in pre-upgrade configuration
     """

@@ -3,7 +3,7 @@ dependencies:
   repository: https://charts.helm.sh/stable
   version: 8.6.3
 - name: chartreuse
-  repository: file://../../../helm-chart/chartreuse
+  repository: https://wiremind.github.io/wiremind-helm-charts
   version: 4.0.0
-digest: sha256:e177f612feb9a9616e6963ba0d42df52d0d8d831b9bd43129299499ab5096301
-generated: "2021-10-04T12:48:54.781831+02:00"
+digest: sha256:4b31db6118835e807d5a26332b7cbc4bc5ec8ff1bffba113db33d7e27116a043
+generated: "2021-10-04T15:54:40.411683+02:00"

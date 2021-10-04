@@ -1,25 +1,50 @@
-# Chartreuse: Automated Alembic migrations within kubernetes
+# Chartreuse: Automated Alembic SQL schema migrations within kubernetes
 
-**"How to automate management of database schema migration at scale without having to write backward/forward compatible migrations, using CI/CD and Kubernetes"**
+**"How to automate management of Alembic database schema migration at scale using CI/CD and Kubernetes"**
 
 Chartreuse is a wrapper around [Alembic](https://alembic.sqlalchemy.org) to ease,
 detect and automate migrations on deployed applications.
 
-Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), the Hooks are defined in Chartreuse [Chart](./helm-chart). Please make sure Chartreuse Python **Package version** and Chartreuse **Chart version**, you use, share `major.minor` otherwise Chartreuse won't start.
+Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), the Hooks are defined in [Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse).
 
-## Install
+## Usage
 
-This Python package requires the `expecteddeploymentscales.wiremind.io` `Custom Resource Definition` from `wiremind-kubernetes` repository:
+### Requirements
+
+- Python >= 3.7
+
+- This Python package requires the `expecteddeploymentscales.wiremind.io` Kubernetes `Custom Resource Definition` from `wiremind-kubernetes` repository:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/wiremind/wiremind-kubernetes/main/CustomResourceDefinition-expecteddeploymentscales.yaml
 ```
 
+- Please make sure Chartreuse Python **Package version** and Chartreuse **Helm Chart version**, you use, share `major.minor` otherwise Chartreuse won't start.
+
 ## Configuration
 
-TBD
+### Using Helm
 
-## How it works
+Chartreuse comes with a Helm Chart ready to be used as a Helm Subchart in your own Helm Chart.
+
+All you have to do is build your own container image containing:
+
+- Chartreuse Python package
+- Your Alembic migrations in an `alembic` directory
+- All required dependencies to run your alembic migrations.
+
+and state in the Chartreuse Helm Chart values.yaml:
+
+- the image repository and tag
+- URL to connect to your PostgreSQL
+
+During install and/or upgrade of your Helm Release, Chartreuse will run as Kubernetes Job and automatically migrate PostgreSQL shchema to `HEAD` if needed.
+
+If required, it will also scale down Deployments that should NOT run during a Deployment using ExpectedDeploymentScale CRD.
+
+Please refer to the [example](example) directory for example.
+
+#### Diagram
 
 The state diagram of your application while upgrading using Helm and using Chartreuse for your migrations is as follows:
 
@@ -53,7 +78,7 @@ The state diagram of your application while upgrading using Helm and using Chart
        ...
       ```
 2. Chartreuse in pre-upgrade mode:
-    - When running Chartreuse in pre-upgrade mode (`upgradeBeforeDeployment: true`), it will not start running (The Chartreuse Pod will hang in `Init` state) until one PG Pod (and ES Pod if ES is used) is running, see [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L37) and [here](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/blob/v3.0.0/helm-chart/chartreuse/templates/job.yaml#L56), so make sure these Pods are available to Chartreuse. To fix that:
+    - When running Chartreuse in pre-upgrade mode (`upgradeBeforeDeployment: true`), it will not start running (The Chartreuse Pod will hang in `Init` state) until one PG Pod (and ES Pod if ES is used) is running, so make sure these Pods are available to Chartreuse. To fix that:
       - You will need to delete the Chartreuse Job so the upgrade can resume and fix you PG and ES pods (or create them if they don't exist), then you can redeploy so your migrations can run.
       - You can also try the `upgradeBeforeDeployment: false` mode (maybe temporarily).
 

@@ -21,6 +21,6 @@ dependencies:
   version: "8.6.3"
   repository: "https://charts.helm.sh/stable"
 - name: chartreuse
-  repository: "file://../../../helm-chart/chartreuse"
+  repository: "https://wiremind.github.io/wiremind-helm-charts"
   version: "*"
   condition: chartreuse.enabled
