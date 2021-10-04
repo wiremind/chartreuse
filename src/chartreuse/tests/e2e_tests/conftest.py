@@ -30,18 +30,6 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
 
     logging.getLogger().setLevel(logging.INFO)
 
-    run_command(
-        "helm repo add stable https://charts.helm.sh/stable",
-    )
-    run_command(
-        "helm dep up",
-        cwd=HELM_CHART_PATH,
-    )
-
-    run_command(
-        "kubectl apply -f https://raw.githubusercontent.com/wiremind/wiremind-kubernetes/main/CustomResourceDefinition-expecteddeploymentscales.yaml",
-    )
-
     try:
         run_command(f"kubectl create namespace {TEST_NAMESPACE}")
 
@@ -78,7 +66,7 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
 
 
 @pytest.fixture(scope="module")
-def build_docker_image():
+def prepare_container_image_and_helm_chart():
     # We build a dummy docker image and deploy chartreuse subchart
     run_command(
         "docker build . -f example/Dockerfile-dev --tag dummy-e2e-chartreuse-image:latest",
@@ -89,6 +77,18 @@ def build_docker_image():
             "kind load docker-image dummy-e2e-chartreuse-image:latest",
             cwd=ROOT_PATH,
         )
+
+    run_command(
+        "helm repo add stable https://charts.helm.sh/stable",
+    )
+    run_command(
+        "helm dep up",
+        cwd=HELM_CHART_PATH,
+    )
+
+    run_command(
+        "kubectl apply -f https://raw.githubusercontent.com/wiremind/wiremind-kubernetes/main/CustomResourceDefinition-expecteddeploymentscales.yaml",
+    )
 
 
 @pytest.fixture

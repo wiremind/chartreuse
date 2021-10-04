@@ -4,8 +4,6 @@ import wiremind_kubernetes.kubernetes_helper
 
 from .utils import AlembicMigrationHelper
 
-CHARTREUSE_MIGRATE_JOB_NAME = "chartreuse-migrate"
-
 
 def configure_logging() -> None:
     logging.basicConfig(

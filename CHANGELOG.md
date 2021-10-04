@@ -12,8 +12,8 @@
 # 3.1.0 (2021-05-03)
 ## Feature
 - Add support for PG clusters managed by postgres-operator (Patroni PG):
-  - Wait for the PG cluster to be configured before running the migrations. (See [Note 1.](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/tree/v3.1.0#notes) for more details)
-  - When Alembic run migrations against a Patroni PG, the owner Role should be set. (See [Note 1.](https://gitlab.wiremind.io/wiremind/devops/chartreuse/-/tree/v3.1.0#notes) for more details)
+  - Wait for the PG cluster to be configured before running the migrations.
+  - When Alembic run migrations against a Patroni PG, the owner Role should be set.
 
 # 3.0.1 (2021-04-13)
 ## Fix
