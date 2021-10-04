@@ -3,8 +3,14 @@ name: Python Testing
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "doc/**"
 
 jobs:
   test:
