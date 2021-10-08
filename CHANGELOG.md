@@ -1,4 +1,8 @@
-# ChangeLog
+# Changelog
+
+## v4.0.2 (2021-10-08)
+### Fixes
+- fix: upgrade wiremind-kubernetes to ignore failed (like Evicted) Pods when stop-pods.
 
 ## v4.0.1 (2021-10-04)
 ### Fixes
