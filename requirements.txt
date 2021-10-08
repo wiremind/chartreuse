@@ -4,7 +4,7 @@
 #
 #    pip-compile --no-emit-index-url
 #
-alembic==1.7.3
+alembic==1.7.4
     # via chartreuse (setup.py)
 cachetools==4.2.4
     # via google-auth
@@ -14,12 +14,14 @@ certifi==2021.5.30
     #   requests
 charset-normalizer==2.0.6
     # via requests
-google-auth==2.2.1
+google-auth==2.3.0
     # via kubernetes
 greenlet==1.1.2
     # via sqlalchemy
 idna==3.2
     # via requests
+importlib-metadata==4.8.1
+    # via alembic
 importlib-resources==5.2.2
     # via alembic
 kubernetes==18.20.0
@@ -62,10 +64,12 @@ urllib3==1.26.7
     #   requests
 websocket-client==1.2.1
     # via kubernetes
-wiremind-kubernetes==6.3.1
+wiremind-kubernetes==6.3.3
     # via chartreuse (setup.py)
 zipp==3.6.0
-    # via importlib-resources
+    # via
+    #   importlib-metadata
+    #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
