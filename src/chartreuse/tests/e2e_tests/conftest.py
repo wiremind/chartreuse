@@ -40,11 +40,11 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
             else:
                 additional_args = "--set chartreuse.enabled=true --set chartreuse.upgradeBeforeDeployment=false"
         run_command(
-            f"helm upgrade --install --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 120s {additional_args}",
+            f"helm install --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 180s {additional_args}",
             cwd=EXAMPLE_PATH,
         )
         run_command(
-            f"helm upgrade --install --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 120s {additional_args}",
+            f"helm upgrade --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 60s {additional_args}",
             cwd=EXAMPLE_PATH,
         )
 

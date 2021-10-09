@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.3 (2021-10-09)
+### Fixes
+- Test python 3.10 in CI.
+
 ## v4.0.2 (2021-10-08)
 ### Fixes
 - fix: upgrade wiremind-kubernetes to ignore failed (like Evicted) Pods when stop-pods.
