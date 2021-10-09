@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, 3.10.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -66,3 +66,14 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           report_paths: "junit.xml"
+
+  linter:
+    name: black-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-black@v2
+        with:
+          github_token: ${{ secrets.github_token }}
+          # Change reviewdog reporter if you need [github-pr-check, github-check].
+          reporter: github-pr-check
