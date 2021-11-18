@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.3 (2021-11-18)
+### Fixes
+- setup.py: require `psycopg2-binary` instead of `psycopg2`.
+
 ## v4.0.3 (2021-10-09)
 ### Fixes
 - Test python 3.10 in CI.
