@@ -4,7 +4,7 @@
 #
 #    pip-compile --no-emit-index-url
 #
-alembic==1.7.5
+alembic==1.7.4
     # via chartreuse (setup.py)
 cachetools==4.2.4
     # via google-auth
@@ -12,27 +12,27 @@ certifi==2021.10.8
     # via
     #   kubernetes
     #   requests
-charset-normalizer==2.0.7
+charset-normalizer==2.0.6
     # via requests
-google-auth==2.3.3
+google-auth==2.3.0
     # via kubernetes
 greenlet==1.1.2
     # via sqlalchemy
-idna==3.3
+idna==3.2
     # via requests
-importlib-metadata==4.8.2
+importlib-metadata==4.8.1
     # via alembic
-importlib-resources==5.4.0
+importlib-resources==5.2.2
     # via alembic
-kubernetes==19.15.0
+kubernetes==18.20.0
     # via wiremind-kubernetes
-mako==1.1.6
+mako==1.1.5
     # via alembic
 markupsafe==2.0.1
     # via mako
 oauthlib==3.1.1
     # via requests-oauthlib
-psycopg2-binary==2.9.2
+psycopg2==2.9.1
     # via chartreuse (setup.py)
 pyasn1==0.4.8
     # via
@@ -42,7 +42,7 @@ pyasn1-modules==0.2.8
     # via google-auth
 python-dateutil==2.8.2
     # via kubernetes
-pyyaml==6.0
+pyyaml==5.4.1
     # via kubernetes
 requests==2.26.0
     # via
@@ -54,10 +54,9 @@ rsa==4.7.2
     # via google-auth
 six==1.16.0
     # via
-    #   google-auth
     #   kubernetes
     #   python-dateutil
-sqlalchemy==1.4.27
+sqlalchemy==1.4.25
     # via alembic
 urllib3==1.26.7
     # via
