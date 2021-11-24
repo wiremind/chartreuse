@@ -42,7 +42,7 @@ setup(
     python_requires=">=3.7.0",
     install_requires=[
         "alembic==1.*",
-        "psycopg2-binary==2.*",
+        "psycopg2==2.*",
         "wiremind-kubernetes==6.*,>=6.3.5",
     ],
     extras_require={
