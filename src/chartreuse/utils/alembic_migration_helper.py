@@ -100,7 +100,7 @@ class AlembicMigrationHelper:
                 sleep(2)
         raise Exception(
             f"I'm fed up! Waited {wait_timeout}s for postgres-operator to configure the"
-            f" Postgres database. Start by checking the postgres-operator logs."
+            f" Postgres database. Check the Postgres logs and then postgres-operator for anything fishy."
         )
 
     def _get_table_list(self) -> List[str]:
