@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.6 (2022-07-21)
+### Misc
+- Make log clearer when PG is not ready for migrations.
+
 ## v4.0.3 (2021-10-09)
 ### Fixes
 - Test python 3.10 in CI.
