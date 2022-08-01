@@ -1,13 +1,12 @@
 import logging
 import os
+from typing import List
 
 from wiremind_kubernetes import KubernetesDeploymentManager
 
 from chartreuse import get_version
 
 from .chartreuse import Chartreuse
-
-from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,7 @@ def main() -> None:
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
     ensure_safe_run()
+    ALEMBIC_DIRECTORY_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic")
     POSTGRESQL_URL: str = os.environ["CHARTREUSE_ALEMBIC_URL"]
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
@@ -53,6 +53,7 @@ def main() -> None:
 
     deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
+        alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
         postgresql_url=POSTGRESQL_URL,
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
         alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,

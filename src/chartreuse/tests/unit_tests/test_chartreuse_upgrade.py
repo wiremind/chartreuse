@@ -1,13 +1,15 @@
+from typing import Optional
+
 import chartreuse.chartreuse_upgrade
 import pytest
-
 from chartreuse import get_version
+from pytest_mock.plugin import MockerFixture
 
 from ..conftest import configure_os_environ_mock
 from .conftest import configure_chartreuse_mock
 
 
-def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(mocker):
+def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(mocker: MockerFixture) -> None:
     """
     Test that chartreuse_upgrades stop pods in case of detected migration.
     """
@@ -20,7 +22,7 @@ def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(mocker):
     mocked_stop_pods.assert_called()
 
 
-def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(mocker):
+def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(mocker: MockerFixture) -> None:
     """
     Test that chartreuse_upgrades does not stop pods in case of detected migration but we disallow stop-pods.
     """
@@ -36,7 +38,7 @@ def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(mocker):
     mocked_stop_pods.assert_not_called()
 
 
-def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker):
+def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker: MockerFixture) -> None:
     """
     Test that chartreuse_upgrades does NOT stop pods in case of migration not needed.
     """
@@ -70,7 +72,9 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker):
         ("2", "2.0.0", True),
     ],
 )
-def test_chartreuse_upgrade_compatibility_check(mocker, helm_chart_version, package_version, should_raise):
+def test_chartreuse_upgrade_compatibility_check(
+    mocker: MockerFixture, helm_chart_version: Optional[str], package_version: str, should_raise: bool
+) -> None:
     """
     Test that chartreuse_upgrade deals as expected with compatibility with the package version and the
     Helm Chart version.

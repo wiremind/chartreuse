@@ -16,6 +16,7 @@ def configure_logging() -> None:
 class Chartreuse:
     def __init__(
         self,
+        alembic_directory_path: str,
         postgresql_url: str,
         release_name: str,
         alembic_allow_migration_for_empty_database: bool,
@@ -26,7 +27,8 @@ class Chartreuse:
         configure_logging()
 
         self.alembic_migration_helper = AlembicMigrationHelper(
-            postgresql_url,
+            alembic_directory_path=alembic_directory_path,
+            database_url=postgresql_url,
             allow_migration_for_empty_database=alembic_allow_migration_for_empty_database,
             additional_parameters=alembic_additional_parameters,
         )
@@ -40,9 +42,9 @@ class Chartreuse:
 
         self.is_migration_needed = self.check_migration_needed()
 
-    def check_migration_needed(self):
+    def check_migration_needed(self) -> bool:
         return self.alembic_migration_helper.is_migration_needed
 
-    def upgrade(self):
+    def upgrade(self) -> None:
         if self.check_migration_needed():
             self.alembic_migration_helper.upgrade_db()

@@ -1,16 +1,13 @@
 import logging
+import os
 import re
 from subprocess import SubprocessError
+from time import sleep, time
 from typing import List
-import os
 
 import sqlalchemy
 from sqlalchemy.pool import NullPool
-from time import sleep, time
 from wiremind_kubernetes.utils import run_command
-
-ALEMBIC_DIRECTORY_PATH = "/app/alembic"
-
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +15,8 @@ logger = logging.getLogger(__name__)
 class AlembicMigrationHelper:
     def __init__(
         self,
+        *,
+        alembic_directory_path: str = "/app/alembic",
         database_url: str,
         additional_parameters: str = "",
         allow_migration_for_empty_database: bool = False,
@@ -29,6 +28,7 @@ class AlembicMigrationHelper:
         self.database_url = database_url
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
         self.additional_parameters = additional_parameters
+        self.alembic_directory_path = alembic_directory_path
 
         # Chartreuse will upgrade a PG managed/configured by postgres-operator
         self.is_patroni_postgresql: bool = "CHARTREUSE_PATRONI_POSTGRESQL" in os.environ
@@ -41,11 +41,11 @@ class AlembicMigrationHelper:
 
         self.is_migration_needed = self._check_migration_needed()
 
-    def _configure(self):
+    def _configure(self) -> None:
         command_sq: str = "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={sqlalchemy_url}/' alembic.ini"
         cleaned_url = self.database_url.replace("/", r"\/")
         stdout, _, returncode = run_command(
-            command_sq.format(sqlalchemy_url=cleaned_url), cwd=ALEMBIC_DIRECTORY_PATH, return_result=True
+            command_sq.format(sqlalchemy_url=cleaned_url), cwd=self.alembic_directory_path, return_result=True
         )
         if returncode == 0:
             logger.info("alembic.ini was configured.")
@@ -115,12 +115,12 @@ class AlembicMigrationHelper:
 
     def _get_alembic_current(self) -> str:
         command: str = f"alembic {self.additional_parameters} current"
-        alembic_current, stderr, returncode = run_command(command, return_result=True, cwd=ALEMBIC_DIRECTORY_PATH)
+        alembic_current, stderr, returncode = run_command(command, return_result=True, cwd=self.alembic_directory_path)
         if returncode != 0:
             raise SubprocessError(f"{command} has failed: {alembic_current}, {stderr}")
         return alembic_current
 
-    def _check_migration_needed(self):
+    def _check_migration_needed(self) -> bool:
         if self.is_postgres_empty() and not self.allow_migration_for_empty_database:
             logger.info("Database is not populated yet but migration for empty database is forbidden, not upgrading.")
             return False
@@ -133,7 +133,7 @@ class AlembicMigrationHelper:
         logger.info("SQL database schema can be upgraded.")
         return True
 
-    def upgrade_db(self):
+    def upgrade_db(self) -> None:
         logger.info("Database needs to be upgraded. Proceeding.")
-        run_command(f"alembic {self.additional_parameters} upgrade head", cwd=ALEMBIC_DIRECTORY_PATH)
+        run_command(f"alembic {self.additional_parameters} upgrade head", cwd=self.alembic_directory_path)
         logger.info("Done upgrading database.")
