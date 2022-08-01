@@ -2,15 +2,15 @@ import logging
 import os
 import subprocess
 import time
+from typing import Generator
 
+import chartreuse
+import pytest
 import sqlalchemy
 from wiremind_kubernetes.kube_config import load_kubernetes_config
 from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
 from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUpE2E  # noqa: F401
 from wiremind_kubernetes.utils import run_command
-
-import chartreuse
-import pytest
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
@@ -24,7 +24,7 @@ ALEMBIC_PATH = os.path.join(EXAMPLE_PATH, "alembic")
 POSTGRESQL_URL = "postgresql://foo:foo@localhost/foo?sslmode=prefer"
 
 
-def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
+def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Generator:
     # In order to configure kubernetes
     load_kubernetes_config(use_kubeconfig=None)
 
@@ -66,7 +66,7 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False):
 
 
 @pytest.fixture(scope="module")
-def prepare_container_image_and_helm_chart():
+def prepare_container_image_and_helm_chart() -> None:
     # We build a dummy docker image and deploy chartreuse subchart
     run_command(
         "docker build . -f example/Dockerfile-dev --tag dummy-e2e-chartreuse-image:latest",
@@ -92,29 +92,29 @@ def prepare_container_image_and_helm_chart():
 
 
 @pytest.fixture
-def populate_cluster():
+def populate_cluster() -> Generator:
     yield from _cluster_init(include_chartreuse=False)
 
 
 @pytest.fixture
-def populate_cluster_with_chartreuse_post_upgrade():
+def populate_cluster_with_chartreuse_post_upgrade() -> Generator:
     yield from _cluster_init(include_chartreuse=True, pre_upgrade=False)
 
 
 @pytest.fixture
-def populate_cluster_with_chartreuse_pre_upgrade():
+def populate_cluster_with_chartreuse_pre_upgrade() -> Generator:
     yield from _cluster_init(include_chartreuse=True, pre_upgrade=True)
 
 
-def assert_sql_upgraded():
+def assert_sql_upgraded() -> None:
     assert sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
 
 
-def assert_sql_not_upgraded():
+def assert_sql_not_upgraded() -> None:
     assert not sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
 
 
-def are_pods_scaled_down():
+def are_pods_scaled_down() -> bool:
     return KubernetesDeploymentManager(
         release_name=TEST_RELEASE, namespace=TEST_NAMESPACE, should_load_kubernetes_config=False
     ).is_deployment_stopped("e2e-test-release-my-test-chart")

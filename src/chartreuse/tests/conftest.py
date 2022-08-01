@@ -1,8 +1,12 @@
 import os
 from typing import Dict, Union
 
+from pytest_mock.plugin import MockerFixture
 
-def configure_os_environ_mock(mocker, additional_environment: Union[Dict[str, str], None] = None):
+
+def configure_os_environ_mock(
+    mocker: MockerFixture, additional_environment: Union[Dict[str, str], None] = None
+) -> None:
 
     new_environ: Dict[str, str] = dict(
         CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS="",

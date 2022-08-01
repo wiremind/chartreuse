@@ -13,7 +13,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     from alembic import op
 
     op.create_table(
@@ -21,7 +21,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     from alembic import op
 
     op.drop_table("upgraded")

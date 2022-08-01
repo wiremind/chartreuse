@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.1.0 (2022-08-01)
+### Feature
+- Correctly add mypy support
+- Added a basic .gitignore file for python projects
+- Added an environment variable `ALEMBIC_DIRECTORY_PATH` to customise alembic directory path
+
 ## v4.0.3 (2021-10-09)
 ### Fixes
 - Test python 3.10 in CI.
