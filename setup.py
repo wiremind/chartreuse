@@ -1,7 +1,7 @@
 """
 Chartreuse
 """
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("VERSION") as version_file:
     version = version_file.read().strip()
@@ -31,6 +31,8 @@ setup(
     name="chartreuse",
     version=version,
     description="Helper for Alembic migrations within Kubernetes.",
+    long_description="Helper for Alembic migrations within Kubernetes.",
+    platforms=["posix"],
     author="wiremind",
     author_email="dev@wiremind.io",
     url="https://github.com/wiremind/chartreuse",
