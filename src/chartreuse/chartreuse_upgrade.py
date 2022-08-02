@@ -41,6 +41,7 @@ def main() -> None:
     """
     ensure_safe_run()
     ALEMBIC_DIRECTORY_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic")
+    ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini")
     POSTGRESQL_URL: str = os.environ["CHARTREUSE_ALEMBIC_URL"]
     ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
         os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
@@ -54,6 +55,7 @@ def main() -> None:
     deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
         alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
+        alembic_config_file_path=ALEMBIC_CONFIG_FILE_PATH,
         postgresql_url=POSTGRESQL_URL,
         alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
         alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,

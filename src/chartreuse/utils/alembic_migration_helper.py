@@ -17,6 +17,7 @@ class AlembicMigrationHelper:
         self,
         *,
         alembic_directory_path: str = "/app/alembic",
+        alembic_config_file_path: str = "alembic.ini",
         database_url: str,
         additional_parameters: str = "",
         allow_migration_for_empty_database: bool = False,
@@ -29,6 +30,7 @@ class AlembicMigrationHelper:
         self.allow_migration_for_empty_database = allow_migration_for_empty_database
         self.additional_parameters = additional_parameters
         self.alembic_directory_path = alembic_directory_path
+        self.alembic_config_file_path = alembic_config_file_path
 
         # Chartreuse will upgrade a PG managed/configured by postgres-operator
         self.is_patroni_postgresql: bool = "CHARTREUSE_PATRONI_POSTGRESQL" in os.environ
@@ -42,11 +44,11 @@ class AlembicMigrationHelper:
         self.is_migration_needed = self._check_migration_needed()
 
     def _configure(self) -> None:
-        command_sq: str = "sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={sqlalchemy_url}/' alembic.ini"
         cleaned_url = self.database_url.replace("/", r"\/")
-        stdout, _, returncode = run_command(
-            command_sq.format(sqlalchemy_url=cleaned_url), cwd=self.alembic_directory_path, return_result=True
+        command_sq: str = (
+            f"sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={cleaned_url}/' {self.alembic_config_file_path}"
         )
+        stdout, _, returncode = run_command(command_sq, cwd=self.alembic_directory_path, return_result=True)
         if returncode == 0:
             logger.info("alembic.ini was configured.")
         else:
@@ -114,7 +116,7 @@ class AlembicMigrationHelper:
         return True
 
     def _get_alembic_current(self) -> str:
-        command: str = f"alembic {self.additional_parameters} current"
+        command: str = f"alembic -c {self.alembic_config_file_path} {self.additional_parameters} current"
         alembic_current, stderr, returncode = run_command(command, return_result=True, cwd=self.alembic_directory_path)
         if returncode != 0:
             raise SubprocessError(f"{command} has failed: {alembic_current}, {stderr}")
@@ -135,5 +137,8 @@ class AlembicMigrationHelper:
 
     def upgrade_db(self) -> None:
         logger.info("Database needs to be upgraded. Proceeding.")
-        run_command(f"alembic {self.additional_parameters} upgrade head", cwd=self.alembic_directory_path)
+        run_command(
+            f"alembic -c {self.alembic_config_file_path} {self.additional_parameters} upgrade head",
+            cwd=self.alembic_directory_path,
+        )
         logger.info("Done upgrading database.")

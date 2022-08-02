@@ -17,6 +17,7 @@ class Chartreuse:
     def __init__(
         self,
         alembic_directory_path: str,
+        alembic_config_file_path: str,
         postgresql_url: str,
         release_name: str,
         alembic_allow_migration_for_empty_database: bool,
@@ -28,6 +29,7 @@ class Chartreuse:
 
         self.alembic_migration_helper = AlembicMigrationHelper(
             alembic_directory_path=alembic_directory_path,
+            alembic_config_file_path=alembic_config_file_path,
             database_url=postgresql_url,
             allow_migration_for_empty_database=alembic_allow_migration_for_empty_database,
             additional_parameters=alembic_additional_parameters,
