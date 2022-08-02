@@ -1,10 +1,14 @@
 # Changelog
 
+## v4.2.0 (2022-08-02)
+### Feature
+- Added an environment variable `CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH` to customise alembic configuration file path
+
 ## v4.1.0 (2022-08-01)
 ### Feature
 - Correctly add mypy support
 - Added a basic .gitignore file for python projects
-- Added an environment variable `ALEMBIC_DIRECTORY_PATH` to customise alembic directory path
+- Added an environment variable `CHARTREUSE_ALEMBIC_DIRECTORY_PATH` to customise alembic directory path
 
 ## v4.0.3 (2021-10-09)
 ### Fixes

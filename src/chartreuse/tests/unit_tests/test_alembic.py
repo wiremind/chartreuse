@@ -118,7 +118,7 @@ def test_additional_parameters(mocker: MockerFixture) -> None:
         database_url="foo", configure=False, additional_parameters="foo bar"
     )
     alembic_migration_helper.upgrade_db()
-    mocked_run_command.assert_called_with("alembic foo bar upgrade head", cwd="/app/alembic")
+    mocked_run_command.assert_called_with("alembic -c alembic.ini foo bar upgrade head", cwd="/app/alembic")
 
 
 def test_additional_parameters_current(mocker: MockerFixture) -> None:
@@ -133,4 +133,6 @@ def test_additional_parameters_current(mocker: MockerFixture) -> None:
         database_url="foo", configure=False, additional_parameters="foo bar"
     )
     alembic_migration_helper._get_alembic_current()
-    mocked_run_command.assert_called_with("alembic foo bar current", cwd="/app/alembic", return_result=True)
+    mocked_run_command.assert_called_with(
+        "alembic -c alembic.ini foo bar current", cwd="/app/alembic", return_result=True
+    )
