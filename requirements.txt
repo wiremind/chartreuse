@@ -26,7 +26,7 @@ importlib-resources==5.2.2
     # via alembic
 kubernetes==18.20.0
     # via wiremind-kubernetes
-mako==1.1.5
+mako==1.2.2
     # via alembic
 markupsafe==2.0.1
     # via mako
