@@ -1,0 +1,14 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "my-test-chart.fullname" . }}
+  labels:
+{{ include "my-test-chart.selectorLabels" . | indent 4 }}
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "my-test-chart.fullname" . }}
+  targetCPUUtilizationPercentage: 75

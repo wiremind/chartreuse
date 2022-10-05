@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.0 (2022-10-06)
+### Feature
+- Support Kube `HPAScaleToZero` feature gate, see [here](https://github.com/wiremind/wiremind-kubernetes/releases/tag/v7.0.0) for more details.
+
 ## v4.2.0 (2022-08-02)
 ### Feature
 - Added an environment variable `CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH` to customise alembic configuration file path
