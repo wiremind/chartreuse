@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.3.1 (2022-11-22)
+### Fixes
+- setup.py: do not pin major versions of alembic/psycopg2 dependencies.
+- Upgrade recommended requirements.txt (actually only used for unit/e2e testing).
+
 ## v4.3.0 (2022-10-06)
 ### Feature
 - Support Kube `HPAScaleToZero` feature gate, see [here](https://github.com/wiremind/wiremind-kubernetes/releases/tag/v7.0.0) for more details.
