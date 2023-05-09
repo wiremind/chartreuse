@@ -45,15 +45,15 @@ class AlembicMigrationHelper:
 
     def _configure(self) -> None:
         cleaned_url = self.database_url.replace("/", r"\/")
-        command_sq: str = (
-            f"sed -i -e 's/sqlalchemy.url.*=.*/sqlalchemy.url={cleaned_url}/' {self.alembic_config_file_path}"
-        )
-        stdout, _, returncode = run_command(command_sq, cwd=self.alembic_directory_path, return_result=True)
-        if returncode == 0:
+        with open(self.alembic_config_file_path, "r") as f:
+            content = f.read()
+            content_new = re.sub('(sqlalchemy.url.*=.*){1}', r'%s' % cleaned_url, content, flags=re.M)
+        if content != content_new:
+            with open(self.alembic_config_file_path, "w") as f:
+                f.write(content_new)
             logger.info("alembic.ini was configured.")
         else:
-            # To avoid displaying the password. sed can still display a part of the URL
-            raise SubprocessError(f"{command_sq.format(sqlalchemy_url='REDACTED')} has failed: {stdout}")
+            raise SubprocessError(f"configuration of alembic.ini has failed (alembic.ini is unchanged)")
 
     def _wait_postgres_is_configured(self) -> None:
         """
