@@ -47,13 +47,13 @@ class AlembicMigrationHelper:
         cleaned_url = self.database_url.replace("/", r"\/")
         with open(self.alembic_config_file_path, "r") as f:
             content = f.read()
-            content_new = re.sub('(sqlalchemy.url.*=.*){1}', r'%s' % cleaned_url, content, flags=re.M)
+            content_new = re.sub("(sqlalchemy.url.*=.*){1}", r"%s" % cleaned_url, content, flags=re.M)
         if content != content_new:
             with open(self.alembic_config_file_path, "w") as f:
                 f.write(content_new)
             logger.info("alembic.ini was configured.")
         else:
-            raise SubprocessError(f"configuration of alembic.ini has failed (alembic.ini is unchanged)")
+            raise SubprocessError("configuration of alembic.ini has failed (alembic.ini is unchanged)")
 
     def _wait_postgres_is_configured(self) -> None:
         """
