@@ -49,7 +49,7 @@ class AlembicMigrationHelper:
             content = f.read()
             content_new = re.sub("(sqlalchemy.url.*=.*){1}", r"%s" % cleaned_url, content, flags=re.M)
         if content != content_new:
-            with open(self.alembic_config_file_path, "w") as f:
+            with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "w") as f:
                 f.write(content_new)
             logger.info("alembic.ini was configured.")
         else:
