@@ -47,7 +47,7 @@ class AlembicMigrationHelper:
         cleaned_url = self.database_url.replace("/", r"\/")
         with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "r") as f:
             content = f.read()
-            content_new = re.sub("(sqlalchemy.url.*=.*){1}", r"%s" % cleaned_url, content, flags=re.M)
+            content_new = re.sub("(sqlalchemy.url.*=.*){1}", r"sqlalchemy.url=%s" % cleaned_url, content, flags=re.M)
         if content != content_new:
             with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "w") as f:
                 f.write(content_new)
