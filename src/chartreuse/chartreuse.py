@@ -24,7 +24,6 @@ class Chartreuse:
         alembic_additional_parameters: str = "",
         kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager = None,
     ):
-
         configure_logging()
 
         self.alembic_migration_helper = AlembicMigrationHelper(
