@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.2 (2023-05-11)
+### Fixes
+  - Do not log almbic migrations log in clear
+
 ## v4.3.1 (2022-11-22)
 ### Fixes
 - setup.py: do not pin major versions of alembic/psycopg2 dependencies.
