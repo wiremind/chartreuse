@@ -4,13 +4,15 @@ import subprocess
 import time
 from typing import Generator
 
-import chartreuse
 import pytest
 import sqlalchemy
+from sqlalchemy import inspect
 from wiremind_kubernetes.kube_config import load_kubernetes_config
 from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
 from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUpE2E  # noqa: F401
 from wiremind_kubernetes.utils import run_command
+
+import chartreuse
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
@@ -107,11 +109,11 @@ def populate_cluster_with_chartreuse_pre_upgrade() -> Generator:
 
 
 def assert_sql_upgraded() -> None:
-    assert sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
+    assert inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
 
 
 def assert_sql_not_upgraded() -> None:
-    assert not sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
+    assert not inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
 
 
 def are_pods_scaled_down() -> bool:

@@ -6,6 +6,7 @@ from time import sleep, time
 from typing import List
 
 import sqlalchemy
+from sqlalchemy import inspect, text
 from sqlalchemy.pool import NullPool
 from wiremind_kubernetes.utils import run_command
 
@@ -46,7 +47,9 @@ class AlembicMigrationHelper:
     def _configure(self) -> None:
         with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "r") as f:
             content = f.read()
-            content_new = re.sub("(sqlalchemy.url.*=.*){1}", r"sqlalchemy.url=%s" % self.database_url, content, flags=re.M)
+            content_new = re.sub(
+                "(sqlalchemy.url.*=.*){1}", r"sqlalchemy.url=%s" % self.database_url, content, flags=re.M
+            )
         if content != content_new:
             with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "w") as f:
                 f.write(content_new)
@@ -79,7 +82,7 @@ class AlembicMigrationHelper:
                 with engine.connect() as connection:
                     transac = connection.begin()
                     # TODO: Use scalar_one() once sqlachemly >= 1.4
-                    _id = connection.execute(";".join(default_privileges_checks)).scalar()
+                    _id = connection.execute(text(";".join(default_privileges_checks))).scalar()
                     assert _id == 1
                     transac.rollback()
                 logger.info(
@@ -101,7 +104,7 @@ class AlembicMigrationHelper:
         )
 
     def _get_table_list(self) -> List[str]:
-        return sqlalchemy.create_engine(self.database_url).table_names()
+        return inspect(sqlalchemy.create_engine(self.database_url)).get_table_names()
 
     def is_postgres_empty(self) -> bool:
         table_list = self._get_table_list()

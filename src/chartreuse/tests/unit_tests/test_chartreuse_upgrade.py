@@ -1,9 +1,10 @@
 from typing import Optional
 
-import chartreuse.chartreuse_upgrade
 import pytest
-from chartreuse import get_version
 from pytest_mock.plugin import MockerFixture
+
+import chartreuse.chartreuse_upgrade
+from chartreuse import get_version
 
 from ..conftest import configure_os_environ_mock
 from .conftest import configure_chartreuse_mock
