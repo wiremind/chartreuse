@@ -75,7 +75,7 @@ The state diagram of your application while upgrading using Helm and using Chart
           ...
           with context.begin_transaction():
             if patroni_postgresql:
-              context.execute("SET ROLE wiremind_owner")
+              context.execute(text("SET ROLE wiremind_owner"))
             context.run_migrations()
        ...
       ```
