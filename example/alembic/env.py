@@ -1,6 +1,6 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 from alembic import context
 
@@ -69,7 +69,7 @@ def run_migrations_online() -> None:
             # The default privileges are set according to this user
             # See: https://github.com/zalando/postgres-operator/issues/1170
             if patroni_postgresql:
-                context.execute("SET ROLE wiremind_owner")
+                context.execute(text("SET ROLE wiremind_owner"))
             context.run_migrations()
 
 

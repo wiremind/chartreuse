@@ -4,6 +4,8 @@ import subprocess
 import time
 from typing import Generator
 
+from sqlalchemy import inspect
+
 import chartreuse
 import pytest
 import sqlalchemy
@@ -107,11 +109,11 @@ def populate_cluster_with_chartreuse_pre_upgrade() -> Generator:
 
 
 def assert_sql_upgraded() -> None:
-    assert sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
+    assert inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
 
 
 def assert_sql_not_upgraded() -> None:
-    assert not sqlalchemy.create_engine(POSTGRESQL_URL).table_names() == ["alembic_version", "upgraded"]
+    assert not inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
 
 
 def are_pods_scaled_down() -> bool:

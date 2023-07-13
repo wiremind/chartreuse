@@ -6,6 +6,7 @@ from time import sleep, time
 from typing import List
 
 import sqlalchemy
+from sqlalchemy import inspect, text
 from sqlalchemy.pool import NullPool
 from wiremind_kubernetes.utils import run_command
 
@@ -79,7 +80,7 @@ class AlembicMigrationHelper:
                 with engine.connect() as connection:
                     transac = connection.begin()
                     # TODO: Use scalar_one() once sqlachemly >= 1.4
-                    _id = connection.execute(";".join(default_privileges_checks)).scalar()
+                    _id = connection.execute(text(";".join(default_privileges_checks))).scalar()
                     assert _id == 1
                     transac.rollback()
                 logger.info(
@@ -101,7 +102,7 @@ class AlembicMigrationHelper:
         )
 
     def _get_table_list(self) -> List[str]:
-        return sqlalchemy.create_engine(self.database_url).table_names()
+        return inspect(sqlalchemy.create_engine(self.database_url)).get_table_names()
 
     def is_postgres_empty(self) -> bool:
         table_list = self._get_table_list()
