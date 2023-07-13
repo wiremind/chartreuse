@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.3 (2023-07-13)
+### Fixes
+  - sql-alchemy: update deprecated functions
+
 ## v4.3.2 (2023-05-11)
 ### Fixes
   - Do not log almbic migrations log in clear

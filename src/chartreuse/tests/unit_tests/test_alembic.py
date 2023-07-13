@@ -1,5 +1,6 @@
-import chartreuse.utils
 from pytest_mock.plugin import MockerFixture
+
+import chartreuse.utils
 
 
 def test_respect_empty_database(mocker: MockerFixture) -> None:

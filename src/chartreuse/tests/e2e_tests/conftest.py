@@ -4,15 +4,15 @@ import subprocess
 import time
 from typing import Generator
 
-from sqlalchemy import inspect
-
-import chartreuse
 import pytest
 import sqlalchemy
+from sqlalchemy import inspect
 from wiremind_kubernetes.kube_config import load_kubernetes_config
 from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
 from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUpE2E  # noqa: F401
 from wiremind_kubernetes.utils import run_command
+
+import chartreuse
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
