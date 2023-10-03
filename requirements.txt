@@ -59,7 +59,7 @@ six==1.16.0
     #   python-dateutil
 sqlalchemy==1.4.44
     # via alembic
-urllib3==1.26.12
+urllib3==1.26.17
     # via
     #   kubernetes
     #   requests
