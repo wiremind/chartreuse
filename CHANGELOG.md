@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.4 (2023-11-23)
+### Misc
+- Make log clearer when PG is not ready for migrations.
+
 ## v4.3.3 (2023-07-13)
 ### Fixes
   - sql-alchemy: update deprecated functions
