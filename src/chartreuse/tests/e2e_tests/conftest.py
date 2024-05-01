@@ -88,8 +88,9 @@ def prepare_container_image_and_helm_chart() -> None:
         cwd=HELM_CHART_PATH,
     )
 
+    run_command("helm repo add wiremind https://wiremind.github.io/wiremind-helm-charts")
     run_command(
-        "kubectl apply -f https://raw.githubusercontent.com/wiremind/wiremind-kubernetes/main/CustomResourceDefinition-expecteddeploymentscales.yaml",
+        "helm install wiremind-crds wiremind/wiremind-crds --version 0.1.0",
     )
 
 
