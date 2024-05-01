@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.5 (2024-05-01)
+### Chore
+- tests: e2e: apply expecteddeploymentscales CRD from wiremind helm chart repository
+
 ## v4.3.4 (2023-11-23)
 ### Misc
 - Make log clearer when PG is not ready for migrations.

@@ -13,10 +13,11 @@ Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), th
 
 - Python >= 3.7
 - Using Helm to deploy you application
-- This Python package requires the `expecteddeploymentscales.wiremind.io` Kubernetes `Custom Resource Definition` from `wiremind-kubernetes` repository:
+- This Python package requires the `expecteddeploymentscales.wiremind.io` Kubernetes `Custom Resource Definition`:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/wiremind/wiremind-kubernetes/main/CustomResourceDefinition-expecteddeploymentscales.yaml
+helm repo add wiremind https://wiremind.github.io/wiremind-helm-charts
+helm install wiremind-crds wiremind/wiremind-crds --version 0.1.0
 ```
 
 - Please make sure Chartreuse Python **Package version** and Chartreuse **Helm Chart version**, you use, share `major.minor` otherwise Chartreuse won't start.
