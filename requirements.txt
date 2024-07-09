@@ -67,7 +67,7 @@ websocket-client==1.4.2
     # via kubernetes
 wiremind-kubernetes==7.0.0
     # via chartreuse (setup.py)
-zipp==3.10.0
+zipp==3.19.1
     # via
     #   importlib-metadata
     #   importlib-resources
