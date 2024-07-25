@@ -3,7 +3,6 @@ import os
 import re
 from subprocess import SubprocessError
 from time import sleep, time
-from typing import List
 
 import sqlalchemy
 from sqlalchemy import inspect, text
@@ -45,13 +44,13 @@ class AlembicMigrationHelper:
         self.is_migration_needed = self._check_migration_needed()
 
     def _configure(self) -> None:
-        with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "r") as f:
+        with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}") as f:
             content = f.read()
             content_new = re.sub(
                 "(sqlalchemy.url.*=.*){1}", r"sqlalchemy.url=%s" % self.database_url, content, flags=re.M
             )
         if content != content_new:
-            with open("%s/%s" % (self.alembic_directory_path, self.alembic_config_file_path), "w") as f:
+            with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}", "w") as f:
                 f.write(content_new)
             logger.info("alembic.ini was configured.")
         else:
@@ -66,7 +65,7 @@ class AlembicMigrationHelper:
         wait_timeout = int(os.getenv("CHARTREUSE_ALEMBIC_POSTGRES_WAIT_CONFIGURED_TIMEOUT", 60))
         engine = sqlalchemy.create_engine(self.database_url, poolclass=NullPool, connect_args={"connect_timeout": 1})
 
-        default_privileges_checks: List[str] = [
+        default_privileges_checks: list[str] = [
             "SET ROLE wiremind_owner",  # The real owner, alembic will switch to it before running migrations.
             "CREATE TABLE _chartreuse_test_default_privileges(id serial)",
             "SET ROLE wiremind_writer_user",
@@ -103,7 +102,7 @@ class AlembicMigrationHelper:
             f" Postgres database. Check the Postgres logs and then postgres-operator for anything fishy."
         )
 
-    def _get_table_list(self) -> List[str]:
+    def _get_table_list(self) -> list[str]:
         return inspect(sqlalchemy.create_engine(self.database_url)).get_table_names()
 
     def is_postgres_empty(self) -> bool:

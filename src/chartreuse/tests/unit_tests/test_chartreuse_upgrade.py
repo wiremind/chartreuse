@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 from pytest_mock.plugin import MockerFixture
 
@@ -74,7 +72,7 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(mocker: MockerFixtur
     ],
 )
 def test_chartreuse_upgrade_compatibility_check(
-    mocker: MockerFixture, helm_chart_version: Optional[str], package_version: str, should_raise: bool
+    mocker: MockerFixture, helm_chart_version: str | None, package_version: str, should_raise: bool
 ) -> None:
     """
     Test that chartreuse_upgrade deals as expected with compatibility with the package version and the
