@@ -22,7 +22,7 @@ class Chartreuse:
         release_name: str,
         alembic_allow_migration_for_empty_database: bool,
         alembic_additional_parameters: str = "",
-        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager = None,
+        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager | None = None,
     ):
         configure_logging()
 

@@ -41,7 +41,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=True,
-    python_requires=">=3.7.0",
+    python_requires=">=3.11.0",
     install_requires=[
         "alembic",
         "psycopg2",
