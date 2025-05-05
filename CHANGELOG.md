@@ -1,10 +1,15 @@
 # Changelog
 
-## v5.0.0 (2024-07-25)
+## v5.0.0 (2025-05-05)
 ### BREAKING CHANGE
 - Change minimum supported version of python: 3.11 (drop 3.7, 3.8, 3.9, 3.10)
 ### Chore
-- chore(ci): upgrade requirements, test for python 3.12
+- chore(ci): upgrade requirements, test for python 3.11 & 3.12
+### Feat
+- add support for Clickhouse
+### Fix
+- remove usage of pkg_resources in favor of importlib
+
 
 ## v4.3.5 (2024-05-01)
 ### Chore

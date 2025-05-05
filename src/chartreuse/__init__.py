@@ -1,5 +1,5 @@
-import pkg_resources
+from importlib.metadata import version
 
 
 def get_version() -> str:
-    return pkg_resources.require(__name__)[0].version
+    return version("chartreuse")
