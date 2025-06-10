@@ -40,7 +40,7 @@ python-dateutil==2.9.0.post0
     # via kubernetes
 pyyaml==6.0.1
     # via kubernetes
-requests==2.32.3
+requests==2.32.4
     # via
     #   kubernetes
     #   requests-oauthlib
