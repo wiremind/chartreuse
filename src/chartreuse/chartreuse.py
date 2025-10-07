@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List
 
 import wiremind_kubernetes.kubernetes_helper
 
@@ -25,8 +24,7 @@ class Chartreuse:
         release_name: str,
         alembic_allow_migration_for_empty_database: bool,
         alembic_additional_parameters: str = "",
-        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager
-        | None = None,
+        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager | None = None,
     ):
         configure_logging()
 
@@ -41,10 +39,8 @@ class Chartreuse:
         if kubernetes_helper:
             self.kubernetes_helper = kubernetes_helper
         else:
-            self.kubernetes_helper = (
-                wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
-                    use_kubeconfig=None, release_name=release_name
-                )
+            self.kubernetes_helper = wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
+                use_kubeconfig=None, release_name=release_name
             )
 
         self.is_migration_needed = self.check_migration_needed()
@@ -62,15 +58,14 @@ class MultiChartreuse:
 
     def __init__(
         self,
-        databases_config: List[Dict],
+        databases_config: list[dict],
         release_name: str,
-        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager
-        | None = None,
+        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager | None = None,
     ):
         configure_logging()
 
         self.databases_config = databases_config
-        self.migration_helpers: Dict[str, AlembicMigrationHelper] = {}
+        self.migration_helpers: dict[str, AlembicMigrationHelper] = {}
 
         # Initialize migration helpers for each database
         for db_config in databases_config:
@@ -81,9 +76,7 @@ class MultiChartreuse:
                 alembic_directory_path=db_config["alembic_directory_path"],
                 alembic_config_file_path=db_config["alembic_config_file_path"],
                 database_url=db_config["url"],
-                allow_migration_for_empty_database=db_config.get(
-                    "allow_migration_for_empty_database", False
-                ),
+                allow_migration_for_empty_database=db_config.get("allow_migration_for_empty_database", False),
                 additional_parameters=db_config.get("additional_parameters", ""),
             )
             self.migration_helpers[db_name] = helper
@@ -92,10 +85,8 @@ class MultiChartreuse:
         if kubernetes_helper:
             self.kubernetes_helper = kubernetes_helper
         else:
-            self.kubernetes_helper = (
-                wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
-                    use_kubeconfig=None, release_name=release_name
-                )
+            self.kubernetes_helper = wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
+                use_kubeconfig=None, release_name=release_name
             )
 
         # Check if any migrations are needed

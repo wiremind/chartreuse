@@ -14,11 +14,7 @@ import yaml
 def build_database_url(db_config: dict) -> str:
     """Build database URL from components."""
     required_components = ["dialect", "user", "password", "host", "port", "database"]
-    missing_components = [
-        comp
-        for comp in required_components
-        if comp not in db_config or not db_config[comp]
-    ]
+    missing_components = [comp for comp in required_components if comp not in db_config or not db_config[comp]]
 
     if missing_components:
         raise ValueError(f"Missing components: {missing_components}")
@@ -43,7 +39,7 @@ def validate_config(config_path: str) -> bool:
             return False
 
         # Load and parse YAML
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             config = yaml.safe_load(f)
 
         # Validate structure
@@ -101,12 +97,8 @@ def validate_config(config_path: str) -> bool:
 
             # Check optional boolean fields
             for bool_field in ["allow_migration_for_empty_database"]:
-                if bool_field in db_config and not isinstance(
-                    db_config[bool_field], bool
-                ):
-                    print(
-                        f"❌ Database {db_name}: '{bool_field}' must be true or false"
-                    )
+                if bool_field in db_config and not isinstance(db_config[bool_field], bool):
+                    print(f"❌ Database {db_name}: '{bool_field}' must be true or false")
                     return False
 
             print(f"✅ Database {db_name}: OK")

@@ -1,6 +1,6 @@
 # Changelog
 
-## v5.1.0 (2025-10-07)
+## v6.0.0 (2025-10-07)
 
 ### Feat
 - add support for multi-database migration

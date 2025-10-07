@@ -51,9 +51,7 @@ class TestEnsureSafeRun:
 
         assert "Couldn't get the Chartreuse's Helm Chart version" in str(exc_info.value)
 
-    def test_ensure_safe_run_different_major_versions(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_ensure_safe_run_different_major_versions(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with different major versions."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="4.2.1")
         mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0"})
@@ -63,13 +61,9 @@ class TestEnsureSafeRun:
 
         assert "(['5', '2'] != ['4', '2'])" in str(exc_info.value)
 
-    def test_ensure_safe_run_complex_version_formats(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_ensure_safe_run_complex_version_formats(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with complex version formats."""
-        mocker.patch(
-            "chartreuse.chartreuse_upgrade.get_version", return_value="5.2.1-alpha.1"
-        )
+        mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.2.1-alpha.1")
         mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0-beta.2"})
 
         # Should not raise any exception as major.minor match
@@ -99,17 +93,13 @@ class TestMainMultiDatabase:
         )
 
         # Mock MultiChartreuse
-        mock_multi_chartreuse = mocker.patch(
-            "chartreuse.chartreuse_upgrade.MultiChartreuse"
-        )
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
 
         # Mock KubernetesDeploymentManager
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -134,9 +124,7 @@ class TestMainMultiDatabase:
         mock_k8s_instance.stop_pods.assert_called_once()
         mock_k8s_instance.start_pods.assert_called_once()
 
-    def test_main_multi_database_no_migration_needed(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_main_multi_database_no_migration_needed(self, mocker: MockerFixture) -> None:
         """Test main function when no migration is needed."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
@@ -153,16 +141,12 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch(
-            "chartreuse.chartreuse_upgrade.MultiChartreuse"
-        )
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = False
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -184,9 +168,7 @@ class TestMainMultiDatabase:
         mock_k8s_instance.stop_pods.assert_not_called()
         mock_k8s_instance.start_pods.assert_not_called()
 
-    def test_main_multi_database_config_load_failure(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_main_multi_database_config_load_failure(self, mocker: MockerFixture) -> None:
         """Test main function with config loading failure."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
@@ -206,9 +188,7 @@ class TestMainMultiDatabase:
         with pytest.raises(FileNotFoundError):
             main()
 
-    def test_main_multi_database_stop_pods_disabled(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_main_multi_database_stop_pods_disabled(self, mocker: MockerFixture) -> None:
         """Test main function with ENABLE_STOP_PODS disabled."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
@@ -225,16 +205,12 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch(
-            "chartreuse.chartreuse_upgrade.MultiChartreuse"
-        )
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -256,9 +232,7 @@ class TestMainMultiDatabase:
         mock_k8s_instance.stop_pods.assert_not_called()
         mock_k8s_instance.start_pods.assert_not_called()
 
-    def test_main_multi_database_upgrade_before_deployment(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_main_multi_database_upgrade_before_deployment(self, mocker: MockerFixture) -> None:
         """Test main function with UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
@@ -275,16 +249,12 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch(
-            "chartreuse.chartreuse_upgrade.MultiChartreuse"
-        )
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -306,9 +276,7 @@ class TestMainMultiDatabase:
         mock_k8s_instance.stop_pods.assert_called_once()
         mock_k8s_instance.start_pods.assert_not_called()
 
-    def test_main_multi_database_start_pods_failure(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_main_multi_database_start_pods_failure(self, mocker: MockerFixture) -> None:
         """Test main function when start_pods fails."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
@@ -325,16 +293,12 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch(
-            "chartreuse.chartreuse_upgrade.MultiChartreuse"
-        )
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_instance.start_pods.side_effect = Exception("Failed to start pods")
         mock_k8s_manager.return_value = mock_k8s_instance
@@ -373,9 +337,7 @@ class TestMainSingleDatabase:
         mock_chartreuse_instance.is_migration_needed = True
         mock_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -423,9 +385,7 @@ class TestMainSingleDatabase:
         mock_chartreuse_instance.is_migration_needed = False
         mock_chartreuse.return_value = mock_chartreuse_instance
 
-        mock_k8s_manager = mocker.patch(
-            "chartreuse.chartreuse_upgrade.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -482,9 +442,7 @@ class TestMainBooleanParsing:
             ("1", True),  # bool("1") -> True (non-empty string)
         ],
     )
-    def test_boolean_parsing_variations(
-        self, mocker: MockerFixture, bool_str: str, expected: bool
-    ) -> None:
+    def test_boolean_parsing_variations(self, mocker: MockerFixture, bool_str: str, expected: bool) -> None:
         """Test various boolean string parsing in environment variables."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 

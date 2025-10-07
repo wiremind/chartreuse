@@ -3,14 +3,13 @@ Simple configuration loader for multi-database support.
 """
 
 import logging
-from typing import Dict, List
 
 import yaml
 
 logger = logging.getLogger(__name__)
 
 
-def build_database_url(db_config: Dict) -> str:
+def build_database_url(db_config: dict) -> str:
     """
     Build database URL from individual components.
 
@@ -18,11 +17,7 @@ def build_database_url(db_config: Dict) -> str:
     """
     # Build URL from components
     required_components = ["dialect", "user", "password", "host", "port", "database"]
-    missing_components = [
-        comp
-        for comp in required_components
-        if comp not in db_config or not db_config[comp]
-    ]
+    missing_components = [comp for comp in required_components if comp not in db_config or not db_config[comp]]
 
     if missing_components:
         raise ValueError(f"Missing required components: {missing_components}")
@@ -37,7 +32,7 @@ def build_database_url(db_config: Dict) -> str:
     return f"{dialect}://{user}:{password}@{host}:{port}/{database}"
 
 
-def load_multi_database_config(config_path: str) -> List[Dict]:
+def load_multi_database_config(config_path: str) -> list[dict]:
     """
     Load multi-database configuration from YAML file.
 
@@ -56,7 +51,7 @@ def load_multi_database_config(config_path: str) -> List[Dict]:
         additional_parameters: ""
     """
     try:
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             config = yaml.safe_load(f)
 
         if "databases" not in config:
@@ -65,9 +60,7 @@ def load_multi_database_config(config_path: str) -> List[Dict]:
         databases_dict = config["databases"]
 
         if not isinstance(databases_dict, dict):
-            raise ValueError(
-                "'databases' must be a dictionary with database names as keys"
-            )
+            raise ValueError("'databases' must be a dictionary with database names as keys")
 
         # Convert dictionary to list format for internal processing
         databases = []
@@ -82,7 +75,7 @@ def load_multi_database_config(config_path: str) -> List[Dict]:
 
         return databases
 
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+    except FileNotFoundError as err:
+        raise FileNotFoundError(f"Configuration file not found: {config_path}") from err
     except yaml.YAMLError as e:
-        raise ValueError(f"Invalid YAML in configuration file: {e}")
+        raise ValueError(f"Invalid YAML in configuration file: {e}") from e

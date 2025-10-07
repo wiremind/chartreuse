@@ -54,7 +54,5 @@ setup(
         "mypy": extra_require_mypy,
         "test": extra_require_test,
     },
-    entry_points={
-        "console_scripts": ["chartreuse-upgrade=chartreuse.chartreuse_upgrade:main"]
-    },
+    entry_points={"console_scripts": ["chartreuse-upgrade=chartreuse.chartreuse_upgrade:main"]},
 )

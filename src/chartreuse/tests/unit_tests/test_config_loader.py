@@ -124,10 +124,7 @@ class TestLoadMultiDatabaseConfig:
             # Check main database config
             main_db = next(db for db in result if db["name"] == "main")
             assert main_db["alembic_directory_path"] == "/app/alembic/main"
-            assert (
-                main_db["url"]
-                == "postgresql://mainuser:mainpass@main.db.com:5432/maindb"
-            )
+            assert main_db["url"] == "postgresql://mainuser:mainpass@main.db.com:5432/maindb"
             assert main_db["allow_migration_for_empty_database"] is True
             assert main_db["additional_parameters"] == "--verbose"
 
@@ -205,9 +202,7 @@ class TestLoadMultiDatabaseConfig:
         with pytest.raises(FileNotFoundError) as exc_info:
             load_multi_database_config(non_existent_file)
 
-        assert f"Configuration file not found: {non_existent_file}" in str(
-            exc_info.value
-        )
+        assert f"Configuration file not found: {non_existent_file}" in str(exc_info.value)
 
     def test_load_multi_database_config_invalid_yaml(self) -> None:
         """Test that invalid YAML raises ValueError."""

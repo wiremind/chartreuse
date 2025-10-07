@@ -27,14 +27,10 @@ class TestConfigureLogging:
 class TestChartreuse:
     """Test cases for Chartreuse class."""
 
-    def test_chartreuse_init_with_kubernetes_helper(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_chartreuse_init_with_kubernetes_helper(self, mocker: MockerFixture) -> None:
         """Test Chartreuse initialization with provided kubernetes helper."""
         # Mock AlembicMigrationHelper
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = True
         mock_alembic_helper.return_value = mock_alembic_instance
@@ -68,22 +64,16 @@ class TestChartreuse:
         assert chartreuse.kubernetes_helper == mock_k8s_helper
         assert chartreuse.is_migration_needed is True
 
-    def test_chartreuse_init_without_kubernetes_helper(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_chartreuse_init_without_kubernetes_helper(self, mocker: MockerFixture) -> None:
         """Test Chartreuse initialization without provided kubernetes helper."""
         # Mock AlembicMigrationHelper
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = False
         mock_alembic_helper.return_value = mock_alembic_instance
 
         # Mock KubernetesDeploymentManager
-        mock_k8s_manager = mocker.patch(
-            "wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager")
         mock_k8s_instance = MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -99,18 +89,14 @@ class TestChartreuse:
         )
 
         # Verify KubernetesDeploymentManager was initialized
-        mock_k8s_manager.assert_called_once_with(
-            use_kubeconfig=None, release_name="test-release"
-        )
+        mock_k8s_manager.assert_called_once_with(use_kubeconfig=None, release_name="test-release")
 
         assert chartreuse.kubernetes_helper == mock_k8s_instance
         assert chartreuse.is_migration_needed is False
 
     def test_check_migration_needed(self, mocker: MockerFixture) -> None:
         """Test check_migration_needed method."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = True
         mock_alembic_helper.return_value = mock_alembic_instance
@@ -137,9 +123,7 @@ class TestChartreuse:
 
     def test_upgrade_when_migration_needed(self, mocker: MockerFixture) -> None:
         """Test upgrade method when migration is needed."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = True
         mock_alembic_helper.return_value = mock_alembic_instance
@@ -163,9 +147,7 @@ class TestChartreuse:
 
     def test_upgrade_when_migration_not_needed(self, mocker: MockerFixture) -> None:
         """Test upgrade method when migration is not needed."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = False
         mock_alembic_helper.return_value = mock_alembic_instance
@@ -191,14 +173,10 @@ class TestChartreuse:
 class TestMultiChartreuse:
     """Test cases for MultiChartreuse class."""
 
-    def test_multi_chartreuse_init_with_kubernetes_helper(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_multi_chartreuse_init_with_kubernetes_helper(self, mocker: MockerFixture) -> None:
         """Test MultiChartreuse initialization with provided kubernetes helper."""
         # Mock AlembicMigrationHelper
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
 
         # Create mock instances for different databases
         mock_main_instance = MagicMock()
@@ -254,22 +232,16 @@ class TestMultiChartreuse:
         # Verify migration is needed (because main db needs migration)
         assert multi_chartreuse.is_migration_needed is True
 
-    def test_multi_chartreuse_init_without_kubernetes_helper(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_multi_chartreuse_init_without_kubernetes_helper(self, mocker: MockerFixture) -> None:
         """Test MultiChartreuse initialization without provided kubernetes helper."""
         # Mock AlembicMigrationHelper
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = False
         mock_alembic_helper.return_value = mock_alembic_instance
 
         # Mock KubernetesDeploymentManager
-        mock_k8s_manager = mocker.patch(
-            "wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager"
-        )
+        mock_k8s_manager = mocker.patch("wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager")
         mock_k8s_instance = MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -291,19 +263,13 @@ class TestMultiChartreuse:
         )
 
         # Verify KubernetesDeploymentManager was initialized
-        mock_k8s_manager.assert_called_once_with(
-            use_kubeconfig=None, release_name="test-release"
-        )
+        mock_k8s_manager.assert_called_once_with(use_kubeconfig=None, release_name="test-release")
 
         assert multi_chartreuse.kubernetes_helper == mock_k8s_instance
 
-    def test_check_migration_needed_with_mixed_needs(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_check_migration_needed_with_mixed_needs(self, mocker: MockerFixture) -> None:
         """Test check_migration_needed with some databases needing migration."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
 
         # Create mock instances
         mock_main_instance = MagicMock()
@@ -342,13 +308,9 @@ class TestMultiChartreuse:
         result = multi_chartreuse.check_migration_needed()
         assert result is True
 
-    def test_check_migration_needed_none_need_migration(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_check_migration_needed_none_need_migration(self, mocker: MockerFixture) -> None:
         """Test check_migration_needed when no databases need migration."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
 
         mock_instance = MagicMock()
         mock_instance.is_migration_needed = False
@@ -377,9 +339,7 @@ class TestMultiChartreuse:
 
     def test_upgrade_only_needed_databases(self, mocker: MockerFixture) -> None:
         """Test upgrade method only upgrades databases that need migration."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
 
         # Create mock instances
         mock_main_instance = MagicMock()
@@ -422,9 +382,7 @@ class TestMultiChartreuse:
 
     def test_multi_chartreuse_default_values(self, mocker: MockerFixture) -> None:
         """Test that default values are handled correctly for optional parameters."""
-        mock_alembic_helper = mocker.patch(
-            "chartreuse.chartreuse.AlembicMigrationHelper"
-        )
+        mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = False
         mock_alembic_helper.return_value = mock_alembic_instance

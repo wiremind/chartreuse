@@ -34,41 +34,41 @@ test = [
   "pytest",
   "pytest-mock",
 ]
-mypy = [
-  "mypy",
+ruff = [
+  "ruff",
 ]
 dev = [
-  "black",
-  "flake8",
-  "flake8-mutable",
+  "ruff",
   "pip-tools",
 
   "mock",
   "pytest",
   "pytest-mock",
-
-  "mypy"
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-target-version = ['py311']
+target-version = "py311"
 
-[tool.isort]
-line_length = 120
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+]
+ignore = []
 
-[tool.mypy]
-python_version = "3.11"
-ignore_missing_imports = true
-check_untyped_defs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_unused_configs = true
-no_implicit_optional = true
-show_error_codes = true
-files = [ "src", "example/alembic"]
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["chartreuse"]
 
 [tool.pytest.ini_options]
 log_level = "INFO"

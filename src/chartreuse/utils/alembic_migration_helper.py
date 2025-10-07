@@ -44,26 +44,20 @@ class AlembicMigrationHelper:
         self.is_migration_needed = self._check_migration_needed()
 
     def _configure(self) -> None:
-        with open(
-            f"{self.alembic_directory_path}/{self.alembic_config_file_path}"
-        ) as f:
+        with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}") as f:
             content = f.read()
             content_new = re.sub(
                 "(sqlalchemy.url.*=.*){1}",
-                r"sqlalchemy.url=%s" % self.database_url,
+                rf"sqlalchemy.url={self.database_url}",
                 content,
                 flags=re.M,
             )
         if content != content_new:
-            with open(
-                f"{self.alembic_directory_path}/{self.alembic_config_file_path}", "w"
-            ) as f:
+            with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}", "w") as f:
                 f.write(content_new)
             logger.info("alembic.ini was configured.")
         else:
-            raise SubprocessError(
-                "configuration of alembic.ini has failed (alembic.ini is unchanged)"
-            )
+            raise SubprocessError("configuration of alembic.ini has failed (alembic.ini is unchanged)")
 
     def _wait_postgres_is_configured(self) -> None:
         """
@@ -71,12 +65,8 @@ class AlembicMigrationHelper:
         and that default privileges were configured.
         # TODO: Maybe make this a readinessProbe on Patroni PG Pods
         """
-        wait_timeout = int(
-            os.getenv("CHARTREUSE_ALEMBIC_POSTGRES_WAIT_CONFIGURED_TIMEOUT", 60)
-        )
-        engine = sqlalchemy.create_engine(
-            self.database_url, poolclass=NullPool, connect_args={"connect_timeout": 1}
-        )
+        wait_timeout = int(os.getenv("CHARTREUSE_ALEMBIC_POSTGRES_WAIT_CONFIGURED_TIMEOUT", 60))
+        engine = sqlalchemy.create_engine(self.database_url, poolclass=NullPool, connect_args={"connect_timeout": 1})
 
         default_privileges_checks: list[str] = [
             "SET ROLE wiremind_owner",  # The real owner, alembic will switch to it before running migrations.
@@ -94,9 +84,7 @@ class AlembicMigrationHelper:
                 with engine.connect() as connection:
                     transac = connection.begin()
                     # TODO: Use scalar_one() once sqlachemly >= 1.4
-                    _id = connection.execute(
-                        text(";".join(default_privileges_checks))
-                    ).scalar()
+                    _id = connection.execute(text(";".join(default_privileges_checks))).scalar()
                     assert _id == 1
                     transac.rollback()
                 logger.info(
@@ -133,18 +121,14 @@ class AlembicMigrationHelper:
 
     def _get_alembic_current(self) -> str:
         command: str = f"alembic -c {self.alembic_config_file_path} {self.additional_parameters} current"
-        alembic_current, stderr, returncode = run_command(
-            command, return_result=True, cwd=self.alembic_directory_path
-        )
+        alembic_current, stderr, returncode = run_command(command, return_result=True, cwd=self.alembic_directory_path)
         if returncode != 0:
             raise SubprocessError(f"{command} has failed: {alembic_current}, {stderr}")
         return alembic_current
 
     def _check_migration_needed(self) -> bool:
         if self.is_postgres_empty() and not self.allow_migration_for_empty_database:
-            logger.info(
-                "Database is not populated yet but migration for empty database is forbidden, not upgrading."
-            )
+            logger.info("Database is not populated yet but migration for empty database is forbidden, not upgrading.")
             return False
 
         head_re = re.compile(r"^\w+ \(head\)$", re.MULTILINE)

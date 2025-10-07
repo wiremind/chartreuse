@@ -54,21 +54,14 @@ def main() -> None:
             logger.error(f"Failed to load multi-database configuration: {e}")
             raise
 
-        ENABLE_STOP_PODS: bool = bool(
-            os.environ.get("CHARTREUSE_ENABLE_STOP_PODS", "true").lower() == "true"
-        )
+        ENABLE_STOP_PODS: bool = bool(os.environ.get("CHARTREUSE_ENABLE_STOP_PODS", "true").lower() == "true")
         RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
         UPGRADE_BEFORE_DEPLOYMENT: bool = bool(
-            os.environ.get("CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT", "false").lower()
-            == "true"
+            os.environ.get("CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT", "false").lower() == "true"
         )
-        HELM_IS_INSTALL: bool = bool(
-            os.environ.get("HELM_IS_INSTALL", "false").lower() == "true"
-        )
+        HELM_IS_INSTALL: bool = bool(os.environ.get("HELM_IS_INSTALL", "false").lower() == "true")
 
-        deployment_manager = KubernetesDeploymentManager(
-            release_name=RELEASE_NAME, use_kubeconfig=None
-        )
+        deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
         chartreuse = MultiChartreuse(
             databases_config=databases_config,
             release_name=RELEASE_NAME,
@@ -96,29 +89,19 @@ def main() -> None:
         # Use legacy single-database configuration
         logger.info("Using single-database configuration from environment variables")
 
-        ALEMBIC_DIRECTORY_PATH: str = os.environ.get(
-            "CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic"
-        )
-        ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get(
-            "CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini"
-        )
+        ALEMBIC_DIRECTORY_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic")
+        ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini")
         POSTGRESQL_URL: str | None = os.environ["CHARTREUSE_ALEMBIC_URL"]
         ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
             os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
         )
-        ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ[
-            "CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"
-        ]
+        ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
         SINGLE_ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
         SINGLE_RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
-        SINGLE_UPGRADE_BEFORE_DEPLOYMENT: bool = bool(
-            os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"]
-        )
+        SINGLE_UPGRADE_BEFORE_DEPLOYMENT: bool = bool(os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"])
         SINGLE_HELM_IS_INSTALL: bool = bool(os.environ["HELM_IS_INSTALL"])
 
-        deployment_manager = KubernetesDeploymentManager(
-            release_name=SINGLE_RELEASE_NAME, use_kubeconfig=None
-        )
+        deployment_manager = KubernetesDeploymentManager(release_name=SINGLE_RELEASE_NAME, use_kubeconfig=None)
         single_chartreuse = Chartreuse(
             alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
             alembic_config_file_path=ALEMBIC_CONFIG_FILE_PATH,
