@@ -1,0 +1,25 @@
+# Simple example configuration with dictionary format
+databases:
+  # Main database
+  main:
+    alembic_directory_path: /app/alembic/main
+    alembic_config_file_path: alembic.ini
+    dialect: postgresql
+    user: myuser
+    password: mypassword
+    host: localhost
+    port: 5432
+    database: myapp
+    allow_migration_for_empty_database: true
+
+  # Cache database
+  cache:
+    alembic_directory_path: /app/alembic/cache
+    alembic_config_file_path: alembic.ini
+    dialect: postgresql
+    user: cache_user
+    password: cache_pass
+    host: redis-db
+    port: 5432
+    database: cache_db
+    allow_migration_for_empty_database: false

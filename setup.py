@@ -45,6 +45,7 @@ setup(
     install_requires=[
         "alembic",
         "psycopg2",
+        "PyYAML",
         "wiremind-kubernetes~=7.0",
     ],
     extras_require={
