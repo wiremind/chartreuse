@@ -55,7 +55,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    patroni_postgresql: bool = "patroni_postgresql" in context.get_x_argument(as_dictionary=True)
+    patroni_postgresql: bool = "patroni_postgresql" in context.get_x_argument(
+        as_dictionary=True
+    )
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),  # type: ignore
         prefix="sqlalchemy.",
