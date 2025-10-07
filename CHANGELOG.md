@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.1.0 (2025-10-07)
+
+### Feat
+- add support for multi-database migration
+
+
 ## v5.0.0 (2025-05-05)
 ### BREAKING CHANGE
 - Change minimum supported version of python: 3.11 (drop 3.7, 3.8, 3.9, 3.10)
