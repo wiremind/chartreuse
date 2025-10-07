@@ -3,7 +3,6 @@ Simple configuration loader for multi-database support.
 """
 
 import logging
-import os
 from typing import Dict, List
 
 import yaml

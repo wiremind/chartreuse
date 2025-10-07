@@ -22,10 +22,10 @@ class TestBuildDatabaseUrl:
             "port": "5432",
             "database": "testdb",
         }
-        
+
         expected_url = "postgresql://testuser:testpass@localhost:5432/testdb"
         result = build_database_url(db_config)
-        
+
         assert result == expected_url
 
     def test_build_database_url_missing_components(self) -> None:
@@ -35,10 +35,10 @@ class TestBuildDatabaseUrl:
             "user": "testuser",
             # Missing password, host, port, database
         }
-        
+
         with pytest.raises(ValueError) as exc_info:
             build_database_url(db_config)
-        
+
         assert "Missing required components" in str(exc_info.value)
         assert "password" in str(exc_info.value)
         assert "host" in str(exc_info.value)
@@ -55,10 +55,10 @@ class TestBuildDatabaseUrl:
             "port": "5432",
             "database": "testdb",
         }
-        
+
         with pytest.raises(ValueError) as exc_info:
             build_database_url(db_config)
-        
+
         assert "Missing required components" in str(exc_info.value)
         assert "user" in str(exc_info.value)
 
@@ -72,10 +72,10 @@ class TestBuildDatabaseUrl:
             "port": "5432",
             "database": "test-db",
         }
-        
+
         expected_url = "postgresql://test@user:test!@#$%pass@localhost:5432/test-db"
         result = build_database_url(db_config)
-        
+
         assert result == expected_url
 
 
@@ -112,66 +112,63 @@ class TestLoadMultiDatabaseConfig:
             }
         }
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(config_data, f)
             temp_file = f.name
 
         try:
             result = load_multi_database_config(temp_file)
-            
+
             assert len(result) == 2
-            
+
             # Check main database config
             main_db = next(db for db in result if db["name"] == "main")
             assert main_db["alembic_directory_path"] == "/app/alembic/main"
-            assert main_db["url"] == "postgresql://mainuser:mainpass@main.db.com:5432/maindb"
+            assert (
+                main_db["url"]
+                == "postgresql://mainuser:mainpass@main.db.com:5432/maindb"
+            )
             assert main_db["allow_migration_for_empty_database"] is True
             assert main_db["additional_parameters"] == "--verbose"
-            
+
             # Check secondary database config
             sec_db = next(db for db in result if db["name"] == "secondary")
             assert sec_db["alembic_directory_path"] == "/app/alembic/secondary"
             assert sec_db["url"] == "postgresql://secuser:secpass@sec.db.com:5433/secdb"
             assert sec_db["allow_migration_for_empty_database"] is False
             assert sec_db.get("additional_parameters", "") == ""
-            
+
         finally:
             os.unlink(temp_file)
 
     def test_load_multi_database_config_missing_databases_key(self) -> None:
         """Test that missing 'databases' key raises ValueError."""
-        config_data = {
-            "some_other_key": {
-                "value": "test"
-            }
-        }
+        config_data = {"some_other_key": {"value": "test"}}
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(config_data, f)
             temp_file = f.name
 
         try:
             with pytest.raises(ValueError) as exc_info:
                 load_multi_database_config(temp_file)
-            
+
             assert "Configuration must contain 'databases' key" in str(exc_info.value)
         finally:
             os.unlink(temp_file)
 
     def test_load_multi_database_config_databases_not_dict(self) -> None:
         """Test that non-dict 'databases' value raises ValueError."""
-        config_data = {
-            "databases": ["not", "a", "dict"]
-        }
+        config_data = {"databases": ["not", "a", "dict"]}
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(config_data, f)
             temp_file = f.name
 
         try:
             with pytest.raises(ValueError) as exc_info:
                 load_multi_database_config(temp_file)
-            
+
             assert "'databases' must be a dictionary" in str(exc_info.value)
         finally:
             os.unlink(temp_file)
@@ -189,14 +186,14 @@ class TestLoadMultiDatabaseConfig:
             }
         }
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(config_data, f)
             temp_file = f.name
 
         try:
             with pytest.raises(ValueError) as exc_info:
                 load_multi_database_config(temp_file)
-            
+
             assert "Missing required components" in str(exc_info.value)
         finally:
             os.unlink(temp_file)
@@ -204,11 +201,13 @@ class TestLoadMultiDatabaseConfig:
     def test_load_multi_database_config_file_not_found(self) -> None:
         """Test that missing config file raises FileNotFoundError."""
         non_existent_file = "/path/that/does/not/exist.yaml"
-        
+
         with pytest.raises(FileNotFoundError) as exc_info:
             load_multi_database_config(non_existent_file)
-        
-        assert f"Configuration file not found: {non_existent_file}" in str(exc_info.value)
+
+        assert f"Configuration file not found: {non_existent_file}" in str(
+            exc_info.value
+        )
 
     def test_load_multi_database_config_invalid_yaml(self) -> None:
         """Test that invalid YAML raises ValueError."""
@@ -219,14 +218,14 @@ class TestLoadMultiDatabaseConfig:
           invalid: [unclosed bracket
         """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(invalid_yaml)
             temp_file = f.name
 
         try:
             with pytest.raises(ValueError) as exc_info:
                 load_multi_database_config(temp_file)
-            
+
             assert "Invalid YAML in configuration file" in str(exc_info.value)
         finally:
             os.unlink(temp_file)
@@ -248,19 +247,19 @@ class TestLoadMultiDatabaseConfig:
             }
         }
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(config_data, f)
             temp_file = f.name
 
         try:
             result = load_multi_database_config(temp_file)
-            
+
             assert len(result) == 1
             db_config = result[0]
             assert db_config["name"] == "minimal"
             assert db_config["url"] == "postgresql://user:pass@localhost:5432/db"
             assert db_config.get("allow_migration_for_empty_database", False) is False
             assert db_config.get("additional_parameters", "") == ""
-            
+
         finally:
             os.unlink(temp_file)

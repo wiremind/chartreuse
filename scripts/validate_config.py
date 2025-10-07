@@ -123,7 +123,7 @@ def validate_config(config_path: str) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     if len(sys.argv) != 2:
         print("Usage: python validate_config.py path/to/config.yaml")
         sys.exit(1)

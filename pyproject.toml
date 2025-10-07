@@ -2,6 +2,7 @@
 name = "chartreuse"
 description="Helper for Alembic migrations within Kubernetes."
 dynamic = ["version"]
+readme = "README.md"
 authors = [{ name = "wiremind", email = "dev@wiremind.io" }]
 license="LGPL-3.0-or-later"
 urls = { github = "https://github.com/wiremind/chartreuse"}

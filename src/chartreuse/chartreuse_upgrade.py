@@ -102,41 +102,41 @@ def main() -> None:
         ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get(
             "CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini"
         )
-        POSTGRESQL_URL: str = os.environ.get("CHARTREUSE_ALEMBIC_URL")
+        POSTGRESQL_URL: str | None = os.environ["CHARTREUSE_ALEMBIC_URL"]
         ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
             os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
         )
         ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ[
             "CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"
         ]
-        ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
-        RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
-        UPGRADE_BEFORE_DEPLOYMENT: bool = bool(
+        SINGLE_ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
+        SINGLE_RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
+        SINGLE_UPGRADE_BEFORE_DEPLOYMENT: bool = bool(
             os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"]
         )
-        HELM_IS_INSTALL: bool = bool(os.environ["HELM_IS_INSTALL"])
+        SINGLE_HELM_IS_INSTALL: bool = bool(os.environ["HELM_IS_INSTALL"])
 
         deployment_manager = KubernetesDeploymentManager(
-            release_name=RELEASE_NAME, use_kubeconfig=None
+            release_name=SINGLE_RELEASE_NAME, use_kubeconfig=None
         )
-        chartreuse = Chartreuse(
+        single_chartreuse = Chartreuse(
             alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
             alembic_config_file_path=ALEMBIC_CONFIG_FILE_PATH,
             postgresql_url=POSTGRESQL_URL,
             alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
             alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
-            release_name=RELEASE_NAME,
+            release_name=SINGLE_RELEASE_NAME,
             kubernetes_helper=deployment_manager,
         )
-        if chartreuse.is_migration_needed:
-            if ENABLE_STOP_PODS:
+        if single_chartreuse.is_migration_needed:
+            if SINGLE_ENABLE_STOP_PODS:
                 deployment_manager.stop_pods()
 
-            chartreuse.upgrade()
+            single_chartreuse.upgrade()
 
-            if not ENABLE_STOP_PODS:
+            if not SINGLE_ENABLE_STOP_PODS:
                 return
-            if UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL:
+            if SINGLE_UPGRADE_BEFORE_DEPLOYMENT and not SINGLE_HELM_IS_INSTALL:
                 return
 
             try:
