@@ -1,12 +1,16 @@
 # Only used for e2e tests. Do not use in production.
-
+# For Wiremind use only since it uses our private package wiremind-python
 FROM python:3.12
 
 WORKDIR /app
 
+# Install uv
+RUN pip install uv
+
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --system --no-cache -r requirements.txt
 
 COPY . .
-RUN pip install -e .
-COPY example/alembic alembic
+RUN uv pip install --system -e .
+RUN uv pip install --system wiremind-python
+COPY alembic alembic

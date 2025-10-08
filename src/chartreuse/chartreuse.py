@@ -72,12 +72,21 @@ class MultiChartreuse:
             db_name = db_config["name"]
             logger.info(f"Initializing migration helper for database: {db_name}")
 
+            # Build additional parameters with section name
+            additional_params = db_config.get("additional_parameters", "")
+
+            # Use database name as section name for alembic -n parameter
+            section_param = f"-n {db_name}"
+
+            if section_param:
+                additional_params = f"{additional_params} {section_param}".strip()
+
             helper = AlembicMigrationHelper(
                 alembic_directory_path=db_config["alembic_directory_path"],
                 alembic_config_file_path=db_config["alembic_config_file_path"],
                 database_url=db_config["url"],
                 allow_migration_for_empty_database=db_config.get("allow_migration_for_empty_database", False),
-                additional_parameters=db_config.get("additional_parameters", ""),
+                additional_parameters=additional_params,
             )
             self.migration_helpers[db_name] = helper
 

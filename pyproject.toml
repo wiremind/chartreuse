@@ -13,6 +13,7 @@ dependencies = [
   "alembic",
   "psycopg2",
   "wiremind-kubernetes~=7.0",
+  "numpy >1.23.6",
 ]
 
 [build-system]

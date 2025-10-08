@@ -1,0 +1,28 @@
+# Only used for e2e tests. Do not use in production.
+# For Wiremind use only since it uses our private package wiremind-python
+
+FROM python:3.12
+
+WORKDIR /app
+
+# Install uv
+RUN pip install uv
+
+# Install dependencies if requirements.txt exists
+COPY pyproject.toml .
+COPY VERSION .
+COPY README.md .
+COPY requirements.txt* ./
+COPY src/ src/
+COPY alembic/ alembic/
+
+RUN if [ -f requirements.txt ]; then uv pip install --system --no-cache -r requirements.txt; fi
+
+# Install the package itself
+RUN uv pip install --system -e .
+
+# Install wiremind-python with authentication using build secrets
+# The secret will be mounted at build time but not stored in the image
+RUN --mount=type=secret,id=uv_config,target=/root/.config/uv/uv.toml \
+    mkdir -p /root/.config/uv && \
+    uv pip install --system wiremind-python cyrillic clickhouse-sqlalchemy
