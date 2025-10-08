@@ -412,5 +412,6 @@ class TestMultiChartreuse:
             alembic_config_file_path="alembic.ini",
             database_url="postgresql://user:pass@localhost:5432/db",
             allow_migration_for_empty_database=False,  # Default value
-            additional_parameters="",  # Default value
+            additional_parameters="-n test",  # Section name parameter added
+            alembic_section_name="test",  # New parameter for multi-database support
         )

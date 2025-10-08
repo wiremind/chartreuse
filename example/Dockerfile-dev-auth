@@ -14,7 +14,7 @@ COPY VERSION .
 COPY README.md .
 COPY requirements.txt* ./
 COPY src/ src/
-COPY alembic/ alembic/
+COPY example/alembic/ alembic/
 
 RUN if [ -f requirements.txt ]; then uv pip install --system --no-cache -r requirements.txt; fi
 

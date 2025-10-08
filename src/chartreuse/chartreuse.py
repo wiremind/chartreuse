@@ -87,6 +87,7 @@ class MultiChartreuse:
                 database_url=db_config["url"],
                 allow_migration_for_empty_database=db_config.get("allow_migration_for_empty_database", False),
                 additional_parameters=additional_params,
+                alembic_section_name=db_name,
             )
             self.migration_helpers[db_name] = helper
 

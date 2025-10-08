@@ -9,6 +9,7 @@ Have a look to examples https://github.com/xzkostyan/clickhouse-sqlalchemy-alemb
 """
 
 import sqlalchemy as sa
+from alembic import op
 from clickhouse_sqlalchemy import engines
 from clickhouse_sqlalchemy.types import (
     Array,
@@ -23,8 +24,6 @@ from clickhouse_sqlalchemy.types import (
     Nullable,
     String,
 )
-
-from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "55622187799e"

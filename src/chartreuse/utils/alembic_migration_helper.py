@@ -22,6 +22,8 @@ class AlembicMigrationHelper:
         additional_parameters: str = "",
         allow_migration_for_empty_database: bool = False,
         configure: bool = True,
+        alembic_section_name: str | None = None,
+        skip_db_checks: bool = False,
     ):
         if not database_url:
             raise ValueError("database_url not set, not upgrading database.")
@@ -31,31 +33,58 @@ class AlembicMigrationHelper:
         self.additional_parameters = additional_parameters
         self.alembic_directory_path = alembic_directory_path
         self.alembic_config_file_path = alembic_config_file_path
+        self.alembic_section_name = alembic_section_name
+        self.skip_db_checks = skip_db_checks
 
         # Chartreuse will upgrade a PG managed/configured by postgres-operator
         self.is_patroni_postgresql: bool = "CHARTREUSE_PATRONI_POSTGRESQL" in os.environ
-        if self.is_patroni_postgresql:
+        if self.is_patroni_postgresql and not skip_db_checks:
             self.additional_parameters += " -x patroni_postgresql=yes"
             self._wait_postgres_is_configured()
 
         if configure:
             self._configure()
 
-        self.is_migration_needed = self._check_migration_needed()
+        if not skip_db_checks:
+            self.is_migration_needed = self._check_migration_needed()
+        else:
+            self.is_migration_needed = False
 
     def _configure(self) -> None:
         with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}") as f:
             content = f.read()
+
+        if self.alembic_section_name:
+            # Multi-database configuration: update specific section
+            # Find the section and update sqlalchemy.url within that section only
+            section_start = rf"\[{re.escape(self.alembic_section_name)}\]"
+            section_pattern = (
+                rf"({section_start}.*?)"
+                rf"(sqlalchemy\.url\s*=\s*[^\n]*)"
+                rf"(.*?)(?=\n\[|\Z)"
+            )
+            content_new = re.sub(
+                section_pattern,
+                rf"\1sqlalchemy.url = {self.database_url}\3",
+                content,
+                flags=re.DOTALL | re.M,
+            )
+        else:
+            # Single database configuration: replace any sqlalchemy.url
             content_new = re.sub(
                 "(sqlalchemy.url.*=.*){1}",
                 rf"sqlalchemy.url={self.database_url}",
                 content,
                 flags=re.M,
             )
+
         if content != content_new:
             with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}", "w") as f:
                 f.write(content_new)
-            logger.info("alembic.ini was configured.")
+            config_type = (
+                f"section {self.alembic_section_name}" if self.alembic_section_name else "default configuration"
+            )
+            logger.info(f"alembic.ini was configured for {config_type}.")
         else:
             raise SubprocessError("configuration of alembic.ini has failed (alembic.ini is unchanged)")
 

@@ -1,8 +1,7 @@
 import logging
 
-from sqlalchemy import engine_from_config, pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # inspired by https://github.com/xzkostyan/clickhouse-sqlalchemy-alembic-example/blob/main/simple/migrations/env.py
 

@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from pytest_mock.plugin import MockerFixture
 
 import chartreuse.utils
@@ -179,3 +182,208 @@ def test_additional_parameters_current(mocker: MockerFixture) -> None:
     mocked_run_command.assert_called_with(
         "alembic -c alembic.ini foo bar current", cwd="/app/alembic", return_result=True
     )
+
+
+def test_multi_database_configuration_postgresql_section(mocker: MockerFixture) -> None:
+    """
+    Test that multi-database configuration correctly updates PostgreSQL section in alembic.ini
+    """
+    # Sample alembic.ini content with multiple sections
+    sample_alembic_ini = """[postgresql]
+script_location = postgresl
+sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[clickhouse]
+script_location = clickhouse
+sqlalchemy.url = clickhouse://default@localhost:8123/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[loggers]
+keys = root,sqlalchemy,alembic
+"""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a temporary alembic.ini file
+        alembic_ini_path = os.path.join(temp_dir, "alembic.ini")
+        with open(alembic_ini_path, "w") as f:
+            f.write(sample_alembic_ini)
+
+        # Test configuring PostgreSQL section
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url="postgresql://new_user:new_pass@new_host:5432/new_db",
+            alembic_section_name="postgresql",
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        # Read the file and verify PostgreSQL section was updated
+        with open(alembic_ini_path) as f:
+            content = f.read()
+
+        # Verify PostgreSQL URL was updated
+        assert "postgresql://new_user:new_pass@new_host:5432/new_db" in content
+        # Verify ClickHouse URL was NOT changed
+        assert "clickhouse://default@localhost:8123/wiremind" in content
+        # Verify sections are still intact
+        assert "[postgresql]" in content
+        assert "[clickhouse]" in content
+        assert "[loggers]" in content
+
+
+def test_multi_database_configuration_clickhouse_section(mocker: MockerFixture) -> None:
+    """
+    Test that multi-database configuration correctly updates ClickHouse section in alembic.ini
+    """
+    # Sample alembic.ini content with multiple sections
+    sample_alembic_ini = """[postgresql]
+script_location = postgresl
+sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[clickhouse]
+script_location = clickhouse
+sqlalchemy.url = clickhouse://default@localhost:8123/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[loggers]
+keys = root,sqlalchemy,alembic
+"""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a temporary alembic.ini file
+        alembic_ini_path = os.path.join(temp_dir, "alembic.ini")
+        with open(alembic_ini_path, "w") as f:
+            f.write(sample_alembic_ini)
+
+        # Test configuring ClickHouse section
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url="clickhouse://new_user:new_pass@new_host:8123/new_db",
+            alembic_section_name="clickhouse",
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        # Read the file and verify ClickHouse section was updated
+        with open(alembic_ini_path) as f:
+            content = f.read()
+
+        # Verify ClickHouse URL was updated
+        assert "clickhouse://new_user:new_pass@new_host:8123/new_db" in content
+        # Verify PostgreSQL URL was NOT changed
+        assert "postgresql://wiremind_owner@localhost:5432/wiremind" in content
+        # Verify sections are still intact
+        assert "[postgresql]" in content
+        assert "[clickhouse]" in content
+        assert "[loggers]" in content
+
+
+def test_multi_database_configuration_both_sections(mocker: MockerFixture) -> None:
+    """
+    Test that multi-database configuration correctly updates both sections independently
+    """
+    # Sample alembic.ini content with multiple sections
+    sample_alembic_ini = """[postgresql]
+script_location = postgresl
+sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[clickhouse]
+script_location = clickhouse
+sqlalchemy.url = clickhouse://default@localhost:8123/wiremind
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+
+[loggers]
+keys = root,sqlalchemy,alembic
+"""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a temporary alembic.ini file
+        alembic_ini_path = os.path.join(temp_dir, "alembic.ini")
+        with open(alembic_ini_path, "w") as f:
+            f.write(sample_alembic_ini)
+
+        # Configure PostgreSQL section first
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url="postgresql://pg_user:pg_pass@pg_host:5432/pg_db",
+            alembic_section_name="postgresql",
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        # Configure ClickHouse section second
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url="clickhouse://ch_user:ch_pass@ch_host:8123/ch_db",
+            alembic_section_name="clickhouse",
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        # Read the file and verify both sections were updated correctly
+        with open(alembic_ini_path) as f:
+            final_content = f.read()
+
+        # Verify both URLs are now updated correctly
+        assert "postgresql://pg_user:pg_pass@pg_host:5432/pg_db" in final_content
+        assert "clickhouse://ch_user:ch_pass@ch_host:8123/ch_db" in final_content
+        # Verify original URLs are gone
+        assert "postgresql://wiremind_owner@localhost:5432/wiremind" not in final_content
+        assert "clickhouse://default@localhost:8123/wiremind" not in final_content
+        # Verify sections are still intact
+        assert "[postgresql]" in final_content
+        assert "[clickhouse]" in final_content
+        assert "[loggers]" in final_content
+
+
+def test_single_database_configuration_still_works(mocker: MockerFixture) -> None:
+    """
+    Test that single-database configuration (legacy behavior) still works when alembic_section_name is None
+    """
+    # Sample simple alembic.ini content (single database)
+    sample_alembic_ini = """[alembic]
+script_location = alembic
+sqlalchemy.url = postgresql://old@localhost:5432/old
+prepend_sys_path = ..
+file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
+"""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create a temporary alembic.ini file
+        alembic_ini_path = os.path.join(temp_dir, "alembic.ini")
+        with open(alembic_ini_path, "w") as f:
+            f.write(sample_alembic_ini)
+
+        # Test single database configuration (alembic_section_name=None)
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url="postgresql://new_user:new_pass@new_host:5432/new_db",
+            alembic_section_name=None,  # Single database mode
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        # Read the file and verify URL was updated
+        with open(alembic_ini_path) as f:
+            content = f.read()
+
+        # Verify URL was updated
+        assert "postgresql://new_user:new_pass@new_host:5432/new_db" in content
+        # Verify original URL is gone
+        assert "postgresql://old@localhost:5432/old" not in content
+        # Verify section is still intact
+        assert "[alembic]" in content
