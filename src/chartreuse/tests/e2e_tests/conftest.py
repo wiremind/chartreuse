@@ -42,11 +42,13 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Genera
             else:
                 additional_args = "--set chartreuse.enabled=true --set chartreuse.upgradeBeforeDeployment=false"
         run_command(
-            f"helm install --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 180s {additional_args}",  # noqa: E501
+            f"""helm install --wait {TEST_RELEASE} {HELM_CHART_PATH}
+            --namespace {TEST_NAMESPACE} --timeout 180s {additional_args}""",
             cwd=EXAMPLE_PATH,
         )
         run_command(
-            f"helm upgrade --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 60s {additional_args}",  # noqa: E501
+            f"""helm upgrade --wait {TEST_RELEASE} {HELM_CHART_PATH}
+            --namespace {TEST_NAMESPACE} --timeout 60s {additional_args}""",
             cwd=EXAMPLE_PATH,
         )
 
@@ -63,7 +65,8 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Genera
         time.sleep(5)  # Hack to wait for k exec to be up
     except:  # noqa
         run_command(
-            f"kubectl logs --selector app.kubernetes.io/instance=e2e-test-release --all-containers=false --namespace {TEST_NAMESPACE} --tail 1000"  # noqa: E501
+            f"""kubectl logs --selector app.kubernetes.io/instance=e2e-test-release
+            --all-containers=false --namespace {TEST_NAMESPACE} --tail 1000"""
         )
         run_command(f"kubectl delete namespace {TEST_NAMESPACE} --grace-period=1")
         raise

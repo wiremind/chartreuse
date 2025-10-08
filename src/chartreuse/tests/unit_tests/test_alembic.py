@@ -15,7 +15,9 @@ def test_respect_empty_database(mocker: MockerFixture) -> None:
         "chartreuse.utils.AlembicMigrationHelper._get_table_list",
         return_value=table_list,
     )
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
     assert alembic_migration_helper.is_postgres_empty()
 
 
@@ -32,7 +34,9 @@ def test_respect_not_empty_database(mocker: MockerFixture) -> None:
         "chartreuse.utils.AlembicMigrationHelper._get_alembic_current",
         return_value="123",
     )
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
     assert alembic_migration_helper.is_postgres_empty() is False
 
 
@@ -56,7 +60,9 @@ e1f79bafdfa2
         "chartreuse.utils.AlembicMigrationHelper._get_alembic_current",
         return_value=sample_alembic_output,
     )
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
 
     assert alembic_migration_helper.is_migration_needed
 
@@ -81,7 +87,9 @@ e1f79bafdfa2 (head)
         "chartreuse.utils.AlembicMigrationHelper._get_alembic_current",
         return_value=sample_alembic_output,
     )
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
 
     assert alembic_migration_helper.is_migration_needed is False
 
@@ -101,7 +109,9 @@ def test_detect_needed_migration_non_existent(mocker: MockerFixture) -> None:
         "chartreuse.utils.AlembicMigrationHelper._get_alembic_current",
         return_value=sample_alembic_output,
     )
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
 
     assert alembic_migration_helper.is_migration_needed
 
@@ -122,7 +132,9 @@ def test_detect_database_is_empty(mocker: MockerFixture) -> None:
         return_value=sample_alembic_output,
     )
 
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
 
     assert alembic_migration_helper.is_postgres_empty()
 
@@ -143,7 +155,9 @@ def test_detect_database_is_not_empty(mocker: MockerFixture) -> None:
         return_value=sample_alembic_output,
     )
 
-    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(database_url="foo", configure=False)
+    alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
+        database_url="foo", alembic_section_name="test", configure=False
+    )
 
     assert alembic_migration_helper.is_postgres_empty() is False
 
@@ -161,7 +175,7 @@ def test_additional_parameters(mocker: MockerFixture) -> None:
     mocked_run_command = mocker.patch("chartreuse.utils.alembic_migration_helper.run_command")
 
     alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
-        database_url="foo", configure=False, additional_parameters="foo bar"
+        database_url="foo", alembic_section_name="test", configure=False, additional_parameters="foo bar"
     )
     alembic_migration_helper.upgrade_db()
     mocked_run_command.assert_called_with("alembic -c alembic.ini foo bar upgrade head", cwd="/app/alembic")
@@ -176,7 +190,7 @@ def test_additional_parameters_current(mocker: MockerFixture) -> None:
     mocked_run_command.return_value = ("bar", None, 0)
 
     alembic_migration_helper = chartreuse.utils.AlembicMigrationHelper(
-        database_url="foo", configure=False, additional_parameters="foo bar"
+        database_url="foo", alembic_section_name="test", configure=False, additional_parameters="foo bar"
     )
     alembic_migration_helper._get_alembic_current()
     mocked_run_command.assert_called_with(
@@ -349,9 +363,9 @@ keys = root,sqlalchemy,alembic
         assert "[loggers]" in final_content
 
 
-def test_single_database_configuration_still_works(mocker: MockerFixture) -> None:
+def test_single_database_configuration_with_alembic_section(mocker: MockerFixture) -> None:
     """
-    Test that single-database configuration (legacy behavior) still works when alembic_section_name is None
+    Test that single-database configuration works when alembic_section_name is specified
     """
     # Sample simple alembic.ini content (single database)
     sample_alembic_ini = """[alembic]
@@ -367,12 +381,12 @@ file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
         with open(alembic_ini_path, "w") as f:
             f.write(sample_alembic_ini)
 
-        # Test single database configuration (alembic_section_name=None)
+        # Test single database configuration with explicit section name
         chartreuse.utils.AlembicMigrationHelper(
             alembic_directory_path=temp_dir,
             alembic_config_file_path="alembic.ini",
             database_url="postgresql://new_user:new_pass@new_host:5432/new_db",
-            alembic_section_name=None,  # Single database mode
+            alembic_section_name="alembic",
             configure=True,
             skip_db_checks=True,
         )

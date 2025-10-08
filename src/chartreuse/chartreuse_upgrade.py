@@ -5,7 +5,7 @@ from wiremind_kubernetes import KubernetesDeploymentManager
 
 from chartreuse import get_version
 
-from .chartreuse import Chartreuse, MultiChartreuse
+from .chartreuse import Chartreuse
 from .config_loader import load_multi_database_config
 
 logger = logging.getLogger(__name__)
@@ -35,99 +35,80 @@ def ensure_safe_run() -> None:
         )
 
 
+def validate_config_file_path() -> str:
+    """
+    Validate that the multi-database configuration file path is properly configured and accessible.
+
+    Returns:
+        str: The validated config file path
+
+    Raises:
+        ValueError: If environment variable is not set or path is not a file
+        FileNotFoundError: If the config file doesn't exist
+    """
+    multi_config_path = os.environ.get("CHARTREUSE_MULTI_CONFIG_PATH")
+
+    if not multi_config_path:
+        raise ValueError("CHARTREUSE_MULTI_CONFIG_PATH environment variable is required but not set")
+
+    if not os.path.exists(multi_config_path):
+        raise FileNotFoundError(f"Multi-database configuration file not found: {multi_config_path}")
+
+    if not os.path.isfile(multi_config_path):
+        raise ValueError(f"Multi-database configuration path is not a file: {multi_config_path}")
+
+    return multi_config_path
+
+
 def main() -> None:
     """
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
     ensure_safe_run()
 
-    # Check if multi-database configuration is provided
-    multi_config_path = os.environ.get("CHARTREUSE_MULTI_CONFIG_PATH")
+    # Validate and get multi-database configuration path
+    multi_config_path = validate_config_file_path()
 
-    if multi_config_path:
-        # Use multi-database configuration
-        logger.info(f"Using multi-database configuration from: {multi_config_path}")
+    # Use multi-database configuration
+    logger.info("Using multi-database configuration from: %s", multi_config_path)
+
+    try:
+        databases_config = load_multi_database_config(multi_config_path)
+    except (FileNotFoundError, ValueError) as e:
+        logger.error("Failed to load multi-database configuration: %s", e)
+        raise
+
+    ENABLE_STOP_PODS: bool = os.environ.get("CHARTREUSE_ENABLE_STOP_PODS", "true").lower() not in ("", "false", "0")
+    RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
+    UPGRADE_BEFORE_DEPLOYMENT: bool = os.environ.get("CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT", "false").lower() not in (
+        "",
+        "false",
+        "0",
+    )
+    HELM_IS_INSTALL: bool = os.environ.get("HELM_IS_INSTALL", "false").lower() not in ("", "false", "0")
+
+    deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
+    chartreuse = Chartreuse(
+        databases_config=databases_config,
+        release_name=RELEASE_NAME,
+        kubernetes_helper=deployment_manager,
+    )
+
+    if chartreuse.is_migration_needed:
+        if ENABLE_STOP_PODS:
+            deployment_manager.stop_pods()
+
+        chartreuse.upgrade()
+
+        if not ENABLE_STOP_PODS:
+            return
+        if UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL:
+            return
 
         try:
-            databases_config = load_multi_database_config(multi_config_path)
-        except (FileNotFoundError, ValueError) as e:
-            logger.error(f"Failed to load multi-database configuration: {e}")
-            raise
-
-        ENABLE_STOP_PODS: bool = bool(os.environ.get("CHARTREUSE_ENABLE_STOP_PODS", "true").lower() == "true")
-        RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
-        UPGRADE_BEFORE_DEPLOYMENT: bool = bool(
-            os.environ.get("CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT", "false").lower() == "true"
-        )
-        HELM_IS_INSTALL: bool = bool(os.environ.get("HELM_IS_INSTALL", "false").lower() == "true")
-
-        deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
-        chartreuse = MultiChartreuse(
-            databases_config=databases_config,
-            release_name=RELEASE_NAME,
-            kubernetes_helper=deployment_manager,
-        )
-
-        if chartreuse.is_migration_needed:
-            if ENABLE_STOP_PODS:
-                deployment_manager.stop_pods()
-
-            chartreuse.upgrade()
-
-            if not ENABLE_STOP_PODS:
-                return
-            if UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL:
-                return
-
-            try:
-                deployment_manager.start_pods()
-            except:  # noqa: E722
-                logger.error(
-                    "Couldn't scale up new pods in chartreuse_upgrade after migration, SHOULD BE DONE MANUALLY ! "
-                )
-    else:
-        # Use legacy single-database configuration
-        logger.info("Using single-database configuration from environment variables")
-
-        ALEMBIC_DIRECTORY_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic")
-        ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini")
-        POSTGRESQL_URL: str | None = os.environ["CHARTREUSE_ALEMBIC_URL"]
-        ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
-            os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
-        )
-        ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
-        SINGLE_ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
-        SINGLE_RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
-        SINGLE_UPGRADE_BEFORE_DEPLOYMENT: bool = bool(os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"])
-        SINGLE_HELM_IS_INSTALL: bool = bool(os.environ["HELM_IS_INSTALL"])
-
-        deployment_manager = KubernetesDeploymentManager(release_name=SINGLE_RELEASE_NAME, use_kubeconfig=None)
-        single_chartreuse = Chartreuse(
-            alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
-            alembic_config_file_path=ALEMBIC_CONFIG_FILE_PATH,
-            postgresql_url=POSTGRESQL_URL,
-            alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
-            alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
-            release_name=SINGLE_RELEASE_NAME,
-            kubernetes_helper=deployment_manager,
-        )
-        if single_chartreuse.is_migration_needed:
-            if SINGLE_ENABLE_STOP_PODS:
-                deployment_manager.stop_pods()
-
-            single_chartreuse.upgrade()
-
-            if not SINGLE_ENABLE_STOP_PODS:
-                return
-            if SINGLE_UPGRADE_BEFORE_DEPLOYMENT and not SINGLE_HELM_IS_INSTALL:
-                return
-
-            try:
-                deployment_manager.start_pods()
-            except:  # noqa: E722
-                logger.error(
-                    "Couldn't scale up new pods in chartreuse_upgrade after migration, SHOULD BE DONE MANUALLY ! "
-                )
+            deployment_manager.start_pods()
+        except Exception:
+            logger.error("Couldn't scale up new pods in chartreuse_upgrade after migration, SHOULD BE DONE MANUALLY ! ")
 
 
 if __name__ == "__main__":

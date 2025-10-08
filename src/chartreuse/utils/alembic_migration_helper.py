@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+from configparser import ConfigParser
 from subprocess import SubprocessError
 from time import sleep, time
 
@@ -19,10 +20,11 @@ class AlembicMigrationHelper:
         alembic_directory_path: str = "/app/alembic",
         alembic_config_file_path: str = "alembic.ini",
         database_url: str,
+        alembic_section_name: str,
         additional_parameters: str = "",
         allow_migration_for_empty_database: bool = False,
         configure: bool = True,
-        alembic_section_name: str | None = None,
+        # skip_db_checks is used for testing purposes only
         skip_db_checks: bool = False,
     ):
         if not database_url:
@@ -44,49 +46,31 @@ class AlembicMigrationHelper:
 
         if configure:
             self._configure()
-
+        # skip_db_checks is used for testing purposes only
         if not skip_db_checks:
             self.is_migration_needed = self._check_migration_needed()
         else:
             self.is_migration_needed = False
 
     def _configure(self) -> None:
-        with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}") as f:
-            content = f.read()
+        config_path = f"{self.alembic_directory_path}/{self.alembic_config_file_path}"
 
-        if self.alembic_section_name:
-            # Multi-database configuration: update specific section
-            # Find the section and update sqlalchemy.url within that section only
-            section_start = rf"\[{re.escape(self.alembic_section_name)}\]"
-            section_pattern = (
-                rf"({section_start}.*?)"
-                rf"(sqlalchemy\.url\s*=\s*[^\n]*)"
-                rf"(.*?)(?=\n\[|\Z)"
-            )
-            content_new = re.sub(
-                section_pattern,
-                rf"\1sqlalchemy.url = {self.database_url}\3",
-                content,
-                flags=re.DOTALL | re.M,
-            )
-        else:
-            # Single database configuration: replace any sqlalchemy.url
-            content_new = re.sub(
-                "(sqlalchemy.url.*=.*){1}",
-                rf"sqlalchemy.url={self.database_url}",
-                content,
-                flags=re.M,
-            )
+        # Read the configuration file
+        config = ConfigParser()
+        config.read(config_path)
 
-        if content != content_new:
-            with open(f"{self.alembic_directory_path}/{self.alembic_config_file_path}", "w") as f:
-                f.write(content_new)
-            config_type = (
-                f"section {self.alembic_section_name}" if self.alembic_section_name else "default configuration"
-            )
-            logger.info(f"alembic.ini was configured for {config_type}.")
-        else:
-            raise SubprocessError("configuration of alembic.ini has failed (alembic.ini is unchanged)")
+        # Multi-database configuration: update specific section
+        if not config.has_section(self.alembic_section_name):
+            raise ValueError(f"Section '{self.alembic_section_name}' not found in {self.alembic_config_file_path}")
+
+        # Update the sqlalchemy.url in the specific section
+        config.set(self.alembic_section_name, "sqlalchemy.url", self.database_url)
+
+        # Write the updated configuration back to the file
+        with open(config_path, "w") as f:
+            config.write(f)
+
+        logger.info("alembic.ini was configured for section %s.", self.alembic_section_name)
 
     def _wait_postgres_is_configured(self) -> None:
         """
@@ -123,7 +107,7 @@ class AlembicMigrationHelper:
                 return
             except Exception as e:
                 # TODO: Learn about exceptions that should be caught here, otherwise we'll wait for nothing
-                logger.info(f"Caught: {e}")
+                logger.info("Caught: %s", e)
                 logger.info(
                     "Waiting for the postgres-operator to create the user wiremind_owner_user"
                     " (that alembic and I use) and to set default privileges..."
@@ -139,7 +123,7 @@ class AlembicMigrationHelper:
 
     def is_postgres_empty(self) -> bool:
         table_list = self._get_table_list()
-        logger.info(f"Tables in the database: {table_list}")
+        logger.info("Tables in the database: %s", table_list)
         # Don't count "alembic" table
         table_name = "alembic_version"
         if table_name in table_list:

@@ -5,7 +5,8 @@ from unittest.mock import MagicMock
 
 from pytest_mock.plugin import MockerFixture
 
-from chartreuse.chartreuse import Chartreuse, MultiChartreuse, configure_logging
+from chartreuse.chartreuse import Chartreuse, configure_logging
+from chartreuse.config_loader import DatabaseConfig
 
 
 class TestConfigureLogging:
@@ -41,13 +42,25 @@ class TestChartreuse:
         # Create a mock kubernetes helper
         mock_k8s_helper = MagicMock()
 
+        # Use the new dictionary format with DatabaseConfig objects
+        databases_config = {
+            "test-db": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=True,
+                additional_parameters="--verbose",
+            )
+        }
+
         chartreuse = Chartreuse(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
+            databases_config=databases_config,
             release_name="test-release",
-            alembic_allow_migration_for_empty_database=True,
-            alembic_additional_parameters="--verbose",
             kubernetes_helper=mock_k8s_helper,
         )
 
@@ -57,7 +70,8 @@ class TestChartreuse:
             alembic_config_file_path="alembic.ini",
             database_url="postgresql://user:pass@localhost:5432/db",
             allow_migration_for_empty_database=True,
-            additional_parameters="--verbose",
+            additional_parameters="--verbose -n test-db",
+            alembic_section_name="test-db",
         )
 
         # Verify kubernetes helper is set
@@ -80,12 +94,25 @@ class TestChartreuse:
         # Mock configure_logging
         mocker.patch("chartreuse.chartreuse.configure_logging")
 
+        # Use the new dictionary format with DatabaseConfig objects
+        databases_config = {
+            "test-db": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=False,
+                additional_parameters="",
+            )
+        }
+
         chartreuse = Chartreuse(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
+            databases_config=databases_config,
             release_name="test-release",
-            alembic_allow_migration_for_empty_database=False,
         )
 
         # Verify KubernetesDeploymentManager was initialized
@@ -95,7 +122,7 @@ class TestChartreuse:
         assert chartreuse.is_migration_needed is False
 
     def test_check_migration_needed(self, mocker: MockerFixture) -> None:
-        """Test check_migration_needed method."""
+        """Test is_migration_needed property."""
         mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
         mock_alembic_instance = MagicMock()
         mock_alembic_instance.is_migration_needed = True
@@ -104,21 +131,34 @@ class TestChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
+        # Use the new dictionary format with DatabaseConfig objects
+        databases_config = {
+            "test-db": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=True,
+                additional_parameters="",
+            )
+        }
+
         chartreuse = Chartreuse(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
+            databases_config=databases_config,
             release_name="test-release",
-            alembic_allow_migration_for_empty_database=True,
             kubernetes_helper=mock_k8s_helper,
         )
 
-        result = chartreuse.check_migration_needed()
+        result = chartreuse.is_migration_needed
         assert result is True
 
         # Change the mock return value
         mock_alembic_instance.is_migration_needed = False
-        result = chartreuse.check_migration_needed()
+        result = chartreuse.is_migration_needed
         assert result is False
 
     def test_upgrade_when_migration_needed(self, mocker: MockerFixture) -> None:
@@ -131,12 +171,25 @@ class TestChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
+        # Use the new dictionary format with DatabaseConfig objects
+        databases_config = {
+            "test-db": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=True,
+                additional_parameters="",
+            )
+        }
+
         chartreuse = Chartreuse(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
+            databases_config=databases_config,
             release_name="test-release",
-            alembic_allow_migration_for_empty_database=True,
             kubernetes_helper=mock_k8s_helper,
         )
 
@@ -155,12 +208,25 @@ class TestChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
+        # Use the new dictionary format with DatabaseConfig objects
+        databases_config = {
+            "test-db": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=True,
+                additional_parameters="",
+            )
+        }
+
         chartreuse = Chartreuse(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
+            databases_config=databases_config,
             release_name="test-release",
-            alembic_allow_migration_for_empty_database=True,
             kubernetes_helper=mock_k8s_helper,
         )
 
@@ -170,11 +236,11 @@ class TestChartreuse:
         mock_alembic_instance.upgrade_db.assert_not_called()
 
 
-class TestMultiChartreuse:
-    """Test cases for MultiChartreuse class."""
+class TestChartreuseMultiDatabase:
+    """Test cases for Chartreuse class with multiple databases."""
 
     def test_multi_chartreuse_init_with_kubernetes_helper(self, mocker: MockerFixture) -> None:
-        """Test MultiChartreuse initialization with provided kubernetes helper."""
+        """Test Chartreuse initialization with provided kubernetes helper."""
         # Mock AlembicMigrationHelper
         mock_alembic_helper = mocker.patch("chartreuse.chartreuse.AlembicMigrationHelper")
 
@@ -194,24 +260,32 @@ class TestMultiChartreuse:
         # Create a mock kubernetes helper
         mock_k8s_helper = MagicMock()
 
-        databases_config: list[dict[str, any]] = [
-            {
-                "name": "main",
-                "alembic_directory_path": "/app/alembic/main",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
-                "allow_migration_for_empty_database": True,
-                "additional_parameters": "--verbose",
-            },
-            {
-                "name": "secondary",
-                "alembic_directory_path": "/app/alembic/secondary",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5433/secdb",
-            },
-        ]
+        databases_config = {
+            "main": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="maindb",
+                alembic_directory_path="/app/alembic/main",
+                alembic_config_file_path="alembic.ini",
+                allow_migration_for_empty_database=True,
+                additional_parameters="--verbose",
+            ),
+            "secondary": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5433,
+                database="secdb",
+                alembic_directory_path="/app/alembic/secondary",
+                alembic_config_file_path="alembic.ini",
+            ),
+        }
 
-        multi_chartreuse = MultiChartreuse(
+        multi_chartreuse = Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_helper,
@@ -248,16 +322,20 @@ class TestMultiChartreuse:
         # Mock configure_logging
         mocker.patch("chartreuse.chartreuse.configure_logging")
 
-        databases_config: list[dict[str, any]] = [
-            {
-                "name": "test",
-                "alembic_directory_path": "/app/alembic",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/db",
-            }
-        ]
+        databases_config = {
+            "test": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+            )
+        }
 
-        multi_chartreuse = MultiChartreuse(
+        multi_chartreuse = Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
         )
@@ -283,29 +361,37 @@ class TestMultiChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
-        databases_config: list[dict[str, any]] = [
-            {
-                "name": "main",
-                "alembic_directory_path": "/app/alembic/main",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
-            },
-            {
-                "name": "secondary",
-                "alembic_directory_path": "/app/alembic/secondary",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5433/secdb",
-            },
-        ]
+        databases_config = {
+            "main": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="maindb",
+                alembic_directory_path="/app/alembic/main",
+                alembic_config_file_path="alembic.ini",
+            ),
+            "secondary": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5433,
+                database="secdb",
+                alembic_directory_path="/app/alembic/secondary",
+                alembic_config_file_path="alembic.ini",
+            ),
+        }
 
-        multi_chartreuse = MultiChartreuse(
+        multi_chartreuse = Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_helper,
         )
 
         # Should return True because secondary needs migration
-        result = multi_chartreuse.check_migration_needed()
+        result = multi_chartreuse.is_migration_needed
         assert result is True
 
     def test_check_migration_needed_none_need_migration(self, mocker: MockerFixture) -> None:
@@ -319,22 +405,26 @@ class TestMultiChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
-        databases_config: list[dict[str, any]] = [
-            {
-                "name": "test",
-                "alembic_directory_path": "/app/alembic",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/db",
-            }
-        ]
+        databases_config = {
+            "test": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+            )
+        }
 
-        multi_chartreuse = MultiChartreuse(
+        multi_chartreuse = Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_helper,
         )
 
-        result = multi_chartreuse.check_migration_needed()
+        result = multi_chartreuse.is_migration_needed
         assert result is False
 
     def test_upgrade_only_needed_databases(self, mocker: MockerFixture) -> None:
@@ -353,22 +443,30 @@ class TestMultiChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
-        databases_config: list[dict[str, any]] = [
-            {
-                "name": "main",
-                "alembic_directory_path": "/app/alembic/main",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
-            },
-            {
-                "name": "secondary",
-                "alembic_directory_path": "/app/alembic/secondary",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5433/secdb",
-            },
-        ]
+        databases_config = {
+            "main": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="maindb",
+                alembic_directory_path="/app/alembic/main",
+                alembic_config_file_path="alembic.ini",
+            ),
+            "secondary": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5433,
+                database="secdb",
+                alembic_directory_path="/app/alembic/secondary",
+                alembic_config_file_path="alembic.ini",
+            ),
+        }
 
-        multi_chartreuse = MultiChartreuse(
+        multi_chartreuse = Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_helper,
@@ -390,17 +488,21 @@ class TestMultiChartreuse:
         mocker.patch("chartreuse.chartreuse.configure_logging")
         mock_k8s_helper = MagicMock()
 
-        databases_config = [
-            {
-                "name": "test",
-                "alembic_directory_path": "/app/alembic",
-                "alembic_config_file_path": "alembic.ini",
-                "url": "postgresql://user:pass@localhost:5432/db",
-                # No allow_migration_for_empty_database or additional_parameters
-            }
-        ]
+        databases_config = {
+            "test": DatabaseConfig(
+                dialect="postgresql",
+                user="user",
+                password="pass",
+                host="localhost",
+                port=5432,
+                database="db",
+                alembic_directory_path="/app/alembic",
+                alembic_config_file_path="alembic.ini",
+                # No allow_migration_for_empty_database or additional_parameters (using defaults)
+            )
+        }
 
-        MultiChartreuse(
+        Chartreuse(
             databases_config=databases_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_helper,
@@ -411,7 +513,7 @@ class TestMultiChartreuse:
             alembic_directory_path="/app/alembic",
             alembic_config_file_path="alembic.ini",
             database_url="postgresql://user:pass@localhost:5432/db",
-            allow_migration_for_empty_database=False,  # Default value
-            additional_parameters="-n test",  # Section name parameter added
+            allow_migration_for_empty_database=True,  # Default value from DatabaseConfig
+            additional_parameters="-n test",  # Section name parameter added (no leading space when original is empty)
             alembic_section_name="test",  # New parameter for multi-database support
         )

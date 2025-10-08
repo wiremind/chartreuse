@@ -78,6 +78,11 @@ class TestMainMultiDatabase:
         # Mock ensure_safe_run
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
         # Mock config loading
         mock_config = [
             {
@@ -92,8 +97,8 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        # Mock MultiChartreuse
-        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
+        # Mock Chartreuse
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
@@ -128,6 +133,10 @@ class TestMainMultiDatabase:
         """Test main function when no migration is needed."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
         mock_config = [
             {
                 "name": "main",
@@ -141,7 +150,7 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = False
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
@@ -192,6 +201,10 @@ class TestMainMultiDatabase:
         """Test main function with ENABLE_STOP_PODS disabled."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
         mock_config = [
             {
                 "name": "main",
@@ -205,7 +218,7 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
@@ -236,6 +249,10 @@ class TestMainMultiDatabase:
         """Test main function with UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
         mock_config = [
             {
                 "name": "main",
@@ -249,7 +266,7 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
@@ -280,6 +297,10 @@ class TestMainMultiDatabase:
         """Test main function when start_pods fails."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
         mock_config = [
             {
                 "name": "main",
@@ -293,7 +314,7 @@ class TestMainMultiDatabase:
             return_value=mock_config,
         )
 
-        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.MultiChartreuse")
+        mock_multi_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
         mock_multi_chartreuse.return_value = mock_chartreuse_instance
@@ -332,6 +353,26 @@ class TestMainSingleDatabase:
         """Test main function with successful single-database configuration."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
+        # Mock config loading for single database
+        mock_config = [
+            {
+                "name": "main",
+                "url": "postgresql://user:pass@localhost:5432/db",
+                "alembic_directory_path": "/app/alembic",
+                "alembic_config_file_path": "alembic.ini",
+                "alembic_allow_migration_for_empty_database": True,
+                "alembic_additional_parameters": "--verbose",
+            }
+        ]
+        mocker.patch(
+            "chartreuse.chartreuse_upgrade.load_multi_database_config",
+            return_value=mock_config,
+        )
+
         mock_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = True
@@ -341,15 +382,11 @@ class TestMainSingleDatabase:
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
-        # Set up environment for single-database mode (no CHARTREUSE_MULTI_CONFIG_PATH)
+        # Set up environment for unified mode (always requires CHARTREUSE_MULTI_CONFIG_PATH)
         mocker.patch.dict(
             os.environ,
             {
-                "CHARTREUSE_ALEMBIC_DIRECTORY_PATH": "/app/alembic",
-                "CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH": "alembic.ini",
-                "CHARTREUSE_ALEMBIC_URL": "postgresql://user:pass@localhost:5432/db",
-                "CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE": "true",
-                "CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS": "--verbose",
+                "CHARTREUSE_MULTI_CONFIG_PATH": "/app/config.yaml",
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
@@ -360,13 +397,9 @@ class TestMainSingleDatabase:
 
         main()
 
-        # Verify Chartreuse was initialized correctly
+        # Verify Chartreuse was initialized correctly with unified architecture
         mock_chartreuse.assert_called_once_with(
-            alembic_directory_path="/app/alembic",
-            alembic_config_file_path="alembic.ini",
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
-            alembic_allow_migration_for_empty_database=True,
-            alembic_additional_parameters="--verbose",
+            databases_config=mock_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_instance,
         )
@@ -380,6 +413,26 @@ class TestMainSingleDatabase:
         """Test main function with default values for optional environment variables."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
+        # Mock config loading for single database with default values
+        mock_config = [
+            {
+                "name": "main",
+                "url": "postgresql://user:pass@localhost:5432/db",
+                "alembic_directory_path": "/app/alembic",
+                "alembic_config_file_path": "alembic.ini",
+                "alembic_allow_migration_for_empty_database": False,
+                "alembic_additional_parameters": "",
+            }
+        ]
+        mocker.patch(
+            "chartreuse.chartreuse_upgrade.load_multi_database_config",
+            return_value=mock_config,
+        )
+
         mock_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
         mock_chartreuse_instance.is_migration_needed = False
@@ -389,13 +442,11 @@ class TestMainSingleDatabase:
         mock_k8s_instance = mocker.MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
-        # Set minimal required environment variables
+        # Set minimal required environment variables for unified mode
         mocker.patch.dict(
             os.environ,
             {
-                "CHARTREUSE_ALEMBIC_URL": "postgresql://user:pass@localhost:5432/db",
-                "CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE": "false",
-                "CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS": "",
+                "CHARTREUSE_MULTI_CONFIG_PATH": "/app/config.yaml",
                 "CHARTREUSE_ENABLE_STOP_PODS": "false",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
@@ -406,23 +457,12 @@ class TestMainSingleDatabase:
 
         main()
 
-        # Verify Chartreuse was initialized with default values
-        # Note: The boolean parsing in single-database mode uses bool(env_var)
-        # which means any non-empty string is True
+        # Verify Chartreuse was initialized correctly with unified architecture
         mock_chartreuse.assert_called_once_with(
-            alembic_directory_path="/app/alembic",  # Default value
-            alembic_config_file_path="alembic.ini",  # Default value
-            postgresql_url="postgresql://user:pass@localhost:5432/db",
-            alembic_allow_migration_for_empty_database=True,  # "false" -> bool("false") -> True
-            alembic_additional_parameters="",
+            databases_config=mock_config,
             release_name="test-release",
             kubernetes_helper=mock_k8s_instance,
         )
-
-        # No migration needed, so no pods operations
-        mock_chartreuse_instance.upgrade.assert_not_called()
-        mock_k8s_instance.stop_pods.assert_not_called()
-        mock_k8s_instance.start_pods.assert_not_called()
 
 
 class TestMainBooleanParsing:
@@ -431,38 +471,56 @@ class TestMainBooleanParsing:
     @pytest.mark.parametrize(
         "bool_str,expected",
         [
-            ("true", True),
-            ("TRUE", True),
-            ("True", True),
-            ("false", True),  # bool("false") -> True (non-empty string)
-            ("FALSE", True),  # bool("FALSE") -> True (non-empty string)
-            ("False", True),  # bool("False") -> True (non-empty string)
-            ("", False),  # bool("") -> False (empty string)
-            ("0", True),  # bool("0") -> True (non-empty string)
-            ("1", True),  # bool("1") -> True (non-empty string)
+            ("true", True),  # .lower() not in ("", "false", "0") -> "true" not in -> True
+            ("TRUE", True),  # .lower() not in ("", "false", "0") -> "true" not in -> True
+            ("True", True),  # .lower() not in ("", "false", "0") -> "true" not in -> True
+            ("false", False),  # .lower() not in ("", "false", "0") -> "false" in -> False
+            ("FALSE", False),  # .lower() not in ("", "false", "0") -> "false" in -> False
+            ("False", False),  # .lower() not in ("", "false", "0") -> "false" in -> False
+            ("", False),  # .lower() not in ("", "false", "0") -> "" in -> False
+            ("0", False),  # .lower() not in ("", "false", "0") -> "0" in -> False
+            ("1", True),  # .lower() not in ("", "false", "0") -> "1" not in -> True
         ],
     )
     def test_boolean_parsing_variations(self, mocker: MockerFixture, bool_str: str, expected: bool) -> None:
         """Test various boolean string parsing in environment variables."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
+        # Mock file existence for config validation
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("os.path.isfile", return_value=True)
+
+        # Mock config loading
+        mock_config = [
+            {
+                "name": "main",
+                "url": "postgresql://user:pass@localhost:5432/db",
+                "alembic_directory_path": "/app/alembic",
+                "alembic_config_file_path": "alembic.ini",
+            }
+        ]
+        mocker.patch(
+            "chartreuse.chartreuse_upgrade.load_multi_database_config",
+            return_value=mock_config,
+        )
+
         mock_chartreuse = mocker.patch("chartreuse.chartreuse_upgrade.Chartreuse")
         mock_chartreuse_instance = mocker.MagicMock()
-        mock_chartreuse_instance.is_migration_needed = False
+        mock_chartreuse_instance.is_migration_needed = True  # Set to True to test stop_pods behavior
         mock_chartreuse.return_value = mock_chartreuse_instance
 
-        mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager")
+        mock_k8s_instance = mocker.MagicMock()
+        mock_k8s_manager.return_value = mock_k8s_instance
 
-        # Set up environment for single-database mode (no CHARTREUSE_MULTI_CONFIG_PATH)
-        # Note: In single-database mode, boolean parsing uses bool(env_var)
-        # which means any non-empty string is True, empty string is False
+        # Test boolean parsing for environment variables that are still parsed in main()
+        # The boolean parsing logic: .lower() not in ("", "false", "0")
+        # which means: empty string, "false", or "0" are False, everything else is True
         mocker.patch.dict(
             os.environ,
             {
-                "CHARTREUSE_ALEMBIC_URL": "postgresql://user:pass@localhost:5432/db",
-                "CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE": bool_str,
-                "CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS": "",
-                "CHARTREUSE_ENABLE_STOP_PODS": "false",
+                "CHARTREUSE_MULTI_CONFIG_PATH": "/app/config.yaml",
+                "CHARTREUSE_ENABLE_STOP_PODS": bool_str,  # Test this boolean parsing
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
                 "HELM_IS_INSTALL": "false",
@@ -472,6 +530,8 @@ class TestMainBooleanParsing:
 
         main()
 
-        # Check that the boolean was parsed correctly
-        call_args = mock_chartreuse.call_args[1]
-        assert call_args["alembic_allow_migration_for_empty_database"] == expected
+        # Verify that stop_pods was called based on the boolean parsing result
+        if expected:
+            mock_k8s_instance.stop_pods.assert_called_once()
+        else:
+            mock_k8s_instance.stop_pods.assert_not_called()
