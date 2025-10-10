@@ -6,6 +6,7 @@ from wiremind_kubernetes import KubernetesDeploymentManager
 from chartreuse import get_version
 
 from .chartreuse import Chartreuse
+from .config_loader import load_multi_database_config
 
 logger = logging.getLogger(__name__)
 
@@ -34,59 +35,79 @@ def ensure_safe_run() -> None:
         )
 
 
+def validate_config_file_path() -> str:
+    """
+    Validate that the multi-database configuration file path is properly configured and accessible.
+
+    Returns:
+        str: The validated config file path
+
+    Raises:
+        ValueError: If environment variable is not set or path is not a file
+        FileNotFoundError: If the config file doesn't exist
+    """
+    multi_config_path = os.environ.get("CHARTREUSE_MULTI_CONFIG_PATH")
+
+    if not multi_config_path:
+        raise ValueError("CHARTREUSE_MULTI_CONFIG_PATH environment variable is required but not set")
+
+    if not os.path.exists(multi_config_path):
+        raise FileNotFoundError(f"Multi-database configuration file not found: {multi_config_path}")
+
+    if not os.path.isfile(multi_config_path):
+        raise ValueError(f"Multi-database configuration path is not a file: {multi_config_path}")
+
+    return multi_config_path
+
+
 def main() -> None:
     """
     When put in a post-install Helm hook, if this program fails the whole release is considered as failed.
     """
     ensure_safe_run()
-    ALEMBIC_DIRECTORY_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_DIRECTORY_PATH", "/app/alembic")
-    ALEMBIC_CONFIG_FILE_PATH: str = os.environ.get("CHARTREUSE_ALEMBIC_CONFIG_FILE_PATH", "alembic.ini")
-    POSTGRESQL_URL: str = os.environ["CHARTREUSE_ALEMBIC_URL"]
-    ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE: bool = bool(
-        os.environ["CHARTREUSE_ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE"]
-    )
-    ALEMBIC_ADDITIONAL_PARAMETERS: str = os.environ["CHARTREUSE_ALEMBIC_ADDITIONAL_PARAMETERS"]
-    ENABLE_STOP_PODS: bool = bool(os.environ["CHARTREUSE_ENABLE_STOP_PODS"])
+
+    # Validate and get multi-database configuration path
+    multi_config_path = validate_config_file_path()
+
+    # Use multi-database configuration
+    logger.info("Using multi-database configuration from: %s", multi_config_path)
+
+    try:
+        databases_config = load_multi_database_config(multi_config_path)
+    except (FileNotFoundError, ValueError) as e:
+        logger.error("Failed to load multi-database configuration: %s", e)
+        raise
+
+    ENABLE_STOP_PODS: bool = os.environ.get("CHARTREUSE_ENABLE_STOP_PODS", "true").lower() not in ("", "false", "0")
     RELEASE_NAME: str = os.environ["CHARTREUSE_RELEASE_NAME"]
-    UPGRADE_BEFORE_DEPLOYMENT: bool = bool(os.environ["CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT"])
-    HELM_IS_INSTALL: bool = bool(os.environ["HELM_IS_INSTALL"])
+    UPGRADE_BEFORE_DEPLOYMENT: bool = os.environ.get("CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT", "false").lower() not in (
+        "",
+        "false",
+        "0",
+    )
+    HELM_IS_INSTALL: bool = os.environ.get("HELM_IS_INSTALL", "false").lower() not in ("", "false", "0")
 
     deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
-        alembic_directory_path=ALEMBIC_DIRECTORY_PATH,
-        alembic_config_file_path=ALEMBIC_CONFIG_FILE_PATH,
-        postgresql_url=POSTGRESQL_URL,
-        alembic_allow_migration_for_empty_database=ALEMBIC_ALLOW_MIGRATION_FOR_EMPTY_DATABASE,
-        alembic_additional_parameters=ALEMBIC_ADDITIONAL_PARAMETERS,
+        databases_config=databases_config,
         release_name=RELEASE_NAME,
         kubernetes_helper=deployment_manager,
     )
+
     if chartreuse.is_migration_needed:
         if ENABLE_STOP_PODS:
-            # If ever Helm has scaled up the pods that were stopped in predeployment.
             deployment_manager.stop_pods()
 
-        # The exceptions this method raises should NEVER be caught.
-        # If the migration fails, the post-install should fail and the release will fail
-        # we will end up with the old release.
         chartreuse.upgrade()
 
         if not ENABLE_STOP_PODS:
-            # Do not start pods
             return
         if UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL:
-            # Do not start pods in case of helm upgrade (not install, aka initial deployment) in "before" mode
             return
 
-        # Scale up the new pods, only if chartreuse is:
-        # in "upgrade after deployment" mode
-        # or in "upgrade before deployment" mode, during initial install
-
-        # We can fail and abort all, but if we're not that demanding we can start the pods manually
-        # via mayo for example
         try:
             deployment_manager.start_pods()
-        except:  # noqa: E722
+        except Exception:
             logger.error("Couldn't scale up new pods in chartreuse_upgrade after migration, SHOULD BE DONE MANUALLY ! ")
 
 

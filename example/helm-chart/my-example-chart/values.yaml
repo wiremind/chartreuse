@@ -13,7 +13,7 @@ chartreuse:
 
 postgresql:
   image:
-    tag: 11.7.0-debian-10-r9
+    tag: latest
     debug: true
   postgresqlUsername: foo
   postgresqlPassword: foo

@@ -1,6 +1,79 @@
-[tool.black]
-line-length = 120
-target-version = ['py37']
+[project]
+name = "chartreuse"
+description="Helper for Alembic migrations within Kubernetes."
+dynamic = ["version"]
+readme = "README.md"
+authors = [{ name = "wiremind", email = "dev@wiremind.io" }]
+license="LGPL-3.0-or-later"
+urls = { github = "https://github.com/wiremind/chartreuse"}
+scripts = {chartreuse-upgrade = "chartreuse.chartreuse_upgrade:main"}
+requires-python = ">=3.11.0"
 
-[tool.isort]
-line_length = 120
+dependencies = [
+  "alembic",
+  "psycopg2",
+  "pydantic>=2.0.0",
+  "PyYAML",
+  "wiremind-kubernetes~=7.0",
+]
+
+[build-system]
+requires = ["setuptools>=71.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = true
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+
+[project.optional-dependencies]
+test = [
+  "mock",
+  "pytest",
+  "pytest-mock",
+]
+ruff = [
+  "ruff",
+]
+dev = [
+  "ruff",
+  "pip-tools",
+
+  "mock",
+  "pytest",
+  "pytest-mock",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["chartreuse"]
+
+[tool.pytest.ini_options]
+log_level = "INFO"
+# Deterministic ordering for tests; useful for pytest-xdist.
+env = ["PYTHONHASHSEED=0"]
+filterwarnings = ["ignore::pytest.PytestUnknownMarkWarning"]

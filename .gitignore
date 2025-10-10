@@ -68,3 +68,7 @@ venv-python3.7
 venv-python3.8
 venv-python3.10
 .python-version
+
+# Helm Chart 
+*.lock
+example/helm-chart/my-example-chart/charts/

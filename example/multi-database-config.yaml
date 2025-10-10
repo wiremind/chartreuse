@@ -1,0 +1,58 @@
+# Chartreuse Multi-Database Configuration
+# 
+# This YAML file defines multiple databases that Chartreuse should manage.
+# Database names are used as keys for easy organization.
+
+databases:
+  # Main application database
+  main:
+    alembic_directory_path: /app/alembic/main
+    alembic_config_file_path: alembic.ini
+    # Database connection components (URL will be built automatically)
+    dialect: postgresql
+    user: app_user
+    password: app_password
+    host: postgres-main
+    port: 5432
+    database: app_main
+    allow_migration_for_empty_database: true
+    additional_parameters: ""
+
+  # Analytics database
+  analytics:
+    alembic_directory_path: /app/alembic/analytics
+    alembic_config_file_path: alembic.ini
+    dialect: postgresql
+    user: analytics_user
+    password: analytics_password
+    host: postgres-analytics
+    port: 5432
+    database: analytics
+    allow_migration_for_empty_database: false
+    additional_parameters: ""
+
+  # Audit database with custom parameters
+  audit:
+    alembic_directory_path: /app/alembic/audit
+    alembic_config_file_path: alembic.ini
+    dialect: postgresql
+    user: audit_user
+    password: audit_password
+    host: postgres-audit
+    port: 5432
+    database: audit_logs
+    allow_migration_for_empty_database: true
+    additional_parameters: "-x audit_mode=yes"
+
+  # Example with environment variable substitution (if supported by your deployment)
+  reports:
+    alembic_directory_path: /app/alembic/reports
+    alembic_config_file_path: alembic.ini
+    dialect: postgresql
+    user: "${REPORTS_DB_USER}"
+    password: "${REPORTS_DB_PASSWORD}"
+    host: postgres-reports
+    port: 5432
+    database: reports
+    allow_migration_for_empty_database: false
+    additional_parameters: ""

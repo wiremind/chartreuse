@@ -42,21 +42,31 @@ def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Genera
             else:
                 additional_args = "--set chartreuse.enabled=true --set chartreuse.upgradeBeforeDeployment=false"
         run_command(
-            f"helm install --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 180s {additional_args}",
+            f"""helm install --wait {TEST_RELEASE} {HELM_CHART_PATH}
+            --namespace {TEST_NAMESPACE} --timeout 180s {additional_args}""",
             cwd=EXAMPLE_PATH,
         )
         run_command(
-            f"helm upgrade --wait {TEST_RELEASE} {HELM_CHART_PATH} --namespace {TEST_NAMESPACE} --timeout 60s {additional_args}",
+            f"""helm upgrade --wait {TEST_RELEASE} {HELM_CHART_PATH}
+            --namespace {TEST_NAMESPACE} --timeout 60s {additional_args}""",
             cwd=EXAMPLE_PATH,
         )
 
         kubectl_port_forwardpostgresql = subprocess.Popen(
-            ["kubectl", "port-forward", "--namespace", TEST_NAMESPACE, f"{TEST_RELEASE}-postgresql-0", "5432"]
+            [
+                "kubectl",
+                "port-forward",
+                "--namespace",
+                TEST_NAMESPACE,
+                f"{TEST_RELEASE}-postgresql-0",
+                "5432",
+            ]
         )
         time.sleep(5)  # Hack to wait for k exec to be up
     except:  # noqa
         run_command(
-            f"kubectl logs --selector app.kubernetes.io/instance=e2e-test-release --all-containers=false --namespace {TEST_NAMESPACE} --tail 1000"
+            f"""kubectl logs --selector app.kubernetes.io/instance=e2e-test-release
+            --all-containers=false --namespace {TEST_NAMESPACE} --tail 1000"""
         )
         run_command(f"kubectl delete namespace {TEST_NAMESPACE} --grace-period=1")
         raise
@@ -110,14 +120,22 @@ def populate_cluster_with_chartreuse_pre_upgrade() -> Generator:
 
 
 def assert_sql_upgraded() -> None:
-    assert inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
+    assert inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == [
+        "alembic_version",
+        "upgraded",
+    ]
 
 
 def assert_sql_not_upgraded() -> None:
-    assert not inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == ["alembic_version", "upgraded"]
+    assert not inspect(sqlalchemy.create_engine(POSTGRESQL_URL)).get_table_names() == [
+        "alembic_version",
+        "upgraded",
+    ]
 
 
 def are_pods_scaled_down() -> bool:
     return KubernetesDeploymentManager(
-        release_name=TEST_RELEASE, namespace=TEST_NAMESPACE, should_load_kubernetes_config=False
+        release_name=TEST_RELEASE,
+        namespace=TEST_NAMESPACE,
+        should_load_kubernetes_config=False,
     ).is_deployment_stopped("e2e-test-release-my-test-chart")
