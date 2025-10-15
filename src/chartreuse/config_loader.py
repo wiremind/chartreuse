@@ -28,7 +28,6 @@ class DatabaseConfig(BaseModel):
     # Optional migration settings
     allow_migration_for_empty_database: bool = Field(default=True, description="Allow migrations on empty database")
     additional_parameters: str = Field(default="", description="Additional Alembic parameters")
-    is_patroni_postgresql: bool = Field(default=False, description="Whether this is a Patroni PostgreSQL database")
 
     @computed_field
     @property
@@ -40,7 +39,7 @@ class DatabaseConfig(BaseModel):
     @classmethod
     def validate_dialect(cls, v: str) -> str:
         """Validate database dialect."""
-        supported_dialects = ["postgresql", "clickhouse"]
+        supported_dialects = ["postgresql", "mysql", "sqlite", "oracle", "mssql", "clickhouse"]
         if v.lower() not in supported_dialects:
             logger.warning("Dialect '%s' might not be supported. Supported dialects: %s", v, supported_dialects)
         return v
@@ -97,7 +96,6 @@ def load_multi_database_config(config_path: str) -> dict[str, DatabaseConfig]:
         alembic_config_file_path: alembic.ini
         allow_migration_for_empty_database: true
         additional_parameters: ""
-        is_patroni_postgresql: false
 
       # For single database setups, just include one database:
       # analytics:
@@ -111,7 +109,6 @@ def load_multi_database_config(config_path: str) -> dict[str, DatabaseConfig]:
       #   alembic_config_file_path: alembic.ini
       #   allow_migration_for_empty_database: false
       #   additional_parameters: ""
-      #   is_patroni_postgresql: true
     ```
     """
     try:

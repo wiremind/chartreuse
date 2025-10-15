@@ -72,7 +72,6 @@ class TestChartreuse:
             allow_migration_for_empty_database=True,
             additional_parameters="--verbose -n test-db",
             alembic_section_name="test-db",
-            is_patroni_postgresql=False,
         )
 
         # Verify kubernetes helper is set
@@ -517,5 +516,4 @@ class TestChartreuseMultiDatabase:
             allow_migration_for_empty_database=True,  # Default value from DatabaseConfig
             additional_parameters="-n test",  # Section name parameter added (no leading space when original is empty)
             alembic_section_name="test",  # New parameter for multi-database support
-            is_patroni_postgresql=False,  # Default value from DatabaseConfig
         )
