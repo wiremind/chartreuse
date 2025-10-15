@@ -17,6 +17,8 @@ databases:
     database: app_main
     allow_migration_for_empty_database: true
     additional_parameters: ""
+    is_patroni_postgresql: true
+
 
   # Analytics database
   analytics:
@@ -30,6 +32,8 @@ databases:
     database: analytics
     allow_migration_for_empty_database: false
     additional_parameters: ""
+    is_patroni_postgresql: true
+
 
   # Audit database with custom parameters
   audit:
@@ -43,6 +47,8 @@ databases:
     database: audit_logs
     allow_migration_for_empty_database: true
     additional_parameters: "-x audit_mode=yes"
+    is_patroni_postgresql: true
+
 
   # Example with environment variable substitution (if supported by your deployment)
   reports:
@@ -56,3 +62,4 @@ databases:
     database: reports
     allow_migration_for_empty_database: false
     additional_parameters: ""
+    is_patroni_postgresql: true

@@ -49,6 +49,7 @@ class Chartreuse:
                 allow_migration_for_empty_database=db_config.allow_migration_for_empty_database,
                 additional_parameters=additional_params,
                 alembic_section_name=db_name,
+                is_patroni_postgresql=db_config.is_patroni_postgresql,
             )
             self.migration_helpers[db_name] = helper
 
