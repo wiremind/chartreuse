@@ -11,7 +11,6 @@ databases:
     port: 5432
     database: myapp
     allow_migration_for_empty_database: true
-    is_patroni_postgresql: false
 
   # Cache database
   cache:
@@ -24,4 +23,3 @@ databases:
     port: 5432
     database: cache_db
     allow_migration_for_empty_database: false
-    is_patroni_postgresql: true

@@ -26,7 +26,6 @@ class AlembicMigrationHelper:
         configure: bool = True,
         # skip_db_checks is used for testing purposes only
         skip_db_checks: bool = False,
-        is_patroni_postgresql: bool = False,
     ):
         if not database_url:
             raise ValueError("database_url not set, not upgrading database.")
@@ -38,9 +37,9 @@ class AlembicMigrationHelper:
         self.alembic_config_file_path = alembic_config_file_path
         self.alembic_section_name = alembic_section_name
         self.skip_db_checks = skip_db_checks
-        self.is_patroni_postgresql = is_patroni_postgresql
 
         # Chartreuse will upgrade a PG managed/configured by postgres-operator
+        self.is_patroni_postgresql: bool = "CHARTREUSE_PATRONI_POSTGRESQL" in os.environ
         if self.is_patroni_postgresql and not skip_db_checks:
             self.additional_parameters += " -x patroni_postgresql=yes"
             self._wait_postgres_is_configured()
@@ -78,7 +77,6 @@ class AlembicMigrationHelper:
         Make sure the user `wiremind_owner_user` was created by the postgres-operator
         and that default privileges were configured.
         # TODO: Maybe make this a readinessProbe on Patroni PG Pods
-        # We need to remove this, it's an open source tool...
         """
         wait_timeout = int(os.getenv("CHARTREUSE_ALEMBIC_POSTGRES_WAIT_CONFIGURED_TIMEOUT", 60))
         engine = sqlalchemy.create_engine(self.database_url, poolclass=NullPool, connect_args={"connect_timeout": 1})
