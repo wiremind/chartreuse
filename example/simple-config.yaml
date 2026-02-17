@@ -4,7 +4,7 @@ databases:
   main:
     alembic_directory_path: /app/alembic/main
     alembic_config_file_path: alembic.ini
-    dialect: postgresql
+    dialect: postgresql+psycopg
     user: myuser
     password: mypassword
     host: localhost
@@ -16,7 +16,7 @@ databases:
   cache:
     alembic_directory_path: /app/alembic/cache
     alembic_config_file_path: alembic.ini
-    dialect: postgresql
+    dialect: postgresql+psycopg
     user: cache_user
     password: cache_pass
     host: redis-db

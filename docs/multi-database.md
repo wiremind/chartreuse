@@ -18,7 +18,7 @@ databases:
   main:
     alembic_directory_path: /app/alembic/main
     alembic_config_file_path: alembic.ini
-    dialect: postgresql
+    dialect: postgresql+psycopg
     user: app_user
     password: app_password
     host: postgres-main
@@ -31,7 +31,7 @@ databases:
   analytics:
     alembic_directory_path: /app/alembic/analytics
     alembic_config_file_path: alembic.ini
-    dialect: postgresql
+    dialect: postgresql+psycopg
     user: analytics_user
     password: analytics_password
     host: postgres-analytics
@@ -49,7 +49,7 @@ databases:
 - `alembic_config_file_path`: Alembic configuration file name
 
 **Database connection components (all required):**
-- `dialect`: Database dialect (e.g., postgresql, mysql, sqlite)
+- `dialect`: Database dialect (e.g., postgresql+psycopg, mysql, sqlite)
 - `user`: Database username
 - `password`: Database password
 - `host`: Database host
@@ -129,7 +129,7 @@ data:
       main:
         alembic_directory_path: /app/alembic/main
         alembic_config_file_path: alembic.ini
-        dialect: postgresql
+        dialect: postgresql+psycopg
         user: {{ .Values.database.main.user }}
         password: {{ .Values.database.main.password }}
         host: {{ .Values.database.main.host }}
@@ -140,7 +140,7 @@ data:
       analytics:
         alembic_directory_path: /app/alembic/analytics
         alembic_config_file_path: alembic.ini
-        dialect: postgresql
+        dialect: postgresql+psycopg
         user: {{ .Values.database.analytics.user }}
         password: {{ .Values.database.analytics.password }}
         host: {{ .Values.database.analytics.host }}
