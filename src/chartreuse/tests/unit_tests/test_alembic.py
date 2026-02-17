@@ -45,7 +45,7 @@ def test_detect_needed_migration(mocker: MockerFixture) -> None:
     Test that chartreuse detects that a migration is needed.
     """
     sample_alembic_output = """
-2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql://***/public
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql+psycopg://***/public
 2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - redis instance at localhost is  activated
 2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Context impl PostgresqlImpl.
 2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Will assume transactional DDL.
@@ -72,7 +72,7 @@ def test_detect_not_needed_migration(mocker: MockerFixture) -> None:
     Test that chartreuse detects that a migration is not needed.
     """
     sample_alembic_output = """
-2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql://***/public
+2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - Database: postgresql+psycopg://***/public
 2018-11-29 17:58:32 - wiremind_python.settings - DEBUG - redis instance at localhost is  activated
 2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Context impl PostgresqlImpl.
 2018-11-29 17:58:32 - alembic.runtime.migration - INFO - Will assume transactional DDL.
@@ -205,7 +205,7 @@ def test_multi_database_configuration_postgresql_section(mocker: MockerFixture) 
     # Sample alembic.ini content with multiple sections
     sample_alembic_ini = """[postgresql]
 script_location = postgresl
-sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+sqlalchemy.url = postgresql+psycopg://wiremind_owner@localhost:5432/wiremind
 prepend_sys_path = ..
 file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
 
@@ -229,7 +229,7 @@ keys = root,sqlalchemy,alembic
         chartreuse.utils.AlembicMigrationHelper(
             alembic_directory_path=temp_dir,
             alembic_config_file_path="alembic.ini",
-            database_url="postgresql://new_user:new_pass@new_host:5432/new_db",
+            database_url="postgresql+psycopg://new_user:new_pass@new_host:5432/new_db",
             alembic_section_name="postgresql",
             configure=True,
             skip_db_checks=True,
@@ -240,7 +240,7 @@ keys = root,sqlalchemy,alembic
             content = f.read()
 
         # Verify PostgreSQL URL was updated
-        assert "postgresql://new_user:new_pass@new_host:5432/new_db" in content
+        assert "postgresql+psycopg://new_user:new_pass@new_host:5432/new_db" in content
         # Verify ClickHouse URL was NOT changed
         assert "clickhouse://default@localhost:8123/wiremind" in content
         # Verify sections are still intact
@@ -256,7 +256,7 @@ def test_multi_database_configuration_clickhouse_section(mocker: MockerFixture) 
     # Sample alembic.ini content with multiple sections
     sample_alembic_ini = """[postgresql]
 script_location = postgresl
-sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+sqlalchemy.url = postgresql+psycopg://wiremind_owner@localhost:5432/wiremind
 prepend_sys_path = ..
 file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
 
@@ -293,7 +293,7 @@ keys = root,sqlalchemy,alembic
         # Verify ClickHouse URL was updated
         assert "clickhouse://new_user:new_pass@new_host:8123/new_db" in content
         # Verify PostgreSQL URL was NOT changed
-        assert "postgresql://wiremind_owner@localhost:5432/wiremind" in content
+        assert "postgresql+psycopg://wiremind_owner@localhost:5432/wiremind" in content
         # Verify sections are still intact
         assert "[postgresql]" in content
         assert "[clickhouse]" in content
@@ -307,7 +307,7 @@ def test_multi_database_configuration_both_sections(mocker: MockerFixture) -> No
     # Sample alembic.ini content with multiple sections
     sample_alembic_ini = """[postgresql]
 script_location = postgresl
-sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+sqlalchemy.url = postgresql+psycopg://wiremind_owner@localhost:5432/wiremind
 prepend_sys_path = ..
 file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
 
@@ -331,7 +331,7 @@ keys = root,sqlalchemy,alembic
         chartreuse.utils.AlembicMigrationHelper(
             alembic_directory_path=temp_dir,
             alembic_config_file_path="alembic.ini",
-            database_url="postgresql://pg_user:pg_pass@pg_host:5432/pg_db",
+            database_url="postgresql+psycopg://pg_user:pg_pass@pg_host:5432/pg_db",
             alembic_section_name="postgresql",
             configure=True,
             skip_db_checks=True,
@@ -352,10 +352,10 @@ keys = root,sqlalchemy,alembic
             final_content = f.read()
 
         # Verify both URLs are now updated correctly
-        assert "postgresql://pg_user:pg_pass@pg_host:5432/pg_db" in final_content
+        assert "postgresql+psycopg://pg_user:pg_pass@pg_host:5432/pg_db" in final_content
         assert "clickhouse://ch_user:ch_pass@ch_host:8123/ch_db" in final_content
         # Verify original URLs are gone
-        assert "postgresql://wiremind_owner@localhost:5432/wiremind" not in final_content
+        assert "postgresql+psycopg://wiremind_owner@localhost:5432/wiremind" not in final_content
         assert "clickhouse://default@localhost:8123/wiremind" not in final_content
         # Verify sections are still intact
         assert "[postgresql]" in final_content
@@ -370,7 +370,7 @@ def test_single_database_configuration_with_alembic_section(mocker: MockerFixtur
     # Sample simple alembic.ini content (single database)
     sample_alembic_ini = """[alembic]
 script_location = alembic
-sqlalchemy.url = postgresql://old@localhost:5432/old
+sqlalchemy.url = postgresql+psycopg://old@localhost:5432/old
 prepend_sys_path = ..
 file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
 """
@@ -385,7 +385,7 @@ file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
         chartreuse.utils.AlembicMigrationHelper(
             alembic_directory_path=temp_dir,
             alembic_config_file_path="alembic.ini",
-            database_url="postgresql://new_user:new_pass@new_host:5432/new_db",
+            database_url="postgresql+psycopg://new_user:new_pass@new_host:5432/new_db",
             alembic_section_name="alembic",
             configure=True,
             skip_db_checks=True,
@@ -396,8 +396,8 @@ file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
             content = f.read()
 
         # Verify URL was updated
-        assert "postgresql://new_user:new_pass@new_host:5432/new_db" in content
+        assert "postgresql+psycopg://new_user:new_pass@new_host:5432/new_db" in content
         # Verify original URL is gone
-        assert "postgresql://old@localhost:5432/old" not in content
+        assert "postgresql+psycopg://old@localhost:5432/old" not in content
         # Verify section is still intact
         assert "[alembic]" in content

@@ -72,3 +72,5 @@ venv-python3.10
 # Helm Chart 
 *.lock
 example/helm-chart/my-example-chart/charts/
+
+.envrc
