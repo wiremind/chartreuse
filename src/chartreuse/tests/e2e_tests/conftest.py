@@ -23,7 +23,7 @@ HELM_CHART_PATH = os.path.join(EXAMPLE_PATH, "helm-chart", "my-example-chart")
 ALEMBIC_PATH = os.path.join(EXAMPLE_PATH, "alembic")
 
 # Calculated from deployed test helm chart + kubectl exec
-POSTGRESQL_URL = "postgresql://foo:foo@localhost/foo?sslmode=prefer"
+POSTGRESQL_URL = "postgresql+psycopg://foo:foo@localhost/foo?sslmode=prefer"
 
 
 def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Generator:

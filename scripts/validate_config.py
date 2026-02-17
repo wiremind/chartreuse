@@ -86,9 +86,9 @@ def validate_config(config_path: str) -> bool:
                 print(f"  📍 Built URL: {url}")
 
                 # Basic URL format validation
-                if not url.startswith(("postgresql://", "mysql://", "sqlite://")):
+                if not url.startswith(("postgresql+psycopg://", "mysql://", "sqlite://")):
                     print(
-                        f"⚠️  Database {db_name}: URL format may be invalid (expected postgresql://, mysql://, or sqlite://)"
+                        f"⚠️ Database {db_name}: URL format may be invalid (expected postgresql+psycopg://, mysql://, or sqlite://)"
                     )
 
             except ValueError as e:

@@ -39,7 +39,7 @@ class DatabaseConfig(BaseModel):
     @classmethod
     def validate_dialect(cls, v: str) -> str:
         """Validate database dialect."""
-        supported_dialects = ["postgresql", "mysql", "sqlite", "oracle", "mssql", "clickhouse"]
+        supported_dialects = ["postgresql+psycopg", "mysql", "sqlite", "oracle", "mssql", "clickhouse"]
         if v.lower() not in supported_dialects:
             logger.warning("Dialect '%s' might not be supported. Supported dialects: %s", v, supported_dialects)
         return v
@@ -86,7 +86,7 @@ def load_multi_database_config(config_path: str) -> dict[str, DatabaseConfig]:
     ```yaml
     databases:
       main:  # Database name/identifier
-        dialect: postgresql
+        dialect: postgresql+psycopg
         user: app_user
         password: app_password
         host: postgres-main
@@ -99,7 +99,7 @@ def load_multi_database_config(config_path: str) -> dict[str, DatabaseConfig]:
 
       # For single database setups, just include one database:
       # analytics:
-      #   dialect: postgresql
+      #   dialect: postgresql+psycopg
       #   user: analytics_user
       #   password: analytics_password
       #   host: postgres-analytics
