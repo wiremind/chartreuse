@@ -16,10 +16,10 @@ classifiers = [
 
 dependencies = [
   "alembic",
+  "kubernetes",
   "psycopg2",
   "pydantic>=2.0.0",
   "PyYAML",
-  "wiremind-kubernetes~=7.0",
 ]
 
 [build-system]

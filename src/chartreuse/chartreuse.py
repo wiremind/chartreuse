@@ -1,9 +1,8 @@
 import logging
 
-import wiremind_kubernetes.kubernetes_helper
-
 from .config_loader import DatabaseConfig
 from .utils import AlembicMigrationHelper
+from .utils.kubernetes_helper import KubernetesDeploymentManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ class Chartreuse:
         self,
         databases_config: dict[str, DatabaseConfig],
         release_name: str,
-        kubernetes_helper: wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager | None = None,
+        kubernetes_helper: KubernetesDeploymentManager | None = None,
     ):
         configure_logging()
 
@@ -56,7 +55,7 @@ class Chartreuse:
         if kubernetes_helper:
             self.kubernetes_helper = kubernetes_helper
         else:
-            self.kubernetes_helper = wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager(
+            self.kubernetes_helper = KubernetesDeploymentManager(
                 use_kubeconfig=None, release_name=release_name
             )
 

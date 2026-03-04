@@ -1,12 +1,11 @@
 import logging
 import os
 
-from wiremind_kubernetes import KubernetesDeploymentManager
-
 from chartreuse import get_version
 
 from .chartreuse import Chartreuse
 from .config_loader import load_multi_database_config
+from .utils.kubernetes_helper import KubernetesDeploymentManager
 
 logger = logging.getLogger(__name__)
 

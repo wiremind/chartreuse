@@ -7,10 +7,8 @@ from collections.abc import Generator
 import pytest
 import sqlalchemy
 from sqlalchemy import inspect
-from wiremind_kubernetes.kube_config import load_kubernetes_config
-from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
-from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUpE2E  # noqa: F401
-from wiremind_kubernetes.utils import run_command
+from chartreuse.utils.command import run_command
+from chartreuse.utils.kubernetes_helper import KubernetesDeploymentManager, load_kubernetes_config
 
 import chartreuse
 
@@ -24,6 +22,16 @@ ALEMBIC_PATH = os.path.join(EXAMPLE_PATH, "alembic")
 
 # Calculated from deployed test helm chart + kubectl exec
 POSTGRESQL_URL = "postgresql://foo:foo@localhost/foo?sslmode=prefer"
+
+
+@pytest.fixture(scope="session")
+def create_namespace() -> Generator:
+    yield
+
+
+@pytest.fixture(scope="session")
+def setUpE2E() -> Generator:
+    yield
 
 
 def _cluster_init(include_chartreuse: bool, pre_upgrade: bool = False) -> Generator:
