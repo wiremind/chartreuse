@@ -11,7 +11,7 @@ Chartreuse leverages [Helm Hooks](https://helm.sh/docs/topics/charts_hooks/), th
 
 ### Requirements
 
-- Python >= 3.7
+- Python >= 3.13
 - Using Helm to deploy you application
 - This Python package requires the `expecteddeploymentscales.wiremind.io` Kubernetes `Custom Resource Definition`:
 

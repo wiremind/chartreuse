@@ -7,7 +7,12 @@ authors = [{ name = "wiremind", email = "dev@wiremind.io" }]
 license="LGPL-3.0-or-later"
 urls = { github = "https://github.com/wiremind/chartreuse"}
 scripts = {chartreuse-upgrade = "chartreuse.chartreuse_upgrade:main"}
-requires-python = ">=3.11.0"
+requires-python = ">=3.13.0"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
 
 dependencies = [
   "alembic",
@@ -50,7 +55,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [

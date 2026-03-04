@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### BREAKING CHANGE
+- Raise minimum supported Python version to 3.13.
+
+### Chore
+- Validate runtime/tooling compatibility on Python 3.14.
+
 ## v6.0.0 (2025-10-07)
 
 ### Feat

@@ -1,7 +1,7 @@
 # Only used for e2e tests. Do not use in production.
 # For Wiremind use only since it uses our private package wiremind-python
 
-FROM python:3.12
+FROM python:3.13
 
 WORKDIR /app
 
