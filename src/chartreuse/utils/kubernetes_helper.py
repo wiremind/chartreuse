@@ -60,7 +60,6 @@ class KubernetesDeploymentManager:
         self.use_kubeconfig = use_kubeconfig
         self.should_load_kubernetes_config = should_load_kubernetes_config
         self._clients_initialized = False
-        self.client_corev1_api: kubernetes.client.CoreV1Api | None = None
         self.client_appsv1_api: kubernetes.client.AppsV1Api | None = None
         self.client_custom_objects_api: kubernetes.client.CustomObjectsApi | None = None
 
@@ -71,7 +70,6 @@ class KubernetesDeploymentManager:
         if self.should_load_kubernetes_config:
             load_kubernetes_config(use_kubeconfig=self.use_kubeconfig)
 
-        self.client_corev1_api = kubernetes.client.CoreV1Api()
         self.client_appsv1_api = kubernetes.client.AppsV1Api()
         self.client_custom_objects_api = kubernetes.client.CustomObjectsApi()
         self._clients_initialized = True
