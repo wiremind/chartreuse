@@ -55,14 +55,26 @@ class KubernetesDeploymentManager:
         use_kubeconfig: bool | None = None,
         should_load_kubernetes_config: bool = True,
     ):
-        if should_load_kubernetes_config:
-            load_kubernetes_config(use_kubeconfig=use_kubeconfig)
-
         self.release_name = release_name
         self.namespace = namespace or _get_namespace_from_kube()
+        self.use_kubeconfig = use_kubeconfig
+        self.should_load_kubernetes_config = should_load_kubernetes_config
+        self._clients_initialized = False
+        self.client_corev1_api: kubernetes.client.CoreV1Api | None = None
+        self.client_appsv1_api: kubernetes.client.AppsV1Api | None = None
+        self.client_custom_objects_api: kubernetes.client.CustomObjectsApi | None = None
+
+    def _ensure_clients_initialized(self) -> None:
+        if self._clients_initialized:
+            return
+
+        if self.should_load_kubernetes_config:
+            load_kubernetes_config(use_kubeconfig=self.use_kubeconfig)
+
         self.client_corev1_api = kubernetes.client.CoreV1Api()
         self.client_appsv1_api = kubernetes.client.AppsV1Api()
         self.client_custom_objects_api = kubernetes.client.CustomObjectsApi()
+        self._clients_initialized = True
 
     def _release_label_selectors(self) -> list[str]:
         if not self.release_name:
@@ -73,6 +85,8 @@ class KubernetesDeploymentManager:
         ]
 
     def _list_release_deployments(self) -> list[Any]:
+        self._ensure_clients_initialized()
+        assert self.client_appsv1_api is not None
         deployments: dict[str, Any] = {}
         selectors = self._release_label_selectors() or [""]
         for selector in selectors:
@@ -86,6 +100,8 @@ class KubernetesDeploymentManager:
         return list(deployments.values())
 
     def _set_deployment_replicas(self, *, deployment_name: str, replicas: int) -> None:
+        self._ensure_clients_initialized()
+        assert self.client_appsv1_api is not None
         self.client_appsv1_api.patch_namespaced_deployment_scale(
             namespace=self.namespace,
             name=deployment_name,
@@ -93,6 +109,8 @@ class KubernetesDeploymentManager:
         )
 
     def _set_deployment_annotation(self, *, deployment_name: str, key: str, value: str) -> None:
+        self._ensure_clients_initialized()
+        assert self.client_appsv1_api is not None
         self.client_appsv1_api.patch_namespaced_deployment(
             namespace=self.namespace,
             name=deployment_name,
@@ -100,6 +118,8 @@ class KubernetesDeploymentManager:
         )
 
     def _get_expected_deployment_scales(self) -> dict[str, int]:
+        self._ensure_clients_initialized()
+        assert self.client_custom_objects_api is not None
         scales: dict[str, int] = {}
         selectors = self._release_label_selectors() or [""]
         for selector in selectors:
@@ -161,6 +181,8 @@ class KubernetesDeploymentManager:
             self._set_deployment_replicas(deployment_name=deployment_name, replicas=wanted_replicas)
 
     def is_deployment_stopped(self, deployment_name: str) -> bool:
+        self._ensure_clients_initialized()
+        assert self.client_appsv1_api is not None
         deployment = self.client_appsv1_api.read_namespaced_deployment(
             namespace=self.namespace,
             name=deployment_name,

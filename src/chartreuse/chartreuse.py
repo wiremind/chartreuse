@@ -55,9 +55,7 @@ class Chartreuse:
         if kubernetes_helper:
             self.kubernetes_helper = kubernetes_helper
         else:
-            self.kubernetes_helper = KubernetesDeploymentManager(
-                use_kubeconfig=None, release_name=release_name
-            )
+            self.kubernetes_helper = KubernetesDeploymentManager(use_kubeconfig=None, release_name=release_name)
 
     @property
     def is_migration_needed(self) -> bool:

@@ -7,10 +7,10 @@ from collections.abc import Generator
 import pytest
 import sqlalchemy
 from sqlalchemy import inspect
-from chartreuse.utils.command import run_command
-from chartreuse.utils.kubernetes_helper import KubernetesDeploymentManager, load_kubernetes_config
 
 import chartreuse
+from chartreuse.utils.command import run_command
+from chartreuse.utils.kubernetes_helper import KubernetesDeploymentManager, load_kubernetes_config
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
