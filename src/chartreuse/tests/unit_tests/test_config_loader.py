@@ -19,7 +19,7 @@ class TestDatabaseConfig:
     def test_valid_database_config(self):
         """Test creating a valid database configuration."""
         config_data = {
-            "dialect": "postgresql",
+            "dialect": "postgresql+psycopg",
             "user": "testuser",
             "password": "testpass",
             "host": "localhost",
@@ -30,7 +30,7 @@ class TestDatabaseConfig:
 
         config = DatabaseConfig(**config_data)
 
-        assert config.dialect == "postgresql"
+        assert config.dialect == "postgresql+psycopg"
         assert config.user == "testuser"
         assert config.password == "testpass"
         assert config.host == "localhost"
@@ -44,7 +44,7 @@ class TestDatabaseConfig:
     def test_database_config_url_computation(self):
         """Test that the URL is computed correctly from components."""
         config = DatabaseConfig(
-            dialect="postgresql",
+            dialect="postgresql+psycopg",
             user="myuser",
             password="mypass",
             host="example.com",
@@ -53,7 +53,7 @@ class TestDatabaseConfig:
             alembic_directory_path="/app/alembic",
         )
 
-        expected_url = "postgresql://myuser:mypass@example.com:5432/mydb"
+        expected_url = "postgresql+psycopg://myuser:mypass@example.com:5432/mydb"
         assert config.url == expected_url
 
     def test_database_config_with_optional_fields(self):
@@ -80,7 +80,7 @@ class TestDatabaseConfig:
     def test_database_config_missing_required_fields(self):
         """Test that missing required fields raise validation errors."""
         incomplete_config = {
-            "dialect": "postgresql",
+            "dialect": "postgresql+psycopg",
             "user": "testuser",
             # Missing password, host, port, database, alembic_directory_path
         }
@@ -99,7 +99,7 @@ class TestDatabaseConfig:
         # Test port too small
         with pytest.raises(ValidationError) as excinfo:
             DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="testuser",
                 password="testpass",
                 host="localhost",
@@ -112,7 +112,7 @@ class TestDatabaseConfig:
         # Test port too large
         with pytest.raises(ValidationError) as excinfo:
             DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="testuser",
                 password="testpass",
                 host="localhost",
@@ -126,7 +126,7 @@ class TestDatabaseConfig:
         """Test dialect validation with supported and unsupported dialects."""
         # Test supported dialect
         config = DatabaseConfig(
-            dialect="postgresql",
+            dialect="postgresql+psycopg",
             user="testuser",
             password="testpass",
             host="localhost",
@@ -134,7 +134,7 @@ class TestDatabaseConfig:
             database="testdb",
             alembic_directory_path="/app/alembic",
         )
-        assert config.dialect == "postgresql"
+        assert config.dialect == "postgresql+psycopg"
 
         # Test unsupported dialect (should still work but log warning)
         config = DatabaseConfig(
@@ -151,7 +151,7 @@ class TestDatabaseConfig:
     def test_additional_parameters_empty_string_handling(self):
         """Test that additional_parameters defaults to empty string when not provided."""
         config = DatabaseConfig(
-            dialect="postgresql",
+            dialect="postgresql+psycopg",
             user="testuser",
             password="testpass",
             host="localhost",
@@ -168,7 +168,7 @@ class TestMultiDatabaseConfig:
     def test_valid_multi_database_config(self):
         """Test creating a valid multi-database configuration."""
         db_config = DatabaseConfig(
-            dialect="postgresql",
+            dialect="postgresql+psycopg",
             user="testuser",
             password="testpass",
             host="localhost",
@@ -185,7 +185,7 @@ class TestMultiDatabaseConfig:
     def test_multi_database_config_multiple_databases(self):
         """Test multi-database configuration with multiple databases."""
         db1 = DatabaseConfig(
-            dialect="postgresql",
+            dialect="postgresql+psycopg",
             user="user1",
             password="pass1",
             host="host1",
@@ -236,7 +236,7 @@ class TestLoadMultiDatabaseConfig:
         config_content = {
             "databases": {
                 "main": {
-                    "dialect": "postgresql",
+                    "dialect": "postgresql+psycopg",
                     "user": "testuser",
                     "password": "testpass",
                     "host": "localhost",
@@ -270,7 +270,7 @@ class TestLoadMultiDatabaseConfig:
 
             # Check main database
             main_db = databases["main"]
-            assert main_db.dialect == "postgresql"
+            assert main_db.dialect == "postgresql+psycopg"
             assert main_db.user == "testuser"
             assert main_db.password == "testpass"
             assert main_db.host == "localhost"
@@ -278,7 +278,7 @@ class TestLoadMultiDatabaseConfig:
             assert main_db.database == "testdb"
             assert main_db.alembic_directory_path == "/app/alembic"
             assert main_db.allow_migration_for_empty_database is True  # default
-            assert main_db.url == "postgresql://testuser:testpass@localhost:5432/testdb"
+            assert main_db.url == "postgresql+psycopg://testuser:testpass@localhost:5432/testdb"
 
             # Check analytics database
             analytics_db = databases["analytics"]
@@ -295,7 +295,7 @@ class TestLoadMultiDatabaseConfig:
         config_content = {
             "databases": {
                 "main": {
-                    "dialect": "postgresql",
+                    "dialect": "postgresql+psycopg",
                     "user": "testuser",
                     "password": "testpass",
                     "host": "localhost",
@@ -316,7 +316,7 @@ class TestLoadMultiDatabaseConfig:
             assert len(databases) == 1
             assert "main" in databases
             main_db = databases["main"]
-            assert main_db.dialect == "postgresql"
+            assert main_db.dialect == "postgresql+psycopg"
 
         finally:
             Path(config_path).unlink()
@@ -330,7 +330,7 @@ class TestLoadMultiDatabaseConfig:
 
     def test_load_invalid_yaml(self):
         """Test loading a file with invalid YAML."""
-        invalid_yaml = "databases:\n  main:\n    dialect: postgresql\n  invalid: yaml: content:"
+        invalid_yaml = "databases:\n  main:\n    dialect: postgresql+psycopg\n  invalid: yaml: content:"
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(invalid_yaml)
@@ -350,7 +350,7 @@ class TestLoadMultiDatabaseConfig:
         config_content = {
             "databases": {
                 "main": {
-                    "dialect": "postgresql",
+                    "dialect": "postgresql+psycopg",
                     "user": "testuser",
                     # Missing required fields: password, host, port, database, alembic_directory_path
                 }
@@ -409,7 +409,7 @@ class TestLoadMultiDatabaseConfig:
         config_content = {
             "databases": {
                 "main": {
-                    "dialect": "postgresql",
+                    "dialect": "postgresql+psycopg",
                     "user": "testuser",
                     "password": "testpass",
                     "host": "localhost",
@@ -445,7 +445,7 @@ class TestLoadMultiDatabaseConfig:
         config_content = {
             "databases": {
                 "main": {
-                    "dialect": "postgresql",
+                    "dialect": "postgresql+psycopg",
                     "user": "testuser",
                     "password": "testpass",
                     "host": "localhost",

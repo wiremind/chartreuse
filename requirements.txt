@@ -28,8 +28,10 @@ markupsafe==3.0.3
     # via mako
 oauthlib==3.3.1
     # via requests-oauthlib
-psycopg2==2.9.10
+psycopg==3.3.2
     # via chartreuse (pyproject.toml)
+psycopg-binary==3.3.2
+    # via psycopg
 pyasn1==0.6.1
     # via
     #   pyasn1-modules

@@ -87,7 +87,7 @@ class TestMainMultiDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/maindb",
                 "alembic_directory_path": "/app/alembic/main",
                 "alembic_config_file_path": "alembic.ini",
             }
@@ -140,7 +140,7 @@ class TestMainMultiDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/maindb",
                 "alembic_directory_path": "/app/alembic/main",
                 "alembic_config_file_path": "alembic.ini",
             }
@@ -208,7 +208,7 @@ class TestMainMultiDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/maindb",
                 "alembic_directory_path": "/app/alembic/main",
                 "alembic_config_file_path": "alembic.ini",
             }
@@ -256,7 +256,7 @@ class TestMainMultiDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/maindb",
                 "alembic_directory_path": "/app/alembic/main",
                 "alembic_config_file_path": "alembic.ini",
             }
@@ -304,7 +304,7 @@ class TestMainMultiDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/maindb",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/maindb",
                 "alembic_directory_path": "/app/alembic/main",
                 "alembic_config_file_path": "alembic.ini",
             }
@@ -361,7 +361,7 @@ class TestMainSingleDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/db",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/db",
                 "alembic_directory_path": "/app/alembic",
                 "alembic_config_file_path": "alembic.ini",
                 "alembic_allow_migration_for_empty_database": True,
@@ -421,7 +421,7 @@ class TestMainSingleDatabase:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/db",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/db",
                 "alembic_directory_path": "/app/alembic",
                 "alembic_config_file_path": "alembic.ini",
                 "alembic_allow_migration_for_empty_database": False,
@@ -494,7 +494,7 @@ class TestMainBooleanParsing:
         mock_config = [
             {
                 "name": "main",
-                "url": "postgresql://user:pass@localhost:5432/db",
+                "url": "postgresql+psycopg://user:pass@localhost:5432/db",
                 "alembic_directory_path": "/app/alembic",
                 "alembic_config_file_path": "alembic.ini",
             }

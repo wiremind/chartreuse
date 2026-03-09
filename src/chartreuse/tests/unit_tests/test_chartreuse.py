@@ -45,7 +45,7 @@ class TestChartreuse:
         # Use the new dictionary format with DatabaseConfig objects
         databases_config = {
             "test-db": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -68,7 +68,7 @@ class TestChartreuse:
         mock_alembic_helper.assert_called_once_with(
             alembic_directory_path="/app/alembic",
             alembic_config_file_path="alembic.ini",
-            database_url="postgresql://user:pass@localhost:5432/db",
+            database_url="postgresql+psycopg://user:pass@localhost:5432/db",
             allow_migration_for_empty_database=True,
             additional_parameters="--verbose -n test-db",
             alembic_section_name="test-db",
@@ -97,7 +97,7 @@ class TestChartreuse:
         # Use the new dictionary format with DatabaseConfig objects
         databases_config = {
             "test-db": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -134,7 +134,7 @@ class TestChartreuse:
         # Use the new dictionary format with DatabaseConfig objects
         databases_config = {
             "test-db": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -174,7 +174,7 @@ class TestChartreuse:
         # Use the new dictionary format with DatabaseConfig objects
         databases_config = {
             "test-db": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -211,7 +211,7 @@ class TestChartreuse:
         # Use the new dictionary format with DatabaseConfig objects
         databases_config = {
             "test-db": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -262,7 +262,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "main": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -274,7 +274,7 @@ class TestChartreuseMultiDatabase:
                 additional_parameters="--verbose",
             ),
             "secondary": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -324,7 +324,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "test": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -363,7 +363,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "main": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -373,7 +373,7 @@ class TestChartreuseMultiDatabase:
                 alembic_config_file_path="alembic.ini",
             ),
             "secondary": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -407,7 +407,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "test": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -445,7 +445,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "main": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -455,7 +455,7 @@ class TestChartreuseMultiDatabase:
                 alembic_config_file_path="alembic.ini",
             ),
             "secondary": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -490,7 +490,7 @@ class TestChartreuseMultiDatabase:
 
         databases_config = {
             "test": DatabaseConfig(
-                dialect="postgresql",
+                dialect="postgresql+psycopg",
                 user="user",
                 password="pass",
                 host="localhost",
@@ -512,7 +512,7 @@ class TestChartreuseMultiDatabase:
         mock_alembic_helper.assert_called_once_with(
             alembic_directory_path="/app/alembic",
             alembic_config_file_path="alembic.ini",
-            database_url="postgresql://user:pass@localhost:5432/db",
+            database_url="postgresql+psycopg://user:pass@localhost:5432/db",
             allow_migration_for_empty_database=True,  # Default value from DatabaseConfig
             additional_parameters="-n test",  # Section name parameter added (no leading space when original is empty)
             alembic_section_name="test",  # New parameter for multi-database support
