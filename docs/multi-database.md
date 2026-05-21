@@ -67,7 +67,6 @@ For multi-database mode:
 - `CHARTREUSE_ENABLE_STOP_PODS`: Whether to stop pods during migration (optional, default: true)
 - `CHARTREUSE_RELEASE_NAME`: Kubernetes release name
 - `CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT`: Whether to upgrade before deployment (optional, default: false)
-- `HELM_IS_INSTALL`: Whether this is a Helm install operation (optional, default: false)
 
 ## Usage
 
