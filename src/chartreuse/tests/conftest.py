@@ -13,7 +13,6 @@ def configure_os_environ_mock(mocker: MockerFixture, additional_environment: dic
         "CHARTREUSE_RELEASE_NAME": "foo",
         "RUN_TEST_IN_KIND": os.environ.get("RUN_TEST_IN_KIND", ""),
         "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "",
-        "HELM_IS_INSTALL": "",
         "CHARTREUSE_MULTI_CONFIG_PATH": "/mock/config.yaml",
         # Add Kubernetes environment variables to prevent config loading
         "KUBERNETES_SERVICE_HOST": "localhost",

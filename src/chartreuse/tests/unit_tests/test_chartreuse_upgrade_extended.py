@@ -116,7 +116,6 @@ class TestMainMultiDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
         )
 
@@ -166,7 +165,6 @@ class TestMainMultiDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
         )
 
@@ -234,7 +232,6 @@ class TestMainMultiDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "false",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
         )
 
@@ -246,7 +243,7 @@ class TestMainMultiDatabase:
         mock_k8s_instance.start_pods.assert_not_called()
 
     def test_main_multi_database_upgrade_before_deployment(self, mocker: MockerFixture) -> None:
-        """Test main function with UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL."""
+        """Test main function with UPGRADE_BEFORE_DEPLOYMENT enabled: start_pods should be skipped."""
         mocker.patch("chartreuse.chartreuse_upgrade.ensure_safe_run")
 
         # Mock file existence for config validation
@@ -282,7 +279,6 @@ class TestMainMultiDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "true",
-                "HELM_IS_INSTALL": "false",
             },
         )
 
@@ -334,7 +330,6 @@ class TestMainMultiDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
         )
 
@@ -390,7 +385,6 @@ class TestMainSingleDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "true",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
             clear=True,
         )
@@ -450,7 +444,6 @@ class TestMainSingleDatabase:
                 "CHARTREUSE_ENABLE_STOP_PODS": "false",
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
             clear=True,
         )
@@ -523,7 +516,6 @@ class TestMainBooleanParsing:
                 "CHARTREUSE_ENABLE_STOP_PODS": bool_str,  # Test this boolean parsing
                 "CHARTREUSE_RELEASE_NAME": "test-release",
                 "CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT": "false",
-                "HELM_IS_INSTALL": "false",
             },
             clear=True,
         )
