@@ -85,7 +85,9 @@ def main() -> None:
         "false",
         "0",
     )
-    HELM_IS_INSTALL: bool = os.environ.get("HELM_IS_INSTALL", "false").lower() not in ("", "false", "0")
+    # HELM_IS_INSTALL removed: under ArgoCD the env var is always empty, and under
+    # pure Helm flow with upgradeBeforeDeployment=true the existing pattern was to
+    # let the orchestrator restart pods after the hook. Always honour that.
 
     deployment_manager = KubernetesDeploymentManager(release_name=RELEASE_NAME, use_kubeconfig=None)
     chartreuse = Chartreuse(
@@ -102,7 +104,7 @@ def main() -> None:
 
         if not ENABLE_STOP_PODS:
             return
-        if UPGRADE_BEFORE_DEPLOYMENT and not HELM_IS_INSTALL:
+        if UPGRADE_BEFORE_DEPLOYMENT:
             return
 
         try:
