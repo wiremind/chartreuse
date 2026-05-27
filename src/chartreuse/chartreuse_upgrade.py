@@ -20,10 +20,10 @@ def ensure_safe_run() -> None:
     # Get "1.2" from "1.2.3"
     package_v_major_minor: list[str] = package_v.split(".", 2)[:2]
 
-    helm_chart_v: str = os.getenv("HELM_CHART_VERSION", "")
+    helm_chart_v: str = os.getenv("HELM_CHART_APP_VERSION", "")
     if not helm_chart_v:
         raise ValueError(
-            "Couldn't get the Chartreuse's Helm Chart version from the env var HELM_CHART_VERSION,"
+            "Couldn't get the Chartreuse's Helm Chart appVersion from the env var HELM_CHART_APP_VERSION,"
             " couldn't make sure that the package is of a compatible version, ABORTING!"
         )
     helm_chart_v_major_minor: list[str] = helm_chart_v.split(".", 2)[:2]

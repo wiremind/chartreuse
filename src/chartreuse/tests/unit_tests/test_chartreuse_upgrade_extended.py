@@ -14,7 +14,7 @@ class TestEnsureSafeRun:
     def test_ensure_safe_run_matching_versions(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with matching major.minor versions."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.2.1")
-        mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0"})
+        mocker.patch.dict(os.environ, {"HELM_CHART_APP_VERSION": "5.2.0"})
 
         # Should not raise any exception
         ensure_safe_run()
@@ -22,7 +22,7 @@ class TestEnsureSafeRun:
     def test_ensure_safe_run_mismatched_versions(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with mismatched major.minor versions."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.1.3")
-        mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0"})
+        mocker.patch.dict(os.environ, {"HELM_CHART_APP_VERSION": "5.2.0"})
 
         with pytest.raises(ValueError) as exc_info:
             ensure_safe_run()
@@ -32,29 +32,29 @@ class TestEnsureSafeRun:
         assert "5.2.0" in str(exc_info.value)
 
     def test_ensure_safe_run_missing_helm_version(self, mocker: MockerFixture) -> None:
-        """Test ensure_safe_run with missing HELM_CHART_VERSION environment variable."""
+        """Test ensure_safe_run with missing HELM_CHART_APP_VERSION environment variable."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.1.3")
         mocker.patch.dict(os.environ, {}, clear=True)
 
         with pytest.raises(ValueError) as exc_info:
             ensure_safe_run()
 
-        assert "Couldn't get the Chartreuse's Helm Chart version" in str(exc_info.value)
+        assert "Couldn't get the Chartreuse's Helm Chart appVersion" in str(exc_info.value)
 
     def test_ensure_safe_run_empty_helm_version(self, mocker: MockerFixture) -> None:
-        """Test ensure_safe_run with empty HELM_CHART_VERSION environment variable."""
+        """Test ensure_safe_run with empty HELM_CHART_APP_VERSION environment variable."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.1.3")
-        mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": ""})
+        mocker.patch.dict(os.environ, {"HELM_CHART_APP_VERSION": ""})
 
         with pytest.raises(ValueError) as exc_info:
             ensure_safe_run()
 
-        assert "Couldn't get the Chartreuse's Helm Chart version" in str(exc_info.value)
+        assert "Couldn't get the Chartreuse's Helm Chart appVersion" in str(exc_info.value)
 
     def test_ensure_safe_run_different_major_versions(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with different major versions."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="4.2.1")
-        mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0"})
+        mocker.patch.dict(os.environ, {"HELM_CHART_APP_VERSION": "5.2.0"})
 
         with pytest.raises(ValueError) as exc_info:
             ensure_safe_run()
@@ -64,7 +64,7 @@ class TestEnsureSafeRun:
     def test_ensure_safe_run_complex_version_formats(self, mocker: MockerFixture) -> None:
         """Test ensure_safe_run with complex version formats."""
         mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.2.1-alpha.1")
-        mocker.patch.dict(os.environ, {"HELM_CHART_VERSION": "5.2.0-beta.2"})
+        mocker.patch.dict(os.environ, {"HELM_CHART_APP_VERSION": "5.2.0-beta.2"})
 
         # Should not raise any exception as major.minor match
         ensure_safe_run()

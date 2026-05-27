@@ -17,7 +17,7 @@ def test_chartreuse_upgrade_detected_migration_enabled_stop_pods(
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
     mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.0.0")
-    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_VERSION": "5.0.0"})
+    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_APP_VERSION": "5.0.0"})
 
     chartreuse.chartreuse_upgrade.main()
     mocked_stop_pods.assert_called()
@@ -35,7 +35,7 @@ def test_chartreuse_upgrade_detected_migration_disabled_stop_pods(
     mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.0.0")
     configure_os_environ_mock(
         mocker=mocker,
-        additional_environment={"CHARTREUSE_ENABLE_STOP_PODS": "", "HELM_CHART_VERSION": "5.0.0"},
+        additional_environment={"CHARTREUSE_ENABLE_STOP_PODS": "", "HELM_CHART_APP_VERSION": "5.0.0"},
     )
 
     chartreuse.chartreuse_upgrade.main()
@@ -52,7 +52,7 @@ def test_chartreuse_upgrade_no_migration_disabled_stop_pods(
     mocked_stop_pods = mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.stop_pods")
     mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager.start_pods")
     mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.0.0")
-    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_VERSION": "5.0.0"})
+    configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_APP_VERSION": "5.0.0"})
 
     chartreuse.chartreuse_upgrade.main()
     mocked_stop_pods.assert_not_called()
@@ -90,7 +90,7 @@ def test_chartreuse_upgrade_compatibility_check(
     Helm Chart version.
     """
     mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value=package_version)
-    additional_environment = {"HELM_CHART_VERSION": helm_chart_version} if helm_chart_version is not None else {}
+    additional_environment = {"HELM_CHART_APP_VERSION": helm_chart_version} if helm_chart_version is not None else {}
     configure_os_environ_mock(mocker=mocker, additional_environment=additional_environment)
     configure_chartreuse_mock(mocker=mocker, is_migration_needed=False)
 
