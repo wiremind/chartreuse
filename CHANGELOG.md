@@ -24,9 +24,9 @@
 
 ### Chore
 - Validate runtime/tooling compatibility on Python 3.14.
-- CI: pushing a `vX.Y.Z.devN` tag (from any branch) publishes a PEP 440 dev pre-release to
-  PyPI, for validating changes on a canary environment before merging. Stable releases still
-  require a published GitHub Release.
+- CI: pushing a SemVer `vX.Y.Z-dev.N` tag (from any branch) publishes the PEP 440 dev
+  pre-release `X.Y.Z.devN` to PyPI, for validating changes on a canary environment before
+  merging. Stable releases still require a published GitHub Release.
 
 ## v6.0.0 (2025-10-07)
 

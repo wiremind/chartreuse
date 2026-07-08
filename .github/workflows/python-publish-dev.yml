@@ -1,18 +1,20 @@
 name: Upload dev Python Package
 
-# Publish a PEP 440 dev pre-release to PyPI on tag push (from any branch), so a change can be
+# Publish a dev pre-release to PyPI on tag push (from any branch), so a change can be
 # validated on a canary environment before merging. Stable releases are NOT published this way:
 # they go through a published GitHub Release (python-publish.yml).
 #
-# Usage: git tag v7.0.0.dev1 && git push origin v7.0.0.dev1
-# The package version is derived from the tag (not from the VERSION file), and the workflow
-# refuses anything that is not a vX.Y.Z.devN tag. pip only installs dev versions when pinned
-# explicitly (or with --pre), so consumers can't pick one up by accident.
+# Usage: git tag v7.0.0-dev.1 && git push origin v7.0.0-dev.1
+# Tags follow semantic versioning (vMAJOR.MINOR.PATCH-dev.N); the workflow translates to the
+# PEP 440 equivalent (7.0.0.dev1) for the package. The version is derived from the tag (not
+# from the VERSION file), and the workflow refuses anything that is not a vX.Y.Z-dev.N tag.
+# pip only installs dev versions when pinned explicitly (or with --pre), so consumers can't
+# pick one up by accident.
 
 on:
   push:
     tags:
-      - "v*.dev*"
+      - "v*-dev.*"
 
 jobs:
   deploy:
@@ -20,18 +22,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Refuse anything but a dev version tag
+      - name: Refuse anything but a SemVer dev version tag
         run: |
-          echo "${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+\.dev[0-9]+$' || {
-            echo "Tag ${GITHUB_REF_NAME} is not a vX.Y.Z.devN dev version, refusing to publish."
+          echo "${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$' || {
+            echo "Tag ${GITHUB_REF_NAME} is not a vX.Y.Z-dev.N dev version, refusing to publish."
             exit 1
           }
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Set package version from the tag
-        run: echo "${GITHUB_REF_NAME#v}" > VERSION
+      - name: Set package version from the tag (SemVer -> PEP 440)
+        run: |
+          SEMVER="${GITHUB_REF_NAME#v}"
+          echo "${SEMVER/-dev./.dev}" > VERSION
+          echo "Publishing version $(cat VERSION) from tag ${GITHUB_REF_NAME}"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
