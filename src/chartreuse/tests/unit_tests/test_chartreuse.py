@@ -87,7 +87,7 @@ class TestChartreuse:
         mock_alembic_helper.return_value = mock_alembic_instance
 
         # Mock KubernetesDeploymentManager
-        mock_k8s_manager = mocker.patch("wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager")
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse.KubernetesDeploymentManager")
         mock_k8s_instance = MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 
@@ -315,7 +315,7 @@ class TestChartreuseMultiDatabase:
         mock_alembic_helper.return_value = mock_alembic_instance
 
         # Mock KubernetesDeploymentManager
-        mock_k8s_manager = mocker.patch("wiremind_kubernetes.kubernetes_helper.KubernetesDeploymentManager")
+        mock_k8s_manager = mocker.patch("chartreuse.chartreuse.KubernetesDeploymentManager")
         mock_k8s_instance = MagicMock()
         mock_k8s_manager.return_value = mock_k8s_instance
 

@@ -1,9 +1,26 @@
 # Changelog
 
-## Unreleased
+## v7.0.0 (2026-07-08)
 
 ### BREAKING CHANGE
 - Raise minimum supported Python version to 3.13.
+
+### BREAKING CHANGE
+- Drop the `wiremind-kubernetes` dependency (library being decommissioned): the subset
+  chartreuse uses (`KubernetesDeploymentManager` with `stop_pods`/`start_pods`, kube config
+  loading, `run_command`) now lives in `chartreuse.kubernetes_helper` and
+  `chartreuse.utils.command`, depending only on the official `kubernetes` client.
+  Library users importing chartreuse should not be affected unless they relied on chartreuse
+  pulling in wiremind-kubernetes transitively.
+
+### Feat
+- New `chartreuse-restore` entrypoint, to run as a post-deployment (e.g. ArgoCD PostSync) hook
+  when `CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT` is enabled. On that path `chartreuse-upgrade`
+  skips `start_pods()` and relies on the following deployment to restore replicas, which never
+  happens for HPA-managed Deployments (their chart omits `spec.replicas`, and an HPA whose
+  target is at 0 replicas with `minReplicas >= 1` is ScalingDisabled): they stayed stranded at
+  0 replicas after every migration. `stop_pods()` now marks every Deployment it stops with the
+  `wiremind.io/stopped-by` annotation; the restore only touches Deployments still carrying it.
 
 ### Chore
 - Validate runtime/tooling compatibility on Python 3.14.

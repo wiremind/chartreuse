@@ -16,12 +16,10 @@ durationpy==0.10
     # via kubernetes
 google-auth==2.41.1
     # via kubernetes
-greenlet==3.2.4
-    # via sqlalchemy
 idna==3.10
     # via requests
 kubernetes==34.1.0
-    # via wiremind-kubernetes
+    # via chartreuse (pyproject.toml)
 mako==1.3.10
     # via alembic
 markupsafe==3.0.3
@@ -75,5 +73,3 @@ urllib3==2.3.0
     #   requests
 websocket-client==1.9.0
     # via kubernetes
-wiremind-kubernetes==7.5.0
-    # via chartreuse (pyproject.toml)

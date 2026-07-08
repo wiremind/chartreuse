@@ -59,9 +59,9 @@ def configure_chartreuse_mock(
 
     # Mock KubernetesDeploymentManager in all the right places
     mock_kdm = mocker.MagicMock()
-    mocker.patch("wiremind_kubernetes.KubernetesDeploymentManager", return_value=mock_kdm)
+    mocker.patch("chartreuse.kubernetes_helper.KubernetesDeploymentManager", return_value=mock_kdm)
     mocker.patch("chartreuse.chartreuse_upgrade.KubernetesDeploymentManager", return_value=mock_kdm)
 
     # Also mock the kubernetes config loading to prevent the config errors
     mocker.patch("kubernetes.config.load_incluster_config")
-    mocker.patch("wiremind_kubernetes.kube_config.load_kubernetes_config")
+    mocker.patch("chartreuse.kubernetes_helper.load_kubernetes_config")
