@@ -5,7 +5,8 @@ from subprocess import SubprocessError
 
 import sqlalchemy
 from sqlalchemy import inspect
-from wiremind_kubernetes.utils import run_command
+
+from .command import run_command
 
 logger = logging.getLogger(__name__)
 

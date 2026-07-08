@@ -1,21 +1,62 @@
 import logging
 import os
 import subprocess
+import sys
 import time
+import urllib.parse
 from collections.abc import Generator
 
 import pytest
 import sqlalchemy
 from sqlalchemy import inspect
-from wiremind_kubernetes.kube_config import load_kubernetes_config
-from wiremind_kubernetes.kubernetes_helper import KubernetesDeploymentManager
-from wiremind_kubernetes.tests.e2e_tests.conftest import create_namespace, setUpE2E  # noqa: F401
-from wiremind_kubernetes.utils import run_command
 
 import chartreuse
+from chartreuse.kubernetes_helper import KubernetesDeploymentManager, load_kubernetes_config
+from chartreuse.utils.command import run_command
 
 TEST_NAMESPACE = "chartreuse-e2e-test"
 TEST_RELEASE = "e2e-test-release"
+
+# Test clusters the e2e suite is allowed to run against
+TEST_IPS_WHITELISTED = [
+    "localhost",  # minikube
+    "127.0.0.1",  # kind
+    "kubernetes.docker.internal",  # Docker for Mac
+]
+TEST_NODES_WHITELISTED = [
+    "minikube",
+    "kind-control-plane",
+    "kind",
+    "kind-worker",
+]
+
+
+def _is_ip_whitelisted() -> bool:
+    api_server = subprocess.check_output(
+        "kubectl config view --minify | grep server | cut -f 2- -d ':' | tr -d ' '",
+        shell=True,
+        text=True,
+    )
+    hostname = urllib.parse.urlparse(api_server.lower().strip()).hostname
+    return hostname in TEST_IPS_WHITELISTED
+
+
+def _is_node_whitelisted() -> bool:
+    output, *_ = run_command("kubectl get nodes -o name", return_result=True)
+    cluster_nodes = [x for x in output.replace("node/", "").split("\n") if x != ""]
+    return all(node in TEST_NODES_WHITELISTED for node in cluster_nodes)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setUpE2E() -> None:
+    """
+    sys.exit(1) if kubectl current context api server is not a test cluster (like kind, minikube, etc)
+    """
+    logging.info("[CLUSTER-CONFIG]: Making sure the tests are running against a test cluster...")
+    if not _is_ip_whitelisted() and not _is_node_whitelisted():
+        logging.error("Attempted to run tests with a non-test cluster, aborting!")
+        sys.exit(1)
+
 
 ROOT_PATH = os.path.join(os.path.dirname(chartreuse.__file__), "..", "..")
 EXAMPLE_PATH = os.path.join(ROOT_PATH, "example")

@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "wiremind", email = "dev@wiremind.io" }]
 license="LGPL-3.0-or-later"
 urls = { github = "https://github.com/wiremind/chartreuse"}
-scripts = {chartreuse-upgrade = "chartreuse.chartreuse_upgrade:main"}
+scripts = {chartreuse-upgrade = "chartreuse.chartreuse_upgrade:main", chartreuse-restore = "chartreuse.chartreuse_restore:main"}
 requires-python = ">=3.13.0"
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -16,10 +16,10 @@ classifiers = [
 
 dependencies = [
   "alembic",
+  "kubernetes",
   "psycopg2",
   "pydantic>=2.0.0",
   "PyYAML",
-  "wiremind-kubernetes~=7.0",
 ]
 
 [build-system]
