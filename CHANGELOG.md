@@ -1,5 +1,18 @@
 # Changelog
 
+## v7.0.1 (2026-07-09)
+
+### Fix
+- Pause HPAs during migrations via `spec.behavior.scaleUp.selectPolicy: Disabled` instead of
+  renaming their `scaleTargetRef` to a non-existent Deployment. The rename made the HPA emit
+  `FailedGetScale` and turn ArgoCD applications **Degraded** for the whole migration window,
+  and was reverted by any GitOps sync anyway. The pause keeps the HPA Healthy while forbidding
+  scale-up; the pre-pause `spec.behavior` is saved in the `wiremind.io/pre-pause-scale-behavior`
+  annotation and restored exactly on resume. Because a leftover pause is not cleaned up by
+  GitOps (the field is invisible to ArgoCD), `start_pods()` and `restore_stopped_pods()` now
+  resume HPAs unconditionally for every tracked Deployment. The old rename-repair path is kept
+  for HPAs left broken by a pre-7.0.1 run (removal planned for 8.0).
+
 ## v7.0.0 (2026-07-08)
 
 ### BREAKING CHANGE
