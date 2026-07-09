@@ -9,6 +9,7 @@ Depends only on the official kubernetes client.
 """
 
 import functools
+import json
 import logging
 import os
 import pprint
@@ -20,10 +21,16 @@ import kubernetes
 
 logger = logging.getLogger(__name__)
 
+# Target-rename prefix used by the pre-7.0.1 HPA disable mechanism. Only the repair path
+# (re_enable_hpa) remains, for HPAs left renamed by an older chartreuse.
+# TODO: remove in 8.0 together with re_enable_hpa.
 HPA_ID_PREFIX = "wm--disabled--kube"
 # Set by stop_pods() on every Deployment it scales down, cleared by start_pods() and
 # restore_stopped_pods(). Allows telling "stopped by us" apart from "deliberately scaled to 0".
 STOPPED_ANNOTATION = "wiremind.io/stopped-by"
+# Set by pause_hpa() on the HPA itself; stores the pre-pause spec.behavior as JSON ("" when
+# absent) so resume_hpa() can restore it exactly. Presence of the annotation == "paused by us".
+PAUSED_ANNOTATION = "wiremind.io/pre-pause-scale-behavior"
 
 
 def load_kubernetes_config(use_kubeconfig: bool | None = None) -> None:
@@ -254,14 +261,51 @@ class KubernetesDeploymentManager:
         return eds_dict
 
     @retry_kubernetes_request
-    def disable_hpa(self, *, deployment_name: str) -> None:
+    def pause_hpa(self, *, deployment_name: str) -> None:
+        """
+        Forbid the Deployment's HPAs from scaling up (spec.behavior.scaleUp.selectPolicy:
+        Disabled) so they can't start pods mid-migration. Unlike breaking the scaleTargetRef,
+        the HPA stays Healthy: no FailedGetScale events, no Degraded ArgoCD application.
+
+        The pre-pause spec.behavior is saved in PAUSED_ANNOTATION so resume_hpa() can restore
+        it exactly. Idempotent: an already-paused HPA is left alone (never overwrite the
+        saved original with a paused state).
+        """
         for hpa in self.get_deployment_hpa(deployment_name=deployment_name):
-            # Tell the hpa to manage a non-existing Deployment
-            hpa.spec.scale_target_ref.name = f"{HPA_ID_PREFIX}-{deployment_name}"
-            self.patch_deployment_hpa(hpa_name=hpa.metadata.name, body=hpa)
+            if PAUSED_ANNOTATION in (hpa.metadata.annotations or {}):
+                continue
+            original_behavior = self.client_autoscalingv2_api.api_client.sanitize_for_serialization(hpa.spec.behavior)
+            saved = json.dumps(original_behavior) if original_behavior else ""
+            body = {
+                "metadata": {"annotations": {PAUSED_ANNOTATION: saved}},
+                "spec": {"behavior": {"scaleUp": {"selectPolicy": "Disabled"}}},
+            }
+            self.patch_deployment_hpa(hpa_name=hpa.metadata.name, body=body)
+
+    @retry_kubernetes_request
+    def resume_hpa(self, *, deployment_name: str) -> None:
+        """
+        Undo pause_hpa(): restore the exact pre-pause spec.behavior (or clear it when there
+        was none) and drop PAUSED_ANNOTATION. No-op on HPAs that don't carry the annotation,
+        so it is always safe to call.
+        """
+        for hpa in self.get_deployment_hpa(deployment_name=deployment_name):
+            saved = (hpa.metadata.annotations or {}).get(PAUSED_ANNOTATION)
+            if saved is None:
+                continue
+            body = {
+                "metadata": {"annotations": {PAUSED_ANNOTATION: None}},
+                "spec": {"behavior": json.loads(saved) if saved else None},
+            }
+            self.patch_deployment_hpa(hpa_name=hpa.metadata.name, body=body)
 
     @retry_kubernetes_request
     def re_enable_hpa(self, *, deployment_name: str) -> None:
+        """
+        Repair an HPA left pointing at a wm--disabled--kube- target by a pre-7.0.1 chartreuse
+        whose run crashed before re-enabling. 7.0.1+ never creates such renames.
+        TODO: remove in 8.0.
+        """
         for hpa in self.get_deployment_hpa(deployment_name=f"{HPA_ID_PREFIX}-{deployment_name}"):
             hpa.spec.scale_target_ref.name = deployment_name
             self.patch_deployment_hpa(hpa_name=hpa.metadata.name, body=hpa)
@@ -278,9 +322,9 @@ class KubernetesDeploymentManager:
         """
         for deployment_name in deployment_dict:
             self.annotate_deployment(deployment_name, {STOPPED_ANNOTATION: self.release_name})
+            self.pause_hpa(deployment_name=deployment_name)
         for _ in range(self.SCALE_DOWN_MAX_WAIT_TIME):
             for deployment_name in deployment_dict:
-                self.disable_hpa(deployment_name=deployment_name)
                 self.scale_down_deployment(deployment_name)
             if self._are_deployments_stopped(deployment_dict):
                 break
@@ -324,6 +368,7 @@ class KubernetesDeploymentManager:
             if len(priority_dict):
                 scaled = True
                 for name, expected_scale in priority_dict.items():
+                    self.resume_hpa(deployment_name=name)
                     self.re_enable_hpa(deployment_name=name)
                     self.scale_up_deployment(name, expected_scale)
                     self.annotate_deployment(name, {STOPPED_ANNOTATION: None})
@@ -336,8 +381,11 @@ class KubernetesDeploymentManager:
         """
         Restore Deployments that stop_pods() scaled down and that nothing scaled back up since.
 
-        Only Deployments still carrying STOPPED_ANNOTATION are touched, so a Deployment
-        deliberately scaled to zero outside of stop_pods() is left alone.
+        Only the replica restore is gated on STOPPED_ANNOTATION, so a Deployment deliberately
+        scaled to zero outside of stop_pods() is left alone. HPA resume/repair on the other
+        hand runs for EVERY tracked Deployment: a pause left behind by a crashed run is not
+        self-healing (ArgoCD ignores the live-only spec.behavior field), and resuming an
+        unpaused HPA is a no-op.
 
         Meant to run after the deployment that follows a stop_pods() without start_pods()
         (CHARTREUSE_UPGRADE_BEFORE_DEPLOYMENT): that deployment restores spec.replicas of
@@ -351,6 +399,8 @@ class KubernetesDeploymentManager:
         restored: list[str] = []
         for priority in sorted(expected_deployment_scale_dict):
             for name, expected_scale in expected_deployment_scale_dict[priority].items():
+                self.resume_hpa(deployment_name=name)
+                self.re_enable_hpa(deployment_name=name)
                 try:
                     deployment = self.client_appsv1_api.read_namespaced_deployment(name, self.namespace)
                 except kubernetes.client.rest.ApiException as e:
@@ -359,7 +409,6 @@ class KubernetesDeploymentManager:
                     raise
                 if STOPPED_ANNOTATION not in (deployment.metadata.annotations or {}):
                     continue
-                self.re_enable_hpa(deployment_name=name)
                 if not deployment.spec.replicas:
                     target_scale = expected_scale
                     if target_scale < 1 and any(self.get_deployment_hpa(deployment_name=name)):
