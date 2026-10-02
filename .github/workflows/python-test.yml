@@ -21,10 +21,10 @@ jobs:
         python-version: [3.13, 3.14]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2.3.4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -40,12 +40,12 @@ jobs:
           ruff format --check .
 
       - name: Set up Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab # v1.1
         with:
           version: v3.7.0
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.2.0
+        uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478 # v1.2.0
         with:
           cluster_name: kind
 
@@ -55,7 +55,7 @@ jobs:
           pytest --verbose . --junitxml=junit.xml
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@127c778ac944abc0f48a5103964304bab7eb208b # v2.9.1
         if: always() # always run even if the previous step fails
         with:
           report_paths: "junit.xml"
@@ -64,8 +64,8 @@ jobs:
     name: black-format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: reviewdog/action-black@v2
+      - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
+      - uses: reviewdog/action-black@7b65863891a77f727fb8ad11b486c04db4aa07d4 # v2.3.0
         with:
           github_token: ${{ secrets.github_token }}
           # Change reviewdog reporter if you need [github-pr-check, github-check].
