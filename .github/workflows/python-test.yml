@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
-      - uses: reviewdog/action-black@7b65863891a77f727fb8ad11b486c04db4aa07d4 # v2.3.0
+      - uses: reviewdog/action-black@5059d92f0326f09326be64e1c50693374c7771cb # v3.24.0
         with:
           github_token: ${{ secrets.github_token }}
           # Change reviewdog reporter if you need [github-pr-check, github-check].
