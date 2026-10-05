@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.0.2 (2026-10-05)
+
+### Fix
+- `is_deployment_stopped` no longer counts a Pod in phase `Succeeded` (`Completed`) as a living
+  replica. A Deployment holding one was never seen as stopped, so the migration waited until an
+  operator deleted the Pod by hand. Terminal phases are now a real tuple, `("Failed", "Succeeded")`,
+  instead of the string `("Failed")`, which made `not in` a substring test.
+
 ## v7.0.1 (2026-07-09)
 
 ### Fix

@@ -2,6 +2,7 @@ import json
 import unittest
 
 import kubernetes
+import pytest
 from pytest_mock import MockerFixture
 
 from chartreuse.kubernetes_helper import PAUSED_ANNOTATION, STOPPED_ANNOTATION, KubernetesDeploymentManager
@@ -275,3 +276,26 @@ def test_resume_hpa_restores_original_behavior(mocker: MockerFixture) -> None:
             body={"metadata": {"annotations": {PAUSED_ANNOTATION: None}}, "spec": {"behavior": None}},
         ),
     ]
+
+
+@pytest.mark.parametrize(
+    "phase, expected_stopped",
+    [
+        ("Failed", True),
+        ("Succeeded", True),
+        ("Running", False),
+        ("Pending", False),
+    ],
+)
+def test_is_deployment_stopped(mocker: MockerFixture, phase: str, expected_stopped: bool) -> None:
+    """
+    Test that we only consider Pods in a non-terminal phase as living Pods.
+
+    A Failed (like evicted) or Succeeded (Completed) Pod holds no resource.
+    """
+    kdm = _make_kdm(mocker)
+    pod = mocker.MagicMock()
+    pod.status.phase = phase
+    mocker.patch.object(kdm, "_get_pods_from_deployment", return_value=[pod])
+
+    assert kdm.is_deployment_stopped("worker") is expected_stopped
