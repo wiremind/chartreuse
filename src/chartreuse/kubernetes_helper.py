@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 # (re_enable_hpa) remains, for HPAs left renamed by an older chartreuse.
 # TODO: remove in 8.0 together with re_enable_hpa.
 HPA_ID_PREFIX = "wm--disabled--kube"
+# A Pod in a terminal phase holds no resource: it is not a living replica.
+TERMINAL_POD_PHASES = ("Failed", "Succeeded")
 # Set by stop_pods() on every Deployment it scales down, cleared by start_pods() and
 # restore_stopped_pods(). Allows telling "stopped by us" apart from "deliberately scaled to 0".
 STOPPED_ANNOTATION = "wiremind.io/stopped-by"
@@ -184,7 +186,7 @@ class KubernetesDeploymentManager:
 
         current_scale = 0
         for pod in pod_list:
-            if pod.status.phase not in ("Failed"):
+            if pod.status.phase not in TERMINAL_POD_PHASES:
                 current_scale += 1
 
         if current_scale > 0:
