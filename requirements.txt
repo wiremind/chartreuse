@@ -20,7 +20,7 @@ idna==3.10
     # via requests
 kubernetes==34.1.0
     # via chartreuse (pyproject.toml)
-mako==1.3.10
+mako==1.4.2
     # via alembic
 markupsafe==3.0.3
     # via mako
