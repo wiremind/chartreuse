@@ -6,7 +6,7 @@ import chartreuse.chartreuse_restore
 from ..conftest import configure_os_environ_mock
 
 
-def _configure_deployment_manager_mock(mocker: MockerFixture) -> "MockerFixture":
+def _configure_deployment_manager_mock(mocker: MockerFixture) -> MockerFixture:
     mocked_kdm = mocker.MagicMock()
     mocker.patch("chartreuse.chartreuse_restore.KubernetesDeploymentManager", return_value=mocked_kdm)
     mocker.patch(

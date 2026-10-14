@@ -1,5 +1,10 @@
 # Changelog
 
+## v8.0.0 (unreleased)
+
+### BREAKING CHANGE
+- Raise minimum supported Python version to 3.14. Wiremind decommissions Python 3.13.
+
 ## v7.0.2 (2026-10-05)
 
 ### Fix
