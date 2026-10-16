@@ -40,7 +40,8 @@ class DatabaseConfig(BaseModel):
     def validate_dialect(cls, v: str) -> str:
         """Validate database dialect."""
         supported_dialects = ["postgresql", "mysql", "sqlite", "oracle", "mssql", "clickhouse"]
-        if v.lower() not in supported_dialects:
+        # Ignore the driver part, e.g. "postgresql+psycopg".
+        if v.lower().split("+")[0] not in supported_dialects:
             logger.warning("Dialect '%s' might not be supported. Supported dialects: %s", v, supported_dialects)
         return v
 
