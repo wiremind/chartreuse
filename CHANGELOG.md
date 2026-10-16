@@ -1,9 +1,13 @@
 # Changelog
 
-## v8.0.0 (unreleased)
+## v8.0.0
 
 ### BREAKING CHANGE
 - Raise minimum supported Python version to 3.14. Wiremind decommissions Python 3.13.
+- Replace `psycopg2` with psycopg 3 (`psycopg[binary]`). SQLAlchemy 2.1+ uses psycopg 3 for
+  `postgresql://` by default; with SQLAlchemy 2.0, set `dialect: postgresql+psycopg`. Alembic
+  migrations that import `psycopg2` must move to `psycopg`, or install `psycopg2` and set
+  `dialect: postgresql+psycopg2`.
 
 ## v7.0.2 (2026-10-05)
 

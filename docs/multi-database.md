@@ -49,7 +49,7 @@ databases:
 - `alembic_config_file_path`: Alembic configuration file name
 
 **Database connection components (all required):**
-- `dialect`: Database dialect (e.g., postgresql, mysql, sqlite)
+- `dialect`: Database dialect (e.g., postgresql, mysql, sqlite). With SQLAlchemy 2.1+, `postgresql` uses the psycopg 3 driver; with SQLAlchemy 2.0, set `postgresql+psycopg`. Set an explicit driver such as `postgresql+psycopg2` to override it.
 - `user`: Database username
 - `password`: Database password
 - `host`: Database host
