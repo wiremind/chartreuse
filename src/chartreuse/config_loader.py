@@ -6,6 +6,7 @@ import logging
 
 import yaml
 from pydantic import BaseModel, Field, computed_field, field_validator
+from sqlalchemy.engine import URL
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +33,18 @@ class DatabaseConfig(BaseModel):
     @computed_field
     @property
     def url(self) -> str:
-        """Build database URL from components."""
-        return f"{self.dialect}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+        """Build database URL from components.
+
+        URL.create escapes special characters in the user and the password.
+        """
+        return URL.create(
+            drivername=self.dialect,
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            database=self.database,
+        ).render_as_string(hide_password=False)
 
     @field_validator("dialect")
     @classmethod

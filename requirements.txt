@@ -26,8 +26,6 @@ markupsafe==3.0.3
     # via mako
 oauthlib==3.3.1
     # via requests-oauthlib
-psycopg2==2.9.10
-    # via chartreuse (pyproject.toml)
 pyasn1==0.6.1
     # via
     #   pyasn1-modules

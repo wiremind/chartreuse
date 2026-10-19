@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+from alembic.config import Config
 from pytest_mock.plugin import MockerFixture
 
 import chartreuse.utils
@@ -401,3 +402,31 @@ file_template = %%(year)d%%(month).2d%%(day).2d-%%(slug)s
         assert "postgresql://old@localhost:5432/old" not in content
         # Verify section is still intact
         assert "[alembic]" in content
+
+
+def test_configure_escapes_percent_in_url() -> None:
+    """
+    Test that a URL with an escaped password survives the alembic.ini interpolation
+    """
+    sample_alembic_ini = """[postgresql]
+script_location = postgresl
+sqlalchemy.url = postgresql://wiremind_owner@localhost:5432/wiremind
+"""
+    database_url = "postgresql://user:p%40ss%25@host:5432/db"
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        alembic_ini_path = os.path.join(temp_dir, "alembic.ini")
+        with open(alembic_ini_path, "w") as f:
+            f.write(sample_alembic_ini)
+
+        chartreuse.utils.AlembicMigrationHelper(
+            alembic_directory_path=temp_dir,
+            alembic_config_file_path="alembic.ini",
+            database_url=database_url,
+            alembic_section_name="postgresql",
+            configure=True,
+            skip_db_checks=True,
+        )
+
+        alembic_config = Config(alembic_ini_path, ini_section="postgresql")
+        assert alembic_config.get_main_option("sqlalchemy.url") == database_url

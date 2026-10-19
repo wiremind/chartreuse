@@ -1,9 +1,31 @@
 # Changelog
 
-## v8.0.0 (unreleased)
+## v7.1.0 (unreleased)
 
-### BREAKING CHANGE
-- Raise minimum supported Python version to 3.14. Wiremind decommissions Python 3.13.
+v7.1.0 replaces v8.0.0. Chartreuse keeps major 7, because the
+[Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse)
+requires the same major version as the Python package. Do not use v8.0.0.
+
+### Upgrade
+Chartreuse no longer installs a database driver. Pick the extra that matches your SQLAlchemy version:
+
+| Your project | Dependency | SQLAlchemy |
+| --- | --- | --- |
+| Stays on psycopg2 (no change) | `chartreuse[psycopg2]` | `<2.1` |
+| Moves to psycopg 3 | `chartreuse[psycopg]` | `>=2.1` |
+
+- With SQLAlchemy 2.1, a `postgresql://` URL needs psycopg 3. Pin `sqlalchemy<2.1` while you stay on psycopg2.
+- To use psycopg 3 with SQLAlchemy 2.0, set `dialect: postgresql+psycopg` in the Chartreuse configuration.
+
+### Python
+- The minimum supported Python version is 3.14. Wiremind decommissions Python 3.13.
+
+### Fix
+- Chartreuse no longer depends on `psycopg2`. The project image provides the database driver.
+  SQLAlchemy selects the driver from the dialect: `postgresql` means psycopg2 with SQLAlchemy 2.0
+  and psycopg (3) with SQLAlchemy 2.1. See [Upgrade](#upgrade).
+- The database URL is built with `sqlalchemy.engine.URL.create`. Special characters in the user or
+  the password (`@`, `:`, `/`, `%`) no longer break the URL or the `alembic.ini` interpolation.
 
 ## v7.0.2 (2026-10-05)
 
