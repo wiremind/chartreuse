@@ -1,10 +1,6 @@
 # Changelog
 
-## v7.1.0 (unreleased)
-
-v7.1.0 replaces v8.0.0. Chartreuse keeps major 7, because the
-[Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse)
-requires the same major version as the Python package. Do not use v8.0.0.
+## v7.1.1 (2026-10-20)
 
 ### Upgrade
 Chartreuse no longer installs a database driver. Pick the extra that matches your SQLAlchemy version:
@@ -21,6 +17,10 @@ Chartreuse no longer installs a database driver. Pick the extra that matches you
 - The minimum supported Python version is 3.14. Wiremind decommissions Python 3.13.
 
 ### Fix
+- The compatibility check compares only the major version of the package and of the Helm Chart
+  `appVersion`, not `major.minor`. A minor release keeps the Helm Chart contract. A chart upgrade within
+  the same major no longer forces a backend upgrade, and a package upgrade no longer forces a chart
+  upgrade.
 - Chartreuse no longer depends on `psycopg2`. The project image provides the database driver.
   SQLAlchemy selects the driver from the dialect: `postgresql` means psycopg2 with SQLAlchemy 2.0
   and psycopg (3) with SQLAlchemy 2.1. See [Upgrade](#upgrade).
