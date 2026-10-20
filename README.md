@@ -33,6 +33,7 @@ All you have to do is build your own container image containing:
 - Chartreuse Python package
 - Your Alembic migrations in an `alembic` directory
 - All required dependencies to run your alembic migrations.
+  This includes the database driver: Chartreuse does not install one. Use the extra `chartreuse[psycopg]` or `chartreuse[psycopg2]`, or depend on the driver directly.
 
 Usually, it will be the same container image for your project with your code as usual, with Chartreuse added as dependency in your setup.py.
 

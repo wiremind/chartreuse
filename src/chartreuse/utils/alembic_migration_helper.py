@@ -55,8 +55,9 @@ class AlembicMigrationHelper:
         if not config.has_section(self.alembic_section_name):
             raise ValueError(f"Section '{self.alembic_section_name}' not found in {self.alembic_config_file_path}")
 
-        # Update the sqlalchemy.url in the specific section
-        config.set(self.alembic_section_name, "sqlalchemy.url", self.database_url)
+        # Update the sqlalchemy.url in the specific section.
+        # ConfigParser and Alembic interpolate "%", and an escaped password contains "%XX".
+        config.set(self.alembic_section_name, "sqlalchemy.url", self.database_url.replace("%", "%%"))
 
         # Write the updated configuration back to the file
         with open(config_path, "w") as f:

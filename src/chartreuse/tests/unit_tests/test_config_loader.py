@@ -9,6 +9,7 @@ from unittest.mock import patch
 import pytest
 import yaml
 from pydantic import ValidationError
+from sqlalchemy.engine import make_url
 
 from chartreuse.config_loader import DatabaseConfig, MultiDatabaseConfig, load_multi_database_config
 
@@ -55,6 +56,24 @@ class TestDatabaseConfig:
 
         expected_url = "postgresql://myuser:mypass@example.com:5432/mydb"
         assert config.url == expected_url
+
+    def test_database_config_url_escapes_password(self):
+        """Test that special characters in the password do not break the URL."""
+        config = DatabaseConfig(
+            dialect="postgresql+psycopg",
+            user="myuser",
+            password="p@ss:w/rd%",
+            host="example.com",
+            port=5432,
+            database="mydb",
+            alembic_directory_path="/app/alembic",
+        )
+
+        url = make_url(config.url)
+        assert url.drivername == "postgresql+psycopg"
+        assert url.password == "p@ss:w/rd%"
+        assert url.host == "example.com"
+        assert url.database == "mydb"
 
     def test_database_config_with_optional_fields(self):
         """Test database configuration with all optional fields set."""
