@@ -32,10 +32,10 @@ def test_chartreuse_restore_restores_stopped_pods(mocker: MockerFixture) -> None
 def test_chartreuse_restore_incompatible_helm_chart_version(mocker: MockerFixture) -> None:
     """
     Test that chartreuse_restore aborts before touching anything when the package and the
-    Helm Chart don't have the same major.minor.
+    Helm Chart don't have the same major.
     """
     mocked_kdm = _configure_deployment_manager_mock(mocker)
-    mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="5.1.0")
+    mocker.patch("chartreuse.chartreuse_upgrade.get_version", return_value="6.0.0")
     configure_os_environ_mock(mocker=mocker, additional_environment={"HELM_CHART_APP_VERSION": "5.0.0"})
 
     with pytest.raises(ValueError):

@@ -1,6 +1,15 @@
 # Changelog
 
-## v7.1.0 (unreleased)
+## v7.1.1 (unreleased)
+
+### Fix
+- The compatibility check accepts a package with the same major as the Helm Chart `appVersion` and a
+  minor greater or equal to the Helm Chart minor. A minor release of the package keeps the Helm Chart
+  contract, so it no longer needs a new Helm Chart release. A Helm Chart minor newer than the package
+  minor still aborts, because the Helm Chart can use options that the package does not know.
+  v7.1.0 refused to start with the Helm Chart `appVersion` 7.0.0.
+
+## v7.1.0 (2026-10-20)
 
 v7.1.0 replaces v8.0.0. Chartreuse keeps major 7, because the
 [Chartreuse Helm Chart](https://github.com/wiremind/wiremind-helm-charts/tree/main/charts/chartreuse)

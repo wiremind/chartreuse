@@ -20,7 +20,7 @@ helm repo add wiremind https://wiremind.github.io/wiremind-helm-charts
 helm install wiremind-crds wiremind/wiremind-crds --version 0.1.0
 ```
 
-- Please make sure Chartreuse Python **Package version** and Chartreuse **Helm Chart version**, you use, share `major.minor` otherwise Chartreuse won't start.
+- Please make sure Chartreuse Python **Package version** and Chartreuse **Helm Chart version**, you use, share the same major, and that the Package minor is greater or equal to the Helm Chart minor, otherwise Chartreuse won't start.
 
 ## Configuration
 

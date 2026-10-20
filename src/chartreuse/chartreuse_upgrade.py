@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from chartreuse import get_version
 
@@ -10,14 +11,20 @@ from .kubernetes_helper import KubernetesDeploymentManager
 logger = logging.getLogger(__name__)
 
 
+def _get_major_minor(version: str) -> tuple[str, int]:
+    """Return ("1", 2) for "1.2.3". A missing minor ("1", "1.") counts as 0."""
+    major, _, rest = version.partition(".")
+    minor_digits = re.match(r"\d*", rest)
+    return major, int(minor_digits.group()) if minor_digits and minor_digits.group() else 0
+
+
 def ensure_safe_run() -> None:
     """
-    The compatibility between the Chartreuse package and Chartreuse Helm Chart is only ensured for
-    versions with the same "major.minor".
+    The Chartreuse package supports a Helm Chart appVersion with the same major and a minor lower or
+    equal to its own. A minor release of the package keeps the Helm Chart contract, but a newer Helm
+    Chart can use options that an older package does not know.
     """
     package_v: str = get_version()
-    # Get "1.2" from "1.2.3"
-    package_v_major_minor: list[str] = package_v.split(".", 2)[:2]
 
     helm_chart_v: str = os.getenv("HELM_CHART_APP_VERSION", "")
     if not helm_chart_v:
@@ -25,12 +32,14 @@ def ensure_safe_run() -> None:
             "Couldn't get the Chartreuse's Helm Chart appVersion from the env var HELM_CHART_APP_VERSION,"
             " couldn't make sure that the package is of a compatible version, ABORTING!"
         )
-    helm_chart_v_major_minor: list[str] = helm_chart_v.split(".", 2)[:2]
-    if helm_chart_v_major_minor != package_v_major_minor:
+
+    package_major, package_minor = _get_major_minor(package_v)
+    helm_chart_major, helm_chart_minor = _get_major_minor(helm_chart_v)
+    if helm_chart_major != package_major or package_minor < helm_chart_minor:
         raise ValueError(
             f"Chartreuse's Helm Chart version '{helm_chart_v}' and the package's version '{package_v}' "
-            f"don't have the same 'major.minor' ({helm_chart_v_major_minor} != {package_v_major_minor}),"
-            " they may be incompatible. Make sure they're semver, align them and retry, ABORTING!"
+            "are incompatible: the package needs the same major and a minor greater or equal to the"
+            " Helm Chart's. Align them and retry, ABORTING!"
         )
 
 
