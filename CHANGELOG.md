@@ -1,5 +1,10 @@
 # Changelog
 
+## v7.2.0 (2026-11-04)
+
+### Python
+- Chartreuse supports Python 3.15. The CI tests Python 3.14 and 3.15.
+
 ## v7.1.1 (2026-10-20)
 
 ### Upgrade
